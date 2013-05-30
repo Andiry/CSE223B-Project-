@@ -233,8 +233,9 @@ static int fuseMain(int argc, char *argv[],
 void * startFuse(void * arg) {
     cerr << "Starting FUSE..." << endl;
     ArgStruct * args = (ArgStruct *) arg;
-    int argc = 2;
+    int argc = 3;
     backup_path = args->argv[2];
+    args->argv[2] = "-f";
 
     fuse_operations from_fuse_oper;
     initOpers(from_fuse_oper);
