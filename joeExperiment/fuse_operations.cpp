@@ -3,30 +3,37 @@
 
 using namespace std;
 
+string backup_path;
+
+const char *convert(const char *path)
+{
+	return (backup_path + path).c_str();
+}
+
 int from_fuse_getattr(const char *path, struct stat *stbuf)
 {
-    return local_getattr(path, stbuf);
+    return local_getattr(convert(path), stbuf);
 }
 
 int from_fuse_fgetattr(const char *path, struct stat *stbuf,
         struct fuse_file_info *fi)
 {
-    return local_fgetattr(path, stbuf, fi);
+    return local_fgetattr(convert(path), stbuf, fi);
 }
 
 int from_fuse_access(const char *path, int mask)
 {
-    return local_access(path, mask);
+    return local_access(convert(path), mask);
 }
 
 int from_fuse_readlink(const char *path, char *buf, size_t size)
 {
-    return local_readlink(path, buf, size);
+    return local_readlink(convert(path), buf, size);
 }
 
 int from_fuse_opendir(const char *path, struct fuse_file_info *fi)
 {
-    return local_opendir(path, fi);
+    return local_opendir(convert(path), fi);
 }
 
 inline struct dirp *from_fuse_get_dirp(struct fuse_file_info *fi)
@@ -37,27 +44,27 @@ inline struct dirp *from_fuse_get_dirp(struct fuse_file_info *fi)
 int from_fuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
         off_t offset, struct fuse_file_info *fi)
 {
-    return local_readdir(path, buf, filler, offset, fi);
+    return local_readdir(convert(path), buf, filler, offset, fi);
 }
 
 int from_fuse_releasedir(const char *path, struct fuse_file_info *fi)
 {
-    return local_releasedir(path, fi);
+    return local_releasedir(convert(path), fi);
 }
 
 int from_fuse_mkdir(const char *path, mode_t mode)
 {
-    return local_mkdir(path, mode);
+    return local_mkdir(convert(path), mode);
 }
 
 int from_fuse_unlink(const char *path)
 {
-    return local_unlink(path);
+    return local_unlink(convert(path));
 }
 
 int from_fuse_rmdir(const char *path)
 {
-    return local_rmdir(path);
+    return local_rmdir(convert(path));
 }
 
 int from_fuse_symlink(const char *from, const char *to)
@@ -77,80 +84,80 @@ int from_fuse_link(const char *from, const char *to)
 
 int from_fuse_chmod(const char *path, mode_t mode)
 {
-    return local_chmod(path, mode);
+    return local_chmod(convert(path), mode);
 }
 
 int from_fuse_chown(const char *path, uid_t uid, gid_t gid)
 {
-    return local_chown(path, uid, gid);
+    return local_chown(convert(path), uid, gid);
 }
 
 int from_fuse_truncate(const char *path, off_t size)
 {
-    return local_truncate(path, size);
+    return local_truncate(convert(path), size);
 }
 
 int from_fuse_ftruncate(const char *path, off_t size,
         struct fuse_file_info *fi)
 {
-    return local_ftruncate(path, size, fi);
+    return local_ftruncate(convert(path), size, fi);
 }
 
 int from_fuse_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
-    return local_create(path, mode, fi);
+    return local_create(convert(path), mode, fi);
 }
 
 int from_fuse_open(const char *path, struct fuse_file_info *fi)
 {
-    return local_open(path, fi);
+    return local_open(convert(path), fi);
 }
 
 int from_fuse_read(const char *path, char *buf, size_t size, off_t offset,
         struct fuse_file_info *fi)
 {
-    return local_read(path, buf, size, offset, fi);
+    return local_read(convert(path), buf, size, offset, fi);
 }
 
 int from_fuse_read_buf(const char *path, struct fuse_bufvec **bufp,
         size_t size, off_t offset, struct fuse_file_info *fi)
 {
-    return local_read_buf(path, bufp, size, offset, fi);
+    return local_read_buf(convert(path), bufp, size, offset, fi);
 }
 
 int from_fuse_write(const char *path, const char *buf, size_t size,
         off_t offset, struct fuse_file_info *fi)
 {
-    return local_write(path, buf, size, offset, fi);
+    return local_write(convert(path), buf, size, offset, fi);
 }
 
 int from_fuse_flush(const char *path, struct fuse_file_info *fi)
 {
-    return local_flush(path, fi);
+    return local_flush(convert(path), fi);
 }
 
 int from_fuse_release(const char *path, struct fuse_file_info *fi)
 {
-    return local_release(path, fi);
+    return local_release(convert(path), fi);
 }
 
 int from_fuse_fsync(const char *path, int isdatasync,
         struct fuse_file_info *fi)
 {
-    return local_fsync(path, isdatasync, fi);
+    return local_fsync(convert(path), isdatasync, fi);
 }
 
 #ifdef HAVE_POSIX_FALLOCATE
 int from_fuse_fallocate(const char *path, int mode,
         off_t offset, off_t length, struct fuse_file_info *fi)
 {
-    return local_fallocate(path, mode, offset, length, fi);
+    return local_fallocate(convert(path), mode, offset, length, fi);
 }
 #endif
 
 int from_fuse_flock(const char *path, struct fuse_file_info *fi, int op)
 {
-    return local_flock(path, fi, op);
+    return local_flock(convert(path), fi, op);
 }
 
 void initOpers(fuse_operations& oper) {
@@ -226,14 +233,20 @@ static int fuseMain(int argc, char *argv[],
 void * startFuse(void * arg) {
     cerr << "Starting FUSE..." << endl;
     ArgStruct * args = (ArgStruct *) arg;
+    int argc = args->argc - 1;
+    backup_path = args->argv[2];
 
     fuse_operations from_fuse_oper;
     initOpers(from_fuse_oper);
 
+<<<<<<< HEAD
     for (int i = 0; i < args->argc; ++i) {
         cerr << i << ": " << args->argv[i] << endl;
     }
     intptr_t ret = fuse_main(args->argc, args->argv, &from_fuse_oper, NULL);
+=======
+    intptr_t ret = fuse_main(argc, args->argv, &from_fuse_oper, NULL);
+>>>>>>> 754419b7ec00a30e314e55b182837e7d62ef612e
     //intptr_t ret = fuseMain(args->argc, args->argv, &from_fuse_oper, sizeof(from_fuse_oper), NULL);
     if (ret)
         return (void *) ret;
