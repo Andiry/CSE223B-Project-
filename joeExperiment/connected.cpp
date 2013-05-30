@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     args->argv = argv;
 
     cerr << "Starting Thrift server thread..." << endl;
-    rc = pthread_create(&sThread, NULL, &startServer, (void *) 9090);
+    rc = pthread_create(&sThread, NULL, &startServer, (void *) args);
     if (rc) {
         cerr << "ERROR: return code from pthread_create() is " << rc << endl;
         exit(-1);

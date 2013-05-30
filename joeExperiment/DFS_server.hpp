@@ -8,10 +8,20 @@
 #include <thrift/transport/TBufferTransports.h>
 
 #include <cstdint>
+#include <vector>
+#include <map>
+
+#ifndef _ARG_STRUCT_
+#define _ARG_STRUCT_
+struct ArgStruct {
+    int argc;
+    char **argv;
+};
+#endif
 
 class DFSHandler : virtual public DFS::DFSIf {
     public:
-        DFSHandler();
+        DFSHandler(int argc, char** argv);
         bool lock(const std::string& path, const std::string& hostname);
         bool unlock(const std::string& path, const std::string& hostname);
         void commit(const int64_t id, const std::string& hostname);
@@ -40,6 +50,9 @@ class DFSHandler : virtual public DFS::DFSIf {
         void dfs_remote_fallocate(const std::string& hostname);
         void dfs_remote_lock(const std::string& hostname);
         void dfs_remote_flock(const std::string& hostname);
+ 
+	int _id;
+	std::vector < std::pair<std::string, int> > _backendServerVector;
 };
 
 void * startServer(void * port);

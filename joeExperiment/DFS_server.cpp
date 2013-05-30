@@ -13,8 +13,16 @@ using boost::shared_ptr;
 using namespace ::DFS;
 using namespace std;
 
-DFSHandler::DFSHandler() {
+DFSHandler::DFSHandler(int argc, char **argv) {
     // Your initialization goes here
+    _id = atoi(argv[3]);
+
+    for (int i = 5; i + 1 < argc; i += 2) {
+	string peer_ip(argv[i]);
+	int peer_port = atoi(argv[i+1]);
+	_backendServerVector.push_back(make_pair(peer_ip, peer_port));
+	cout << "Backend server at: " << peer_ip << " on port: " << peer_port << endl;
+    }
 }
 
 bool DFSHandler::lock(const std::string& path, const std::string& hostname) {
@@ -160,10 +168,12 @@ void DFSHandler::dfs_remote_flock(const std::string& hostname) {
 }
 
 void * startServer(void * arg) {
-    int port = (intptr_t) arg;
-    cerr << "Starting Thrift Server..." << endl;
+    ArgStruct *args = (ArgStruct *) arg;
+    int port = atoi(args->argv[4]);
 
-    boost::shared_ptr<DFSHandler> handler(new DFSHandler());
+    cerr << "Starting Thrift Server on port " << port << " ..." << endl;
+
+    boost::shared_ptr<DFSHandler> handler(new DFSHandler(args->argc, args->argv));
     boost::shared_ptr<TProcessor> processor(new DFSProcessor(handler));
     boost::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
     boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());

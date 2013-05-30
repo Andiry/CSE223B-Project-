@@ -76,10 +76,13 @@ int from_fuse_fallocate(const char *path, int mode,
 
 void initOpers(fuse_operations& oper);
 
+#ifndef _ARG_STRUCT_
+#define _ARG_STRUCT_
 struct ArgStruct {
     int argc;
     char **argv;
 };
+#endif
 
 void * startFuse(void * arg);
 
