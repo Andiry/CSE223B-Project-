@@ -230,14 +230,20 @@ void * startFuse(void * arg) {
     fuse_operations from_fuse_oper;
     initOpers(from_fuse_oper);
 
+    for (int i = 0; i < args->argc; ++i) {
+        cerr << i << ": " << args->argv[i] << endl;
+    }
     intptr_t ret = fuse_main(args->argc, args->argv, &from_fuse_oper, NULL);
     //intptr_t ret = fuseMain(args->argc, args->argv, &from_fuse_oper, sizeof(from_fuse_oper), NULL);
     if (ret)
         return (void *) ret;
 
+    delete [] args->argv;
     delete args;
 
-    pthread_exit(NULL);
+    cerr << "FUSE Done..." << endl;
+
+    //pthread_exit(NULL);
 
     return NULL;
 }
