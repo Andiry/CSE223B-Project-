@@ -239,14 +239,11 @@ void * startFuse(void * arg) {
     fuse_operations from_fuse_oper;
     initOpers(from_fuse_oper);
 
-<<<<<<< HEAD
     for (int i = 0; i < args->argc; ++i) {
         cerr << i << ": " << args->argv[i] << endl;
     }
-    intptr_t ret = fuse_main(args->argc, args->argv, &from_fuse_oper, NULL);
-=======
+    //intptr_t ret = fuse_main(args->argc, args->argv, &from_fuse_oper, NULL);
     intptr_t ret = fuse_main(argc, args->argv, &from_fuse_oper, NULL);
->>>>>>> 754419b7ec00a30e314e55b182837e7d62ef612e
     //intptr_t ret = fuseMain(args->argc, args->argv, &from_fuse_oper, sizeof(from_fuse_oper), NULL);
     if (ret)
         return (void *) ret;

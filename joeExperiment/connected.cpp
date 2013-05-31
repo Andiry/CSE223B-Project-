@@ -36,8 +36,19 @@ int main(int argc, char *argv[])
     }*/
 
     ArgStruct * args = new ArgStruct;
-    args->argc = argc;
-    args->argv = argv;
+
+    args->argc = 4;
+    args->argv = (char **) (new char *[4]);
+
+    initializer_list<char*> newArgv =
+        initializer_list<char *>({argv[0], "-f", "-s", argv[1]});
+    copy(newArgv.begin(), newArgv.end(), args->argv);
+
+    cerr << args->argv[0] << endl;
+    cerr << args->argv[1] << endl;
+    cerr << args->argv[2] << endl;
+    cerr << args->argv[3] << endl;
+    //args->argv = argv;
 
     cerr << "Starting Thrift server thread..." << endl;
     rc = pthread_create(&sThread, NULL, &startServer, (void *) 9090);
