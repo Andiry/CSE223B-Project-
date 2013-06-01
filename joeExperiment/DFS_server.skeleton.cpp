@@ -22,144 +22,154 @@ class DFSHandler : virtual public DFSIf {
     // Your initialization goes here
   }
 
-  bool lock(const std::string& path, const std::string& hostname) {
+  void ping(const HostID& sender) {
     // Your implementation goes here
-    printf("lock\n");
+    printf("ping\n");
   }
 
-  bool unlock(const std::string& path, const std::string& hostname) {
+  void unlock(const HostID& sender, const std::string& file) {
     // Your implementation goes here
     printf("unlock\n");
   }
 
-  void commit(const int64_t id, const std::string& hostname) {
+  void die(const HostID& sender) {
     // Your implementation goes here
-    printf("commit\n");
+    printf("die\n");
   }
 
-  void Bla() {
+  void addServer(const HostID& sender, const HostID& newServer) {
     // Your implementation goes here
-    printf("Bla\n");
+    printf("addServer\n");
   }
 
-  void Ping() {
+  void releaseJoinLock(const HostID& sender) {
     // Your implementation goes here
-    printf("Ping\n");
+    printf("releaseJoinLock\n");
   }
 
-  void Pong() {
+  void lock(const HostID& sender, const std::string& file) {
     // Your implementation goes here
-    printf("Pong\n");
+    printf("lock\n");
   }
 
-  void dfs_remote_opendir(const std::string& hostname) {
+  void join(std::set<HostID> & _return, const HostID& sender) {
     // Your implementation goes here
-    printf("dfs_remote_opendir\n");
+    printf("join\n");
   }
 
-  void dfs_remote_readdir(const std::string& hostname) {
+  bool requestJoinLock(const HostID& sender) {
     // Your implementation goes here
-    printf("dfs_remote_readdir\n");
+    printf("requestJoinLock\n");
+    return false;
   }
 
-  void dfs_remote_releasedir(const std::string& hostname) {
+  bool getJoinLock(const HostID& sender) {
     // Your implementation goes here
-    printf("dfs_remote_releasedir\n");
+    printf("getJoinLock\n");
+    return false;
   }
 
-  void dfs_remote_mkdir(const std::string& hostname) {
+  void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     // Your implementation goes here
-    printf("dfs_remote_mkdir\n");
+    printf("releasedir\n");
   }
 
-  void dfs_remote_symlink(const std::string& hostname) {
+  void mkdir(const HostID& sender, const std::string& path, const int32_t mode) {
     // Your implementation goes here
-    printf("dfs_remote_symlink\n");
+    printf("mkdir\n");
   }
 
-  void dfs_remote_unlink(const std::string& hostname) {
+  void unlink(const HostID& sender, const std::string& path) {
     // Your implementation goes here
-    printf("dfs_remote_unlink\n");
+    printf("unlink\n");
   }
 
-  void dfs_remote_rmdir(const std::string& hostname) {
+  void rmdir(const HostID& sender, const std::string& path) {
     // Your implementation goes here
-    printf("dfs_remote_rmdir\n");
+    printf("rmdir\n");
   }
 
-  void dfs_remote_rename(const std::string& hostname) {
+  void symlink(const HostID& sender, const std::string& from, const std::string& to) {
     // Your implementation goes here
-    printf("dfs_remote_rename\n");
+    printf("symlink\n");
   }
 
-  void dfs_remote_link(const std::string& hostname) {
+  void rename(const HostID& sender, const std::string& from, const std::string& to) {
     // Your implementation goes here
-    printf("dfs_remote_link\n");
+    printf("rename\n");
   }
 
-  void dfs_remote_chmod(const std::string& hostname) {
+  void link(const HostID& sender, const std::string& from, const std::string& to) {
     // Your implementation goes here
-    printf("dfs_remote_chmod\n");
+    printf("link\n");
   }
 
-  void dfs_remote_chown(const std::string& hostname) {
+  void chmod(const HostID& sender, const std::string& path, const int32_t mode) {
     // Your implementation goes here
-    printf("dfs_remote_chown\n");
+    printf("chmod\n");
   }
 
-  void dfs_remote_truncate(const std::string& hostname) {
+  void chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid) {
     // Your implementation goes here
-    printf("dfs_remote_truncate\n");
+    printf("chown\n");
   }
 
-  void dfs_remote_ftruncate(const std::string& hostname) {
+  void truncate(const HostID& sender, const std::string& path, const int64_t size) {
     // Your implementation goes here
-    printf("dfs_remote_ftruncate\n");
+    printf("truncate\n");
   }
 
-  void dfs_remote_create(const std::string& hostname) {
+  void ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi) {
     // Your implementation goes here
-    printf("dfs_remote_create\n");
+    printf("ftruncate\n");
   }
 
-  void dfs_remote_open(const std::string& hostname) {
+  void create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi) {
     // Your implementation goes here
-    printf("dfs_remote_open\n");
+    printf("create\n");
   }
 
-  void dfs_remote_write(const std::string& hostname) {
+  void write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi) {
     // Your implementation goes here
-    printf("dfs_remote_write\n");
+    printf("write\n");
   }
 
-  void dfs_remote_flush(const std::string& hostname) {
+  void flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     // Your implementation goes here
-    printf("dfs_remote_flush\n");
+    printf("flush\n");
   }
 
-  void dfs_remote_release(const std::string& hostname) {
+  void release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     // Your implementation goes here
-    printf("dfs_remote_release\n");
+    printf("release\n");
   }
 
-  void dfs_remote_fsync(const std::string& hostname) {
+  void flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op) {
     // Your implementation goes here
-    printf("dfs_remote_fsync\n");
+    printf("flock\n");
   }
 
-  void dfs_remote_fallocate(const std::string& hostname) {
+  void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi) {
     // Your implementation goes here
-    printf("dfs_remote_fallocate\n");
+    printf("fallocate\n");
   }
 
-  void dfs_remote_lock(const std::string& hostname) {
+  bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) {
     // Your implementation goes here
-    printf("dfs_remote_lock\n");
+    printf("fsync\n");
+    return false;
   }
 
-  void dfs_remote_flock(const std::string& hostname) {
+  bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     // Your implementation goes here
-    printf("dfs_remote_flock\n");
+    printf("open\n");
+    return false;
+  }
+
+  bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+    // Your implementation goes here
+    printf("opendir\n");
+    return false;
   }
 
 };

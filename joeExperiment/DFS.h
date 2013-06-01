@@ -15,34 +15,35 @@ namespace DFS {
 class DFSIf {
  public:
   virtual ~DFSIf() {}
-  virtual bool lock(const std::string& path, const std::string& hostname) = 0;
-  virtual bool unlock(const std::string& path, const std::string& hostname) = 0;
-  virtual void commit(const int64_t id, const std::string& hostname) = 0;
-  virtual void Bla() = 0;
-  virtual void Ping() = 0;
-  virtual void Pong() = 0;
-  virtual void dfs_remote_opendir(const std::string& hostname) = 0;
-  virtual void dfs_remote_readdir(const std::string& hostname) = 0;
-  virtual void dfs_remote_releasedir(const std::string& hostname) = 0;
-  virtual void dfs_remote_mkdir(const std::string& hostname) = 0;
-  virtual void dfs_remote_symlink(const std::string& hostname) = 0;
-  virtual void dfs_remote_unlink(const std::string& hostname) = 0;
-  virtual void dfs_remote_rmdir(const std::string& hostname) = 0;
-  virtual void dfs_remote_rename(const std::string& hostname) = 0;
-  virtual void dfs_remote_link(const std::string& hostname) = 0;
-  virtual void dfs_remote_chmod(const std::string& hostname) = 0;
-  virtual void dfs_remote_chown(const std::string& hostname) = 0;
-  virtual void dfs_remote_truncate(const std::string& hostname) = 0;
-  virtual void dfs_remote_ftruncate(const std::string& hostname) = 0;
-  virtual void dfs_remote_create(const std::string& hostname) = 0;
-  virtual void dfs_remote_open(const std::string& hostname) = 0;
-  virtual void dfs_remote_write(const std::string& hostname) = 0;
-  virtual void dfs_remote_flush(const std::string& hostname) = 0;
-  virtual void dfs_remote_release(const std::string& hostname) = 0;
-  virtual void dfs_remote_fsync(const std::string& hostname) = 0;
-  virtual void dfs_remote_fallocate(const std::string& hostname) = 0;
-  virtual void dfs_remote_lock(const std::string& hostname) = 0;
-  virtual void dfs_remote_flock(const std::string& hostname) = 0;
+  virtual void ping(const HostID& sender) = 0;
+  virtual void unlock(const HostID& sender, const std::string& file) = 0;
+  virtual void die(const HostID& sender) = 0;
+  virtual void addServer(const HostID& sender, const HostID& newServer) = 0;
+  virtual void releaseJoinLock(const HostID& sender) = 0;
+  virtual void lock(const HostID& sender, const std::string& file) = 0;
+  virtual void join(std::set<HostID> & _return, const HostID& sender) = 0;
+  virtual bool requestJoinLock(const HostID& sender) = 0;
+  virtual bool getJoinLock(const HostID& sender) = 0;
+  virtual void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
+  virtual void mkdir(const HostID& sender, const std::string& path, const int32_t mode) = 0;
+  virtual void unlink(const HostID& sender, const std::string& path) = 0;
+  virtual void rmdir(const HostID& sender, const std::string& path) = 0;
+  virtual void symlink(const HostID& sender, const std::string& from, const std::string& to) = 0;
+  virtual void rename(const HostID& sender, const std::string& from, const std::string& to) = 0;
+  virtual void link(const HostID& sender, const std::string& from, const std::string& to) = 0;
+  virtual void chmod(const HostID& sender, const std::string& path, const int32_t mode) = 0;
+  virtual void chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid) = 0;
+  virtual void truncate(const HostID& sender, const std::string& path, const int64_t size) = 0;
+  virtual void ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi) = 0;
+  virtual void create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi) = 0;
+  virtual void write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi) = 0;
+  virtual void flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
+  virtual void release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
+  virtual void flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op) = 0;
+  virtual void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi) = 0;
+  virtual bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) = 0;
+  virtual bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
+  virtual bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
 };
 
 class DFSIfFactory {
@@ -72,134 +73,132 @@ class DFSIfSingletonFactory : virtual public DFSIfFactory {
 class DFSNull : virtual public DFSIf {
  public:
   virtual ~DFSNull() {}
-  bool lock(const std::string& /* path */, const std::string& /* hostname */) {
+  void ping(const HostID& /* sender */) {
+    return;
+  }
+  void unlock(const HostID& /* sender */, const std::string& /* file */) {
+    return;
+  }
+  void die(const HostID& /* sender */) {
+    return;
+  }
+  void addServer(const HostID& /* sender */, const HostID& /* newServer */) {
+    return;
+  }
+  void releaseJoinLock(const HostID& /* sender */) {
+    return;
+  }
+  void lock(const HostID& /* sender */, const std::string& /* file */) {
+    return;
+  }
+  void join(std::set<HostID> & /* _return */, const HostID& /* sender */) {
+    return;
+  }
+  bool requestJoinLock(const HostID& /* sender */) {
     bool _return = false;
     return _return;
   }
-  bool unlock(const std::string& /* path */, const std::string& /* hostname */) {
+  bool getJoinLock(const HostID& /* sender */) {
     bool _return = false;
     return _return;
   }
-  void commit(const int64_t /* id */, const std::string& /* hostname */) {
+  void releasedir(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */) {
     return;
   }
-  void Bla() {
+  void mkdir(const HostID& /* sender */, const std::string& /* path */, const int32_t /* mode */) {
     return;
   }
-  void Ping() {
+  void unlink(const HostID& /* sender */, const std::string& /* path */) {
     return;
   }
-  void Pong() {
+  void rmdir(const HostID& /* sender */, const std::string& /* path */) {
     return;
   }
-  void dfs_remote_opendir(const std::string& /* hostname */) {
+  void symlink(const HostID& /* sender */, const std::string& /* from */, const std::string& /* to */) {
     return;
   }
-  void dfs_remote_readdir(const std::string& /* hostname */) {
+  void rename(const HostID& /* sender */, const std::string& /* from */, const std::string& /* to */) {
     return;
   }
-  void dfs_remote_releasedir(const std::string& /* hostname */) {
+  void link(const HostID& /* sender */, const std::string& /* from */, const std::string& /* to */) {
     return;
   }
-  void dfs_remote_mkdir(const std::string& /* hostname */) {
+  void chmod(const HostID& /* sender */, const std::string& /* path */, const int32_t /* mode */) {
     return;
   }
-  void dfs_remote_symlink(const std::string& /* hostname */) {
+  void chown(const HostID& /* sender */, const std::string& /* path */, const int32_t /* uid */, const int32_t /* gid */) {
     return;
   }
-  void dfs_remote_unlink(const std::string& /* hostname */) {
+  void truncate(const HostID& /* sender */, const std::string& /* path */, const int64_t /* size */) {
     return;
   }
-  void dfs_remote_rmdir(const std::string& /* hostname */) {
+  void ftruncate(const HostID& /* sender */, const std::string& /* path */, const int64_t /* size */, const FUSEFileInfoTransport& /* fi */) {
     return;
   }
-  void dfs_remote_rename(const std::string& /* hostname */) {
+  void create(const HostID& /* sender */, const std::string& /* path */, const int32_t /* mode */, const FUSEFileInfoTransport& /* fi */) {
     return;
   }
-  void dfs_remote_link(const std::string& /* hostname */) {
+  void write(const HostID& /* sender */, const std::string& /* path */, const std::vector<int8_t> & /* buf */, const int64_t /* size */, const int64_t /* offset */, const FUSEFileInfoTransport& /* fi */) {
     return;
   }
-  void dfs_remote_chmod(const std::string& /* hostname */) {
+  void flush(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */) {
     return;
   }
-  void dfs_remote_chown(const std::string& /* hostname */) {
+  void release(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */) {
     return;
   }
-  void dfs_remote_truncate(const std::string& /* hostname */) {
+  void flock(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */, const int64_t /* op */) {
     return;
   }
-  void dfs_remote_ftruncate(const std::string& /* hostname */) {
+  void fallocate(const HostID& /* sender */, const std::string& /* path */, const int64_t /* mode */, const int64_t /* offset */, const int64_t /* length */, const FUSEFileInfoTransport& /* fi */) {
     return;
   }
-  void dfs_remote_create(const std::string& /* hostname */) {
-    return;
+  bool fsync(const HostID& /* sender */, const std::string& /* path */, const int32_t /* isdatasync */, const FUSEFileInfoTransport& /* fi */) {
+    bool _return = false;
+    return _return;
   }
-  void dfs_remote_open(const std::string& /* hostname */) {
-    return;
+  bool open(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */) {
+    bool _return = false;
+    return _return;
   }
-  void dfs_remote_write(const std::string& /* hostname */) {
-    return;
-  }
-  void dfs_remote_flush(const std::string& /* hostname */) {
-    return;
-  }
-  void dfs_remote_release(const std::string& /* hostname */) {
-    return;
-  }
-  void dfs_remote_fsync(const std::string& /* hostname */) {
-    return;
-  }
-  void dfs_remote_fallocate(const std::string& /* hostname */) {
-    return;
-  }
-  void dfs_remote_lock(const std::string& /* hostname */) {
-    return;
-  }
-  void dfs_remote_flock(const std::string& /* hostname */) {
-    return;
+  bool opendir(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */) {
+    bool _return = false;
+    return _return;
   }
 };
 
-typedef struct _DFS_lock_args__isset {
-  _DFS_lock_args__isset() : path(false), hostname(false) {}
-  bool path;
-  bool hostname;
-} _DFS_lock_args__isset;
+typedef struct _DFS_ping_args__isset {
+  _DFS_ping_args__isset() : sender(false) {}
+  bool sender;
+} _DFS_ping_args__isset;
 
-class DFS_lock_args {
+class DFS_ping_args {
  public:
 
-  DFS_lock_args() : path(), hostname() {
+  DFS_ping_args() {
   }
 
-  virtual ~DFS_lock_args() throw() {}
+  virtual ~DFS_ping_args() throw() {}
 
-  std::string path;
-  std::string hostname;
+  HostID sender;
 
-  _DFS_lock_args__isset __isset;
+  _DFS_ping_args__isset __isset;
 
-  void __set_path(const std::string& val) {
-    path = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
-  }
-
-  bool operator == (const DFS_lock_args & rhs) const
+  bool operator == (const DFS_ping_args & rhs) const
   {
-    if (!(path == rhs.path))
-      return false;
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
       return false;
     return true;
   }
-  bool operator != (const DFS_lock_args &rhs) const {
+  bool operator != (const DFS_ping_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_lock_args & ) const;
+  bool operator < (const DFS_ping_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -207,108 +206,50 @@ class DFS_lock_args {
 };
 
 
-class DFS_lock_pargs {
+class DFS_ping_pargs {
  public:
 
 
-  virtual ~DFS_lock_pargs() throw() {}
+  virtual ~DFS_ping_pargs() throw() {}
 
-  const std::string* path;
-  const std::string* hostname;
+  const HostID* sender;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _DFS_lock_result__isset {
-  _DFS_lock_result__isset() : success(false) {}
-  bool success;
-} _DFS_lock_result__isset;
-
-class DFS_lock_result {
- public:
-
-  DFS_lock_result() : success(0) {
-  }
-
-  virtual ~DFS_lock_result() throw() {}
-
-  bool success;
-
-  _DFS_lock_result__isset __isset;
-
-  void __set_success(const bool val) {
-    success = val;
-  }
-
-  bool operator == (const DFS_lock_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const DFS_lock_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const DFS_lock_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _DFS_lock_presult__isset {
-  _DFS_lock_presult__isset() : success(false) {}
-  bool success;
-} _DFS_lock_presult__isset;
-
-class DFS_lock_presult {
- public:
-
-
-  virtual ~DFS_lock_presult() throw() {}
-
-  bool* success;
-
-  _DFS_lock_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
 typedef struct _DFS_unlock_args__isset {
-  _DFS_unlock_args__isset() : path(false), hostname(false) {}
-  bool path;
-  bool hostname;
+  _DFS_unlock_args__isset() : sender(false), file(false) {}
+  bool sender;
+  bool file;
 } _DFS_unlock_args__isset;
 
 class DFS_unlock_args {
  public:
 
-  DFS_unlock_args() : path(), hostname() {
+  DFS_unlock_args() : file() {
   }
 
   virtual ~DFS_unlock_args() throw() {}
 
-  std::string path;
-  std::string hostname;
+  HostID sender;
+  std::string file;
 
   _DFS_unlock_args__isset __isset;
 
-  void __set_path(const std::string& val) {
-    path = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_file(const std::string& val) {
+    file = val;
   }
 
   bool operator == (const DFS_unlock_args & rhs) const
   {
-    if (!(path == rhs.path))
+    if (!(sender == rhs.sender))
       return false;
-    if (!(hostname == rhs.hostname))
+    if (!(file == rhs.file))
       return false;
     return true;
   }
@@ -330,110 +271,520 @@ class DFS_unlock_pargs {
 
   virtual ~DFS_unlock_pargs() throw() {}
 
-  const std::string* path;
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* file;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_unlock_result__isset {
-  _DFS_unlock_result__isset() : success(false) {}
-  bool success;
-} _DFS_unlock_result__isset;
+typedef struct _DFS_die_args__isset {
+  _DFS_die_args__isset() : sender(false) {}
+  bool sender;
+} _DFS_die_args__isset;
 
-class DFS_unlock_result {
+class DFS_die_args {
  public:
 
-  DFS_unlock_result() : success(0) {
+  DFS_die_args() {
   }
 
-  virtual ~DFS_unlock_result() throw() {}
+  virtual ~DFS_die_args() throw() {}
 
+  HostID sender;
+
+  _DFS_die_args__isset __isset;
+
+  void __set_sender(const HostID& val) {
+    sender = val;
+  }
+
+  bool operator == (const DFS_die_args & rhs) const
+  {
+    if (!(sender == rhs.sender))
+      return false;
+    return true;
+  }
+  bool operator != (const DFS_die_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DFS_die_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class DFS_die_pargs {
+ public:
+
+
+  virtual ~DFS_die_pargs() throw() {}
+
+  const HostID* sender;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _DFS_addServer_args__isset {
+  _DFS_addServer_args__isset() : sender(false), newServer(false) {}
+  bool sender;
+  bool newServer;
+} _DFS_addServer_args__isset;
+
+class DFS_addServer_args {
+ public:
+
+  DFS_addServer_args() {
+  }
+
+  virtual ~DFS_addServer_args() throw() {}
+
+  HostID sender;
+  HostID newServer;
+
+  _DFS_addServer_args__isset __isset;
+
+  void __set_sender(const HostID& val) {
+    sender = val;
+  }
+
+  void __set_newServer(const HostID& val) {
+    newServer = val;
+  }
+
+  bool operator == (const DFS_addServer_args & rhs) const
+  {
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(newServer == rhs.newServer))
+      return false;
+    return true;
+  }
+  bool operator != (const DFS_addServer_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DFS_addServer_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class DFS_addServer_pargs {
+ public:
+
+
+  virtual ~DFS_addServer_pargs() throw() {}
+
+  const HostID* sender;
+  const HostID* newServer;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _DFS_releaseJoinLock_args__isset {
+  _DFS_releaseJoinLock_args__isset() : sender(false) {}
+  bool sender;
+} _DFS_releaseJoinLock_args__isset;
+
+class DFS_releaseJoinLock_args {
+ public:
+
+  DFS_releaseJoinLock_args() {
+  }
+
+  virtual ~DFS_releaseJoinLock_args() throw() {}
+
+  HostID sender;
+
+  _DFS_releaseJoinLock_args__isset __isset;
+
+  void __set_sender(const HostID& val) {
+    sender = val;
+  }
+
+  bool operator == (const DFS_releaseJoinLock_args & rhs) const
+  {
+    if (!(sender == rhs.sender))
+      return false;
+    return true;
+  }
+  bool operator != (const DFS_releaseJoinLock_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DFS_releaseJoinLock_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class DFS_releaseJoinLock_pargs {
+ public:
+
+
+  virtual ~DFS_releaseJoinLock_pargs() throw() {}
+
+  const HostID* sender;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _DFS_lock_args__isset {
+  _DFS_lock_args__isset() : sender(false), file(false) {}
+  bool sender;
+  bool file;
+} _DFS_lock_args__isset;
+
+class DFS_lock_args {
+ public:
+
+  DFS_lock_args() : file() {
+  }
+
+  virtual ~DFS_lock_args() throw() {}
+
+  HostID sender;
+  std::string file;
+
+  _DFS_lock_args__isset __isset;
+
+  void __set_sender(const HostID& val) {
+    sender = val;
+  }
+
+  void __set_file(const std::string& val) {
+    file = val;
+  }
+
+  bool operator == (const DFS_lock_args & rhs) const
+  {
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(file == rhs.file))
+      return false;
+    return true;
+  }
+  bool operator != (const DFS_lock_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DFS_lock_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class DFS_lock_pargs {
+ public:
+
+
+  virtual ~DFS_lock_pargs() throw() {}
+
+  const HostID* sender;
+  const std::string* file;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class DFS_lock_result {
+ public:
+
+  DFS_lock_result() {
+  }
+
+  virtual ~DFS_lock_result() throw() {}
+
+
+  bool operator == (const DFS_lock_result & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const DFS_lock_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DFS_lock_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class DFS_lock_presult {
+ public:
+
+
+  virtual ~DFS_lock_presult() throw() {}
+
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _DFS_join_args__isset {
+  _DFS_join_args__isset() : sender(false) {}
+  bool sender;
+} _DFS_join_args__isset;
+
+class DFS_join_args {
+ public:
+
+  DFS_join_args() {
+  }
+
+  virtual ~DFS_join_args() throw() {}
+
+  HostID sender;
+
+  _DFS_join_args__isset __isset;
+
+  void __set_sender(const HostID& val) {
+    sender = val;
+  }
+
+  bool operator == (const DFS_join_args & rhs) const
+  {
+    if (!(sender == rhs.sender))
+      return false;
+    return true;
+  }
+  bool operator != (const DFS_join_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DFS_join_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class DFS_join_pargs {
+ public:
+
+
+  virtual ~DFS_join_pargs() throw() {}
+
+  const HostID* sender;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _DFS_join_result__isset {
+  _DFS_join_result__isset() : success(false) {}
   bool success;
+} _DFS_join_result__isset;
 
-  _DFS_unlock_result__isset __isset;
+class DFS_join_result {
+ public:
 
-  void __set_success(const bool val) {
+  DFS_join_result() {
+  }
+
+  virtual ~DFS_join_result() throw() {}
+
+  std::set<HostID>  success;
+
+  _DFS_join_result__isset __isset;
+
+  void __set_success(const std::set<HostID> & val) {
     success = val;
   }
 
-  bool operator == (const DFS_unlock_result & rhs) const
+  bool operator == (const DFS_join_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const DFS_unlock_result &rhs) const {
+  bool operator != (const DFS_join_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_unlock_result & ) const;
+  bool operator < (const DFS_join_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_unlock_presult__isset {
-  _DFS_unlock_presult__isset() : success(false) {}
+typedef struct _DFS_join_presult__isset {
+  _DFS_join_presult__isset() : success(false) {}
   bool success;
-} _DFS_unlock_presult__isset;
+} _DFS_join_presult__isset;
 
-class DFS_unlock_presult {
+class DFS_join_presult {
  public:
 
 
-  virtual ~DFS_unlock_presult() throw() {}
+  virtual ~DFS_join_presult() throw() {}
+
+  std::set<HostID> * success;
+
+  _DFS_join_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _DFS_requestJoinLock_args__isset {
+  _DFS_requestJoinLock_args__isset() : sender(false) {}
+  bool sender;
+} _DFS_requestJoinLock_args__isset;
+
+class DFS_requestJoinLock_args {
+ public:
+
+  DFS_requestJoinLock_args() {
+  }
+
+  virtual ~DFS_requestJoinLock_args() throw() {}
+
+  HostID sender;
+
+  _DFS_requestJoinLock_args__isset __isset;
+
+  void __set_sender(const HostID& val) {
+    sender = val;
+  }
+
+  bool operator == (const DFS_requestJoinLock_args & rhs) const
+  {
+    if (!(sender == rhs.sender))
+      return false;
+    return true;
+  }
+  bool operator != (const DFS_requestJoinLock_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DFS_requestJoinLock_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class DFS_requestJoinLock_pargs {
+ public:
+
+
+  virtual ~DFS_requestJoinLock_pargs() throw() {}
+
+  const HostID* sender;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _DFS_requestJoinLock_result__isset {
+  _DFS_requestJoinLock_result__isset() : success(false) {}
+  bool success;
+} _DFS_requestJoinLock_result__isset;
+
+class DFS_requestJoinLock_result {
+ public:
+
+  DFS_requestJoinLock_result() : success(0) {
+  }
+
+  virtual ~DFS_requestJoinLock_result() throw() {}
+
+  bool success;
+
+  _DFS_requestJoinLock_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  bool operator == (const DFS_requestJoinLock_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const DFS_requestJoinLock_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DFS_requestJoinLock_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _DFS_requestJoinLock_presult__isset {
+  _DFS_requestJoinLock_presult__isset() : success(false) {}
+  bool success;
+} _DFS_requestJoinLock_presult__isset;
+
+class DFS_requestJoinLock_presult {
+ public:
+
+
+  virtual ~DFS_requestJoinLock_presult() throw() {}
 
   bool* success;
 
-  _DFS_unlock_presult__isset __isset;
+  _DFS_requestJoinLock_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _DFS_commit_args__isset {
-  _DFS_commit_args__isset() : id(false), hostname(false) {}
-  bool id;
-  bool hostname;
-} _DFS_commit_args__isset;
+typedef struct _DFS_getJoinLock_args__isset {
+  _DFS_getJoinLock_args__isset() : sender(false) {}
+  bool sender;
+} _DFS_getJoinLock_args__isset;
 
-class DFS_commit_args {
+class DFS_getJoinLock_args {
  public:
 
-  DFS_commit_args() : id(0), hostname() {
+  DFS_getJoinLock_args() {
   }
 
-  virtual ~DFS_commit_args() throw() {}
+  virtual ~DFS_getJoinLock_args() throw() {}
 
-  int64_t id;
-  std::string hostname;
+  HostID sender;
 
-  _DFS_commit_args__isset __isset;
+  _DFS_getJoinLock_args__isset __isset;
 
-  void __set_id(const int64_t val) {
-    id = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
-  }
-
-  bool operator == (const DFS_commit_args & rhs) const
+  bool operator == (const DFS_getJoinLock_args & rhs) const
   {
-    if (!(id == rhs.id))
-      return false;
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
       return false;
     return true;
   }
-  bool operator != (const DFS_commit_args &rhs) const {
+  bool operator != (const DFS_getJoinLock_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_commit_args & ) const;
+  bool operator < (const DFS_getJoinLock_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -441,213 +792,123 @@ class DFS_commit_args {
 };
 
 
-class DFS_commit_pargs {
+class DFS_getJoinLock_pargs {
  public:
 
 
-  virtual ~DFS_commit_pargs() throw() {}
+  virtual ~DFS_getJoinLock_pargs() throw() {}
 
-  const int64_t* id;
-  const std::string* hostname;
+  const HostID* sender;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
+typedef struct _DFS_getJoinLock_result__isset {
+  _DFS_getJoinLock_result__isset() : success(false) {}
+  bool success;
+} _DFS_getJoinLock_result__isset;
 
-class DFS_Bla_args {
+class DFS_getJoinLock_result {
  public:
 
-  DFS_Bla_args() {
+  DFS_getJoinLock_result() : success(0) {
   }
 
-  virtual ~DFS_Bla_args() throw() {}
+  virtual ~DFS_getJoinLock_result() throw() {}
 
+  bool success;
 
-  bool operator == (const DFS_Bla_args & /* rhs */) const
+  _DFS_getJoinLock_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  bool operator == (const DFS_getJoinLock_result & rhs) const
   {
-    return true;
-  }
-  bool operator != (const DFS_Bla_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const DFS_Bla_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class DFS_Bla_pargs {
- public:
-
-
-  virtual ~DFS_Bla_pargs() throw() {}
-
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class DFS_Ping_args {
- public:
-
-  DFS_Ping_args() {
-  }
-
-  virtual ~DFS_Ping_args() throw() {}
-
-
-  bool operator == (const DFS_Ping_args & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const DFS_Ping_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const DFS_Ping_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class DFS_Ping_pargs {
- public:
-
-
-  virtual ~DFS_Ping_pargs() throw() {}
-
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class DFS_Pong_args {
- public:
-
-  DFS_Pong_args() {
-  }
-
-  virtual ~DFS_Pong_args() throw() {}
-
-
-  bool operator == (const DFS_Pong_args & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const DFS_Pong_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const DFS_Pong_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class DFS_Pong_pargs {
- public:
-
-
-  virtual ~DFS_Pong_pargs() throw() {}
-
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _DFS_dfs_remote_opendir_args__isset {
-  _DFS_dfs_remote_opendir_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_opendir_args__isset;
-
-class DFS_dfs_remote_opendir_args {
- public:
-
-  DFS_dfs_remote_opendir_args() : hostname() {
-  }
-
-  virtual ~DFS_dfs_remote_opendir_args() throw() {}
-
-  std::string hostname;
-
-  _DFS_dfs_remote_opendir_args__isset __isset;
-
-  void __set_hostname(const std::string& val) {
-    hostname = val;
-  }
-
-  bool operator == (const DFS_dfs_remote_opendir_args & rhs) const
-  {
-    if (!(hostname == rhs.hostname))
+    if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_opendir_args &rhs) const {
+  bool operator != (const DFS_getJoinLock_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_opendir_args & ) const;
+  bool operator < (const DFS_getJoinLock_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
+typedef struct _DFS_getJoinLock_presult__isset {
+  _DFS_getJoinLock_presult__isset() : success(false) {}
+  bool success;
+} _DFS_getJoinLock_presult__isset;
 
-class DFS_dfs_remote_opendir_pargs {
+class DFS_getJoinLock_presult {
  public:
 
 
-  virtual ~DFS_dfs_remote_opendir_pargs() throw() {}
+  virtual ~DFS_getJoinLock_presult() throw() {}
 
-  const std::string* hostname;
+  bool* success;
 
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+  _DFS_getJoinLock_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _DFS_dfs_remote_readdir_args__isset {
-  _DFS_dfs_remote_readdir_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_readdir_args__isset;
+typedef struct _DFS_releasedir_args__isset {
+  _DFS_releasedir_args__isset() : sender(false), path(false), fi(false) {}
+  bool sender;
+  bool path;
+  bool fi;
+} _DFS_releasedir_args__isset;
 
-class DFS_dfs_remote_readdir_args {
+class DFS_releasedir_args {
  public:
 
-  DFS_dfs_remote_readdir_args() : hostname() {
+  DFS_releasedir_args() : path() {
   }
 
-  virtual ~DFS_dfs_remote_readdir_args() throw() {}
+  virtual ~DFS_releasedir_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  FUSEFileInfoTransport fi;
 
-  _DFS_dfs_remote_readdir_args__isset __isset;
+  _DFS_releasedir_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_readdir_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_fi(const FUSEFileInfoTransport& val) {
+    fi = val;
+  }
+
+  bool operator == (const DFS_releasedir_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(fi == rhs.fi))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_readdir_args &rhs) const {
+  bool operator != (const DFS_releasedir_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_readdir_args & ) const;
+  bool operator < (const DFS_releasedir_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -655,50 +916,68 @@ class DFS_dfs_remote_readdir_args {
 };
 
 
-class DFS_dfs_remote_readdir_pargs {
+class DFS_releasedir_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_readdir_pargs() throw() {}
+  virtual ~DFS_releasedir_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const FUSEFileInfoTransport* fi;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_releasedir_args__isset {
-  _DFS_dfs_remote_releasedir_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_releasedir_args__isset;
+typedef struct _DFS_mkdir_args__isset {
+  _DFS_mkdir_args__isset() : sender(false), path(false), mode(false) {}
+  bool sender;
+  bool path;
+  bool mode;
+} _DFS_mkdir_args__isset;
 
-class DFS_dfs_remote_releasedir_args {
+class DFS_mkdir_args {
  public:
 
-  DFS_dfs_remote_releasedir_args() : hostname() {
+  DFS_mkdir_args() : path(), mode(0) {
   }
 
-  virtual ~DFS_dfs_remote_releasedir_args() throw() {}
+  virtual ~DFS_mkdir_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  int32_t mode;
 
-  _DFS_dfs_remote_releasedir_args__isset __isset;
+  _DFS_mkdir_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_releasedir_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_mode(const int32_t val) {
+    mode = val;
+  }
+
+  bool operator == (const DFS_mkdir_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(mode == rhs.mode))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_releasedir_args &rhs) const {
+  bool operator != (const DFS_mkdir_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_releasedir_args & ) const;
+  bool operator < (const DFS_mkdir_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -706,50 +985,60 @@ class DFS_dfs_remote_releasedir_args {
 };
 
 
-class DFS_dfs_remote_releasedir_pargs {
+class DFS_mkdir_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_releasedir_pargs() throw() {}
+  virtual ~DFS_mkdir_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const int32_t* mode;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_mkdir_args__isset {
-  _DFS_dfs_remote_mkdir_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_mkdir_args__isset;
+typedef struct _DFS_unlink_args__isset {
+  _DFS_unlink_args__isset() : sender(false), path(false) {}
+  bool sender;
+  bool path;
+} _DFS_unlink_args__isset;
 
-class DFS_dfs_remote_mkdir_args {
+class DFS_unlink_args {
  public:
 
-  DFS_dfs_remote_mkdir_args() : hostname() {
+  DFS_unlink_args() : path() {
   }
 
-  virtual ~DFS_dfs_remote_mkdir_args() throw() {}
+  virtual ~DFS_unlink_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
 
-  _DFS_dfs_remote_mkdir_args__isset __isset;
+  _DFS_unlink_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_mkdir_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  bool operator == (const DFS_unlink_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_mkdir_args &rhs) const {
+  bool operator != (const DFS_unlink_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_mkdir_args & ) const;
+  bool operator < (const DFS_unlink_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -757,50 +1046,59 @@ class DFS_dfs_remote_mkdir_args {
 };
 
 
-class DFS_dfs_remote_mkdir_pargs {
+class DFS_unlink_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_mkdir_pargs() throw() {}
+  virtual ~DFS_unlink_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_symlink_args__isset {
-  _DFS_dfs_remote_symlink_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_symlink_args__isset;
+typedef struct _DFS_rmdir_args__isset {
+  _DFS_rmdir_args__isset() : sender(false), path(false) {}
+  bool sender;
+  bool path;
+} _DFS_rmdir_args__isset;
 
-class DFS_dfs_remote_symlink_args {
+class DFS_rmdir_args {
  public:
 
-  DFS_dfs_remote_symlink_args() : hostname() {
+  DFS_rmdir_args() : path() {
   }
 
-  virtual ~DFS_dfs_remote_symlink_args() throw() {}
+  virtual ~DFS_rmdir_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
 
-  _DFS_dfs_remote_symlink_args__isset __isset;
+  _DFS_rmdir_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_symlink_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  bool operator == (const DFS_rmdir_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_symlink_args &rhs) const {
+  bool operator != (const DFS_rmdir_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_symlink_args & ) const;
+  bool operator < (const DFS_rmdir_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -808,50 +1106,67 @@ class DFS_dfs_remote_symlink_args {
 };
 
 
-class DFS_dfs_remote_symlink_pargs {
+class DFS_rmdir_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_symlink_pargs() throw() {}
+  virtual ~DFS_rmdir_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_unlink_args__isset {
-  _DFS_dfs_remote_unlink_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_unlink_args__isset;
+typedef struct _DFS_symlink_args__isset {
+  _DFS_symlink_args__isset() : sender(false), from(false), to(false) {}
+  bool sender;
+  bool from;
+  bool to;
+} _DFS_symlink_args__isset;
 
-class DFS_dfs_remote_unlink_args {
+class DFS_symlink_args {
  public:
 
-  DFS_dfs_remote_unlink_args() : hostname() {
+  DFS_symlink_args() : from(), to() {
   }
 
-  virtual ~DFS_dfs_remote_unlink_args() throw() {}
+  virtual ~DFS_symlink_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string from;
+  std::string to;
 
-  _DFS_dfs_remote_unlink_args__isset __isset;
+  _DFS_symlink_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_unlink_args & rhs) const
+  void __set_from(const std::string& val) {
+    from = val;
+  }
+
+  void __set_to(const std::string& val) {
+    to = val;
+  }
+
+  bool operator == (const DFS_symlink_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(from == rhs.from))
+      return false;
+    if (!(to == rhs.to))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_unlink_args &rhs) const {
+  bool operator != (const DFS_symlink_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_unlink_args & ) const;
+  bool operator < (const DFS_symlink_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -859,50 +1174,68 @@ class DFS_dfs_remote_unlink_args {
 };
 
 
-class DFS_dfs_remote_unlink_pargs {
+class DFS_symlink_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_unlink_pargs() throw() {}
+  virtual ~DFS_symlink_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* from;
+  const std::string* to;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_rmdir_args__isset {
-  _DFS_dfs_remote_rmdir_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_rmdir_args__isset;
+typedef struct _DFS_rename_args__isset {
+  _DFS_rename_args__isset() : sender(false), from(false), to(false) {}
+  bool sender;
+  bool from;
+  bool to;
+} _DFS_rename_args__isset;
 
-class DFS_dfs_remote_rmdir_args {
+class DFS_rename_args {
  public:
 
-  DFS_dfs_remote_rmdir_args() : hostname() {
+  DFS_rename_args() : from(), to() {
   }
 
-  virtual ~DFS_dfs_remote_rmdir_args() throw() {}
+  virtual ~DFS_rename_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string from;
+  std::string to;
 
-  _DFS_dfs_remote_rmdir_args__isset __isset;
+  _DFS_rename_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_rmdir_args & rhs) const
+  void __set_from(const std::string& val) {
+    from = val;
+  }
+
+  void __set_to(const std::string& val) {
+    to = val;
+  }
+
+  bool operator == (const DFS_rename_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(from == rhs.from))
+      return false;
+    if (!(to == rhs.to))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_rmdir_args &rhs) const {
+  bool operator != (const DFS_rename_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_rmdir_args & ) const;
+  bool operator < (const DFS_rename_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -910,50 +1243,68 @@ class DFS_dfs_remote_rmdir_args {
 };
 
 
-class DFS_dfs_remote_rmdir_pargs {
+class DFS_rename_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_rmdir_pargs() throw() {}
+  virtual ~DFS_rename_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* from;
+  const std::string* to;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_rename_args__isset {
-  _DFS_dfs_remote_rename_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_rename_args__isset;
+typedef struct _DFS_link_args__isset {
+  _DFS_link_args__isset() : sender(false), from(false), to(false) {}
+  bool sender;
+  bool from;
+  bool to;
+} _DFS_link_args__isset;
 
-class DFS_dfs_remote_rename_args {
+class DFS_link_args {
  public:
 
-  DFS_dfs_remote_rename_args() : hostname() {
+  DFS_link_args() : from(), to() {
   }
 
-  virtual ~DFS_dfs_remote_rename_args() throw() {}
+  virtual ~DFS_link_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string from;
+  std::string to;
 
-  _DFS_dfs_remote_rename_args__isset __isset;
+  _DFS_link_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_rename_args & rhs) const
+  void __set_from(const std::string& val) {
+    from = val;
+  }
+
+  void __set_to(const std::string& val) {
+    to = val;
+  }
+
+  bool operator == (const DFS_link_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(from == rhs.from))
+      return false;
+    if (!(to == rhs.to))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_rename_args &rhs) const {
+  bool operator != (const DFS_link_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_rename_args & ) const;
+  bool operator < (const DFS_link_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -961,50 +1312,68 @@ class DFS_dfs_remote_rename_args {
 };
 
 
-class DFS_dfs_remote_rename_pargs {
+class DFS_link_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_rename_pargs() throw() {}
+  virtual ~DFS_link_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* from;
+  const std::string* to;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_link_args__isset {
-  _DFS_dfs_remote_link_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_link_args__isset;
+typedef struct _DFS_chmod_args__isset {
+  _DFS_chmod_args__isset() : sender(false), path(false), mode(false) {}
+  bool sender;
+  bool path;
+  bool mode;
+} _DFS_chmod_args__isset;
 
-class DFS_dfs_remote_link_args {
+class DFS_chmod_args {
  public:
 
-  DFS_dfs_remote_link_args() : hostname() {
+  DFS_chmod_args() : path(), mode(0) {
   }
 
-  virtual ~DFS_dfs_remote_link_args() throw() {}
+  virtual ~DFS_chmod_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  int32_t mode;
 
-  _DFS_dfs_remote_link_args__isset __isset;
+  _DFS_chmod_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_link_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_mode(const int32_t val) {
+    mode = val;
+  }
+
+  bool operator == (const DFS_chmod_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(mode == rhs.mode))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_link_args &rhs) const {
+  bool operator != (const DFS_chmod_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_link_args & ) const;
+  bool operator < (const DFS_chmod_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1012,50 +1381,76 @@ class DFS_dfs_remote_link_args {
 };
 
 
-class DFS_dfs_remote_link_pargs {
+class DFS_chmod_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_link_pargs() throw() {}
+  virtual ~DFS_chmod_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const int32_t* mode;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_chmod_args__isset {
-  _DFS_dfs_remote_chmod_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_chmod_args__isset;
+typedef struct _DFS_chown_args__isset {
+  _DFS_chown_args__isset() : sender(false), path(false), uid(false), gid(false) {}
+  bool sender;
+  bool path;
+  bool uid;
+  bool gid;
+} _DFS_chown_args__isset;
 
-class DFS_dfs_remote_chmod_args {
+class DFS_chown_args {
  public:
 
-  DFS_dfs_remote_chmod_args() : hostname() {
+  DFS_chown_args() : path(), uid(0), gid(0) {
   }
 
-  virtual ~DFS_dfs_remote_chmod_args() throw() {}
+  virtual ~DFS_chown_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  int32_t uid;
+  int32_t gid;
 
-  _DFS_dfs_remote_chmod_args__isset __isset;
+  _DFS_chown_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_chmod_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_uid(const int32_t val) {
+    uid = val;
+  }
+
+  void __set_gid(const int32_t val) {
+    gid = val;
+  }
+
+  bool operator == (const DFS_chown_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(uid == rhs.uid))
+      return false;
+    if (!(gid == rhs.gid))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_chmod_args &rhs) const {
+  bool operator != (const DFS_chown_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_chmod_args & ) const;
+  bool operator < (const DFS_chown_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1063,50 +1458,69 @@ class DFS_dfs_remote_chmod_args {
 };
 
 
-class DFS_dfs_remote_chmod_pargs {
+class DFS_chown_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_chmod_pargs() throw() {}
+  virtual ~DFS_chown_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const int32_t* uid;
+  const int32_t* gid;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_chown_args__isset {
-  _DFS_dfs_remote_chown_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_chown_args__isset;
+typedef struct _DFS_truncate_args__isset {
+  _DFS_truncate_args__isset() : sender(false), path(false), size(false) {}
+  bool sender;
+  bool path;
+  bool size;
+} _DFS_truncate_args__isset;
 
-class DFS_dfs_remote_chown_args {
+class DFS_truncate_args {
  public:
 
-  DFS_dfs_remote_chown_args() : hostname() {
+  DFS_truncate_args() : path(), size(0) {
   }
 
-  virtual ~DFS_dfs_remote_chown_args() throw() {}
+  virtual ~DFS_truncate_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  int64_t size;
 
-  _DFS_dfs_remote_chown_args__isset __isset;
+  _DFS_truncate_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_chown_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_size(const int64_t val) {
+    size = val;
+  }
+
+  bool operator == (const DFS_truncate_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(size == rhs.size))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_chown_args &rhs) const {
+  bool operator != (const DFS_truncate_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_chown_args & ) const;
+  bool operator < (const DFS_truncate_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1114,50 +1528,76 @@ class DFS_dfs_remote_chown_args {
 };
 
 
-class DFS_dfs_remote_chown_pargs {
+class DFS_truncate_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_chown_pargs() throw() {}
+  virtual ~DFS_truncate_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const int64_t* size;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_truncate_args__isset {
-  _DFS_dfs_remote_truncate_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_truncate_args__isset;
+typedef struct _DFS_ftruncate_args__isset {
+  _DFS_ftruncate_args__isset() : sender(false), path(false), size(false), fi(false) {}
+  bool sender;
+  bool path;
+  bool size;
+  bool fi;
+} _DFS_ftruncate_args__isset;
 
-class DFS_dfs_remote_truncate_args {
+class DFS_ftruncate_args {
  public:
 
-  DFS_dfs_remote_truncate_args() : hostname() {
+  DFS_ftruncate_args() : path(), size(0) {
   }
 
-  virtual ~DFS_dfs_remote_truncate_args() throw() {}
+  virtual ~DFS_ftruncate_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  int64_t size;
+  FUSEFileInfoTransport fi;
 
-  _DFS_dfs_remote_truncate_args__isset __isset;
+  _DFS_ftruncate_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_truncate_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_size(const int64_t val) {
+    size = val;
+  }
+
+  void __set_fi(const FUSEFileInfoTransport& val) {
+    fi = val;
+  }
+
+  bool operator == (const DFS_ftruncate_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(size == rhs.size))
+      return false;
+    if (!(fi == rhs.fi))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_truncate_args &rhs) const {
+  bool operator != (const DFS_ftruncate_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_truncate_args & ) const;
+  bool operator < (const DFS_ftruncate_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1165,50 +1605,77 @@ class DFS_dfs_remote_truncate_args {
 };
 
 
-class DFS_dfs_remote_truncate_pargs {
+class DFS_ftruncate_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_truncate_pargs() throw() {}
+  virtual ~DFS_ftruncate_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const int64_t* size;
+  const FUSEFileInfoTransport* fi;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_ftruncate_args__isset {
-  _DFS_dfs_remote_ftruncate_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_ftruncate_args__isset;
+typedef struct _DFS_create_args__isset {
+  _DFS_create_args__isset() : sender(false), path(false), mode(false), fi(false) {}
+  bool sender;
+  bool path;
+  bool mode;
+  bool fi;
+} _DFS_create_args__isset;
 
-class DFS_dfs_remote_ftruncate_args {
+class DFS_create_args {
  public:
 
-  DFS_dfs_remote_ftruncate_args() : hostname() {
+  DFS_create_args() : path(), mode(0) {
   }
 
-  virtual ~DFS_dfs_remote_ftruncate_args() throw() {}
+  virtual ~DFS_create_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  int32_t mode;
+  FUSEFileInfoTransport fi;
 
-  _DFS_dfs_remote_ftruncate_args__isset __isset;
+  _DFS_create_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_ftruncate_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_mode(const int32_t val) {
+    mode = val;
+  }
+
+  void __set_fi(const FUSEFileInfoTransport& val) {
+    fi = val;
+  }
+
+  bool operator == (const DFS_create_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(mode == rhs.mode))
+      return false;
+    if (!(fi == rhs.fi))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_ftruncate_args &rhs) const {
+  bool operator != (const DFS_create_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_ftruncate_args & ) const;
+  bool operator < (const DFS_create_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1216,50 +1683,93 @@ class DFS_dfs_remote_ftruncate_args {
 };
 
 
-class DFS_dfs_remote_ftruncate_pargs {
+class DFS_create_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_ftruncate_pargs() throw() {}
+  virtual ~DFS_create_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const int32_t* mode;
+  const FUSEFileInfoTransport* fi;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_create_args__isset {
-  _DFS_dfs_remote_create_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_create_args__isset;
+typedef struct _DFS_write_args__isset {
+  _DFS_write_args__isset() : sender(false), path(false), buf(false), size(false), offset(false), fi(false) {}
+  bool sender;
+  bool path;
+  bool buf;
+  bool size;
+  bool offset;
+  bool fi;
+} _DFS_write_args__isset;
 
-class DFS_dfs_remote_create_args {
+class DFS_write_args {
  public:
 
-  DFS_dfs_remote_create_args() : hostname() {
+  DFS_write_args() : path(), size(0), offset(0) {
   }
 
-  virtual ~DFS_dfs_remote_create_args() throw() {}
+  virtual ~DFS_write_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  std::vector<int8_t>  buf;
+  int64_t size;
+  int64_t offset;
+  FUSEFileInfoTransport fi;
 
-  _DFS_dfs_remote_create_args__isset __isset;
+  _DFS_write_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_create_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_buf(const std::vector<int8_t> & val) {
+    buf = val;
+  }
+
+  void __set_size(const int64_t val) {
+    size = val;
+  }
+
+  void __set_offset(const int64_t val) {
+    offset = val;
+  }
+
+  void __set_fi(const FUSEFileInfoTransport& val) {
+    fi = val;
+  }
+
+  bool operator == (const DFS_write_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(buf == rhs.buf))
+      return false;
+    if (!(size == rhs.size))
+      return false;
+    if (!(offset == rhs.offset))
+      return false;
+    if (!(fi == rhs.fi))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_create_args &rhs) const {
+  bool operator != (const DFS_write_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_create_args & ) const;
+  bool operator < (const DFS_write_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1267,50 +1777,71 @@ class DFS_dfs_remote_create_args {
 };
 
 
-class DFS_dfs_remote_create_pargs {
+class DFS_write_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_create_pargs() throw() {}
+  virtual ~DFS_write_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const std::vector<int8_t> * buf;
+  const int64_t* size;
+  const int64_t* offset;
+  const FUSEFileInfoTransport* fi;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_open_args__isset {
-  _DFS_dfs_remote_open_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_open_args__isset;
+typedef struct _DFS_flush_args__isset {
+  _DFS_flush_args__isset() : sender(false), path(false), fi(false) {}
+  bool sender;
+  bool path;
+  bool fi;
+} _DFS_flush_args__isset;
 
-class DFS_dfs_remote_open_args {
+class DFS_flush_args {
  public:
 
-  DFS_dfs_remote_open_args() : hostname() {
+  DFS_flush_args() : path() {
   }
 
-  virtual ~DFS_dfs_remote_open_args() throw() {}
+  virtual ~DFS_flush_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  FUSEFileInfoTransport fi;
 
-  _DFS_dfs_remote_open_args__isset __isset;
+  _DFS_flush_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_open_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_fi(const FUSEFileInfoTransport& val) {
+    fi = val;
+  }
+
+  bool operator == (const DFS_flush_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(fi == rhs.fi))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_open_args &rhs) const {
+  bool operator != (const DFS_flush_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_open_args & ) const;
+  bool operator < (const DFS_flush_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1318,50 +1849,68 @@ class DFS_dfs_remote_open_args {
 };
 
 
-class DFS_dfs_remote_open_pargs {
+class DFS_flush_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_open_pargs() throw() {}
+  virtual ~DFS_flush_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const FUSEFileInfoTransport* fi;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_write_args__isset {
-  _DFS_dfs_remote_write_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_write_args__isset;
+typedef struct _DFS_release_args__isset {
+  _DFS_release_args__isset() : sender(false), path(false), fi(false) {}
+  bool sender;
+  bool path;
+  bool fi;
+} _DFS_release_args__isset;
 
-class DFS_dfs_remote_write_args {
+class DFS_release_args {
  public:
 
-  DFS_dfs_remote_write_args() : hostname() {
+  DFS_release_args() : path() {
   }
 
-  virtual ~DFS_dfs_remote_write_args() throw() {}
+  virtual ~DFS_release_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  FUSEFileInfoTransport fi;
 
-  _DFS_dfs_remote_write_args__isset __isset;
+  _DFS_release_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_write_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_fi(const FUSEFileInfoTransport& val) {
+    fi = val;
+  }
+
+  bool operator == (const DFS_release_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(fi == rhs.fi))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_write_args &rhs) const {
+  bool operator != (const DFS_release_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_write_args & ) const;
+  bool operator < (const DFS_release_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1369,50 +1918,76 @@ class DFS_dfs_remote_write_args {
 };
 
 
-class DFS_dfs_remote_write_pargs {
+class DFS_release_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_write_pargs() throw() {}
+  virtual ~DFS_release_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const FUSEFileInfoTransport* fi;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_flush_args__isset {
-  _DFS_dfs_remote_flush_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_flush_args__isset;
+typedef struct _DFS_flock_args__isset {
+  _DFS_flock_args__isset() : sender(false), path(false), fi(false), op(false) {}
+  bool sender;
+  bool path;
+  bool fi;
+  bool op;
+} _DFS_flock_args__isset;
 
-class DFS_dfs_remote_flush_args {
+class DFS_flock_args {
  public:
 
-  DFS_dfs_remote_flush_args() : hostname() {
+  DFS_flock_args() : path(), op(0) {
   }
 
-  virtual ~DFS_dfs_remote_flush_args() throw() {}
+  virtual ~DFS_flock_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  FUSEFileInfoTransport fi;
+  int64_t op;
 
-  _DFS_dfs_remote_flush_args__isset __isset;
+  _DFS_flock_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_flush_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_fi(const FUSEFileInfoTransport& val) {
+    fi = val;
+  }
+
+  void __set_op(const int64_t val) {
+    op = val;
+  }
+
+  bool operator == (const DFS_flock_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(fi == rhs.fi))
+      return false;
+    if (!(op == rhs.op))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_flush_args &rhs) const {
+  bool operator != (const DFS_flock_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_flush_args & ) const;
+  bool operator < (const DFS_flock_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1420,50 +1995,93 @@ class DFS_dfs_remote_flush_args {
 };
 
 
-class DFS_dfs_remote_flush_pargs {
+class DFS_flock_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_flush_pargs() throw() {}
+  virtual ~DFS_flock_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const FUSEFileInfoTransport* fi;
+  const int64_t* op;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_release_args__isset {
-  _DFS_dfs_remote_release_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_release_args__isset;
+typedef struct _DFS_fallocate_args__isset {
+  _DFS_fallocate_args__isset() : sender(false), path(false), mode(false), offset(false), length(false), fi(false) {}
+  bool sender;
+  bool path;
+  bool mode;
+  bool offset;
+  bool length;
+  bool fi;
+} _DFS_fallocate_args__isset;
 
-class DFS_dfs_remote_release_args {
+class DFS_fallocate_args {
  public:
 
-  DFS_dfs_remote_release_args() : hostname() {
+  DFS_fallocate_args() : path(), mode(0), offset(0), length(0) {
   }
 
-  virtual ~DFS_dfs_remote_release_args() throw() {}
+  virtual ~DFS_fallocate_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  int64_t mode;
+  int64_t offset;
+  int64_t length;
+  FUSEFileInfoTransport fi;
 
-  _DFS_dfs_remote_release_args__isset __isset;
+  _DFS_fallocate_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_release_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_mode(const int64_t val) {
+    mode = val;
+  }
+
+  void __set_offset(const int64_t val) {
+    offset = val;
+  }
+
+  void __set_length(const int64_t val) {
+    length = val;
+  }
+
+  void __set_fi(const FUSEFileInfoTransport& val) {
+    fi = val;
+  }
+
+  bool operator == (const DFS_fallocate_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(mode == rhs.mode))
+      return false;
+    if (!(offset == rhs.offset))
+      return false;
+    if (!(length == rhs.length))
+      return false;
+    if (!(fi == rhs.fi))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_release_args &rhs) const {
+  bool operator != (const DFS_fallocate_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_release_args & ) const;
+  bool operator < (const DFS_fallocate_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1471,50 +2089,79 @@ class DFS_dfs_remote_release_args {
 };
 
 
-class DFS_dfs_remote_release_pargs {
+class DFS_fallocate_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_release_pargs() throw() {}
+  virtual ~DFS_fallocate_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const int64_t* mode;
+  const int64_t* offset;
+  const int64_t* length;
+  const FUSEFileInfoTransport* fi;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_fsync_args__isset {
-  _DFS_dfs_remote_fsync_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_fsync_args__isset;
+typedef struct _DFS_fsync_args__isset {
+  _DFS_fsync_args__isset() : sender(false), path(false), isdatasync(false), fi(false) {}
+  bool sender;
+  bool path;
+  bool isdatasync;
+  bool fi;
+} _DFS_fsync_args__isset;
 
-class DFS_dfs_remote_fsync_args {
+class DFS_fsync_args {
  public:
 
-  DFS_dfs_remote_fsync_args() : hostname() {
+  DFS_fsync_args() : path(), isdatasync(0) {
   }
 
-  virtual ~DFS_dfs_remote_fsync_args() throw() {}
+  virtual ~DFS_fsync_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  int32_t isdatasync;
+  FUSEFileInfoTransport fi;
 
-  _DFS_dfs_remote_fsync_args__isset __isset;
+  _DFS_fsync_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_fsync_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_isdatasync(const int32_t val) {
+    isdatasync = val;
+  }
+
+  void __set_fi(const FUSEFileInfoTransport& val) {
+    fi = val;
+  }
+
+  bool operator == (const DFS_fsync_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(isdatasync == rhs.isdatasync))
+      return false;
+    if (!(fi == rhs.fi))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_fsync_args &rhs) const {
+  bool operator != (const DFS_fsync_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_fsync_args & ) const;
+  bool operator < (const DFS_fsync_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1522,101 +2169,126 @@ class DFS_dfs_remote_fsync_args {
 };
 
 
-class DFS_dfs_remote_fsync_pargs {
+class DFS_fsync_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_fsync_pargs() throw() {}
+  virtual ~DFS_fsync_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const int32_t* isdatasync;
+  const FUSEFileInfoTransport* fi;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_fallocate_args__isset {
-  _DFS_dfs_remote_fallocate_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_fallocate_args__isset;
+typedef struct _DFS_fsync_result__isset {
+  _DFS_fsync_result__isset() : success(false) {}
+  bool success;
+} _DFS_fsync_result__isset;
 
-class DFS_dfs_remote_fallocate_args {
+class DFS_fsync_result {
  public:
 
-  DFS_dfs_remote_fallocate_args() : hostname() {
+  DFS_fsync_result() : success(0) {
   }
 
-  virtual ~DFS_dfs_remote_fallocate_args() throw() {}
+  virtual ~DFS_fsync_result() throw() {}
 
-  std::string hostname;
+  bool success;
 
-  _DFS_dfs_remote_fallocate_args__isset __isset;
+  _DFS_fsync_result__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_success(const bool val) {
+    success = val;
   }
 
-  bool operator == (const DFS_dfs_remote_fallocate_args & rhs) const
+  bool operator == (const DFS_fsync_result & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_fallocate_args &rhs) const {
+  bool operator != (const DFS_fsync_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_fallocate_args & ) const;
+  bool operator < (const DFS_fsync_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
+typedef struct _DFS_fsync_presult__isset {
+  _DFS_fsync_presult__isset() : success(false) {}
+  bool success;
+} _DFS_fsync_presult__isset;
 
-class DFS_dfs_remote_fallocate_pargs {
+class DFS_fsync_presult {
  public:
 
 
-  virtual ~DFS_dfs_remote_fallocate_pargs() throw() {}
+  virtual ~DFS_fsync_presult() throw() {}
 
-  const std::string* hostname;
+  bool* success;
 
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+  _DFS_fsync_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _DFS_dfs_remote_lock_args__isset {
-  _DFS_dfs_remote_lock_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_lock_args__isset;
+typedef struct _DFS_open_args__isset {
+  _DFS_open_args__isset() : sender(false), path(false), fi(false) {}
+  bool sender;
+  bool path;
+  bool fi;
+} _DFS_open_args__isset;
 
-class DFS_dfs_remote_lock_args {
+class DFS_open_args {
  public:
 
-  DFS_dfs_remote_lock_args() : hostname() {
+  DFS_open_args() : path() {
   }
 
-  virtual ~DFS_dfs_remote_lock_args() throw() {}
+  virtual ~DFS_open_args() throw() {}
 
-  std::string hostname;
+  HostID sender;
+  std::string path;
+  FUSEFileInfoTransport fi;
 
-  _DFS_dfs_remote_lock_args__isset __isset;
+  _DFS_open_args__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_sender(const HostID& val) {
+    sender = val;
   }
 
-  bool operator == (const DFS_dfs_remote_lock_args & rhs) const
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_fi(const FUSEFileInfoTransport& val) {
+    fi = val;
+  }
+
+  bool operator == (const DFS_open_args & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(fi == rhs.fi))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_lock_args &rhs) const {
+  bool operator != (const DFS_open_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_lock_args & ) const;
+  bool operator < (const DFS_open_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1624,50 +2296,125 @@ class DFS_dfs_remote_lock_args {
 };
 
 
-class DFS_dfs_remote_lock_pargs {
+class DFS_open_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_lock_pargs() throw() {}
+  virtual ~DFS_open_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const FUSEFileInfoTransport* fi;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _DFS_dfs_remote_flock_args__isset {
-  _DFS_dfs_remote_flock_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_flock_args__isset;
+typedef struct _DFS_open_result__isset {
+  _DFS_open_result__isset() : success(false) {}
+  bool success;
+} _DFS_open_result__isset;
 
-class DFS_dfs_remote_flock_args {
+class DFS_open_result {
  public:
 
-  DFS_dfs_remote_flock_args() : hostname() {
+  DFS_open_result() : success(0) {
   }
 
-  virtual ~DFS_dfs_remote_flock_args() throw() {}
+  virtual ~DFS_open_result() throw() {}
 
-  std::string hostname;
+  bool success;
 
-  _DFS_dfs_remote_flock_args__isset __isset;
+  _DFS_open_result__isset __isset;
 
-  void __set_hostname(const std::string& val) {
-    hostname = val;
+  void __set_success(const bool val) {
+    success = val;
   }
 
-  bool operator == (const DFS_dfs_remote_flock_args & rhs) const
+  bool operator == (const DFS_open_result & rhs) const
   {
-    if (!(hostname == rhs.hostname))
+    if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_flock_args &rhs) const {
+  bool operator != (const DFS_open_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_flock_args & ) const;
+  bool operator < (const DFS_open_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _DFS_open_presult__isset {
+  _DFS_open_presult__isset() : success(false) {}
+  bool success;
+} _DFS_open_presult__isset;
+
+class DFS_open_presult {
+ public:
+
+
+  virtual ~DFS_open_presult() throw() {}
+
+  bool* success;
+
+  _DFS_open_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _DFS_opendir_args__isset {
+  _DFS_opendir_args__isset() : sender(false), path(false), fi(false) {}
+  bool sender;
+  bool path;
+  bool fi;
+} _DFS_opendir_args__isset;
+
+class DFS_opendir_args {
+ public:
+
+  DFS_opendir_args() : path() {
+  }
+
+  virtual ~DFS_opendir_args() throw() {}
+
+  HostID sender;
+  std::string path;
+  FUSEFileInfoTransport fi;
+
+  _DFS_opendir_args__isset __isset;
+
+  void __set_sender(const HostID& val) {
+    sender = val;
+  }
+
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_fi(const FUSEFileInfoTransport& val) {
+    fi = val;
+  }
+
+  bool operator == (const DFS_opendir_args & rhs) const
+  {
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(fi == rhs.fi))
+      return false;
+    return true;
+  }
+  bool operator != (const DFS_opendir_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DFS_opendir_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1675,15 +2422,74 @@ class DFS_dfs_remote_flock_args {
 };
 
 
-class DFS_dfs_remote_flock_pargs {
+class DFS_opendir_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_flock_pargs() throw() {}
+  virtual ~DFS_opendir_pargs() throw() {}
 
-  const std::string* hostname;
+  const HostID* sender;
+  const std::string* path;
+  const FUSEFileInfoTransport* fi;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _DFS_opendir_result__isset {
+  _DFS_opendir_result__isset() : success(false) {}
+  bool success;
+} _DFS_opendir_result__isset;
+
+class DFS_opendir_result {
+ public:
+
+  DFS_opendir_result() : success(0) {
+  }
+
+  virtual ~DFS_opendir_result() throw() {}
+
+  bool success;
+
+  _DFS_opendir_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  bool operator == (const DFS_opendir_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const DFS_opendir_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DFS_opendir_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _DFS_opendir_presult__isset {
+  _DFS_opendir_presult__isset() : success(false) {}
+  bool success;
+} _DFS_opendir_presult__isset;
+
+class DFS_opendir_presult {
+ public:
+
+
+  virtual ~DFS_opendir_presult() throw() {}
+
+  bool* success;
+
+  _DFS_opendir_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
@@ -1707,64 +2513,71 @@ class DFSClient : virtual public DFSIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  bool lock(const std::string& path, const std::string& hostname);
-  void send_lock(const std::string& path, const std::string& hostname);
-  bool recv_lock();
-  bool unlock(const std::string& path, const std::string& hostname);
-  void send_unlock(const std::string& path, const std::string& hostname);
-  bool recv_unlock();
-  void commit(const int64_t id, const std::string& hostname);
-  void send_commit(const int64_t id, const std::string& hostname);
-  void Bla();
-  void send_Bla();
-  void Ping();
-  void send_Ping();
-  void Pong();
-  void send_Pong();
-  void dfs_remote_opendir(const std::string& hostname);
-  void send_dfs_remote_opendir(const std::string& hostname);
-  void dfs_remote_readdir(const std::string& hostname);
-  void send_dfs_remote_readdir(const std::string& hostname);
-  void dfs_remote_releasedir(const std::string& hostname);
-  void send_dfs_remote_releasedir(const std::string& hostname);
-  void dfs_remote_mkdir(const std::string& hostname);
-  void send_dfs_remote_mkdir(const std::string& hostname);
-  void dfs_remote_symlink(const std::string& hostname);
-  void send_dfs_remote_symlink(const std::string& hostname);
-  void dfs_remote_unlink(const std::string& hostname);
-  void send_dfs_remote_unlink(const std::string& hostname);
-  void dfs_remote_rmdir(const std::string& hostname);
-  void send_dfs_remote_rmdir(const std::string& hostname);
-  void dfs_remote_rename(const std::string& hostname);
-  void send_dfs_remote_rename(const std::string& hostname);
-  void dfs_remote_link(const std::string& hostname);
-  void send_dfs_remote_link(const std::string& hostname);
-  void dfs_remote_chmod(const std::string& hostname);
-  void send_dfs_remote_chmod(const std::string& hostname);
-  void dfs_remote_chown(const std::string& hostname);
-  void send_dfs_remote_chown(const std::string& hostname);
-  void dfs_remote_truncate(const std::string& hostname);
-  void send_dfs_remote_truncate(const std::string& hostname);
-  void dfs_remote_ftruncate(const std::string& hostname);
-  void send_dfs_remote_ftruncate(const std::string& hostname);
-  void dfs_remote_create(const std::string& hostname);
-  void send_dfs_remote_create(const std::string& hostname);
-  void dfs_remote_open(const std::string& hostname);
-  void send_dfs_remote_open(const std::string& hostname);
-  void dfs_remote_write(const std::string& hostname);
-  void send_dfs_remote_write(const std::string& hostname);
-  void dfs_remote_flush(const std::string& hostname);
-  void send_dfs_remote_flush(const std::string& hostname);
-  void dfs_remote_release(const std::string& hostname);
-  void send_dfs_remote_release(const std::string& hostname);
-  void dfs_remote_fsync(const std::string& hostname);
-  void send_dfs_remote_fsync(const std::string& hostname);
-  void dfs_remote_fallocate(const std::string& hostname);
-  void send_dfs_remote_fallocate(const std::string& hostname);
-  void dfs_remote_lock(const std::string& hostname);
-  void send_dfs_remote_lock(const std::string& hostname);
-  void dfs_remote_flock(const std::string& hostname);
-  void send_dfs_remote_flock(const std::string& hostname);
+  void ping(const HostID& sender);
+  void send_ping(const HostID& sender);
+  void unlock(const HostID& sender, const std::string& file);
+  void send_unlock(const HostID& sender, const std::string& file);
+  void die(const HostID& sender);
+  void send_die(const HostID& sender);
+  void addServer(const HostID& sender, const HostID& newServer);
+  void send_addServer(const HostID& sender, const HostID& newServer);
+  void releaseJoinLock(const HostID& sender);
+  void send_releaseJoinLock(const HostID& sender);
+  void lock(const HostID& sender, const std::string& file);
+  void send_lock(const HostID& sender, const std::string& file);
+  void recv_lock();
+  void join(std::set<HostID> & _return, const HostID& sender);
+  void send_join(const HostID& sender);
+  void recv_join(std::set<HostID> & _return);
+  bool requestJoinLock(const HostID& sender);
+  void send_requestJoinLock(const HostID& sender);
+  bool recv_requestJoinLock();
+  bool getJoinLock(const HostID& sender);
+  void send_getJoinLock(const HostID& sender);
+  bool recv_getJoinLock();
+  void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
+  void send_releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
+  void mkdir(const HostID& sender, const std::string& path, const int32_t mode);
+  void send_mkdir(const HostID& sender, const std::string& path, const int32_t mode);
+  void unlink(const HostID& sender, const std::string& path);
+  void send_unlink(const HostID& sender, const std::string& path);
+  void rmdir(const HostID& sender, const std::string& path);
+  void send_rmdir(const HostID& sender, const std::string& path);
+  void symlink(const HostID& sender, const std::string& from, const std::string& to);
+  void send_symlink(const HostID& sender, const std::string& from, const std::string& to);
+  void rename(const HostID& sender, const std::string& from, const std::string& to);
+  void send_rename(const HostID& sender, const std::string& from, const std::string& to);
+  void link(const HostID& sender, const std::string& from, const std::string& to);
+  void send_link(const HostID& sender, const std::string& from, const std::string& to);
+  void chmod(const HostID& sender, const std::string& path, const int32_t mode);
+  void send_chmod(const HostID& sender, const std::string& path, const int32_t mode);
+  void chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid);
+  void send_chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid);
+  void truncate(const HostID& sender, const std::string& path, const int64_t size);
+  void send_truncate(const HostID& sender, const std::string& path, const int64_t size);
+  void ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi);
+  void send_ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi);
+  void create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi);
+  void send_create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi);
+  void write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi);
+  void send_write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi);
+  void flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
+  void send_flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
+  void release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
+  void send_release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
+  void flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op);
+  void send_flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op);
+  void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi);
+  void send_fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi);
+  bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi);
+  void send_fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi);
+  bool recv_fsync();
+  bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
+  void send_open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
+  bool recv_open();
+  bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
+  void send_opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
+  bool recv_opendir();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -1780,65 +2593,67 @@ class DFSProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef  void (DFSProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
-  void process_lock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_unlock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_commit(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_Bla(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_Ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_Pong(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_opendir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_readdir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_releasedir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_mkdir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_symlink(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_unlink(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_rmdir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_rename(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_link(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_chmod(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_chown(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_truncate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_ftruncate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_create(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_open(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_write(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_flush(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_release(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_fsync(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_fallocate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_lock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_flock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_die(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_addServer(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_releaseJoinLock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_lock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_join(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_requestJoinLock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getJoinLock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_releasedir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_mkdir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_unlink(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_rmdir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_symlink(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_rename(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_link(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_chmod(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_chown(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_truncate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_ftruncate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_create(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_write(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_flush(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_release(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_flock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_fallocate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_fsync(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_open(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_opendir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   DFSProcessor(boost::shared_ptr<DFSIf> iface) :
     iface_(iface) {
-    processMap_["lock"] = &DFSProcessor::process_lock;
+    processMap_["ping"] = &DFSProcessor::process_ping;
     processMap_["unlock"] = &DFSProcessor::process_unlock;
-    processMap_["commit"] = &DFSProcessor::process_commit;
-    processMap_["Bla"] = &DFSProcessor::process_Bla;
-    processMap_["Ping"] = &DFSProcessor::process_Ping;
-    processMap_["Pong"] = &DFSProcessor::process_Pong;
-    processMap_["dfs_remote_opendir"] = &DFSProcessor::process_dfs_remote_opendir;
-    processMap_["dfs_remote_readdir"] = &DFSProcessor::process_dfs_remote_readdir;
-    processMap_["dfs_remote_releasedir"] = &DFSProcessor::process_dfs_remote_releasedir;
-    processMap_["dfs_remote_mkdir"] = &DFSProcessor::process_dfs_remote_mkdir;
-    processMap_["dfs_remote_symlink"] = &DFSProcessor::process_dfs_remote_symlink;
-    processMap_["dfs_remote_unlink"] = &DFSProcessor::process_dfs_remote_unlink;
-    processMap_["dfs_remote_rmdir"] = &DFSProcessor::process_dfs_remote_rmdir;
-    processMap_["dfs_remote_rename"] = &DFSProcessor::process_dfs_remote_rename;
-    processMap_["dfs_remote_link"] = &DFSProcessor::process_dfs_remote_link;
-    processMap_["dfs_remote_chmod"] = &DFSProcessor::process_dfs_remote_chmod;
-    processMap_["dfs_remote_chown"] = &DFSProcessor::process_dfs_remote_chown;
-    processMap_["dfs_remote_truncate"] = &DFSProcessor::process_dfs_remote_truncate;
-    processMap_["dfs_remote_ftruncate"] = &DFSProcessor::process_dfs_remote_ftruncate;
-    processMap_["dfs_remote_create"] = &DFSProcessor::process_dfs_remote_create;
-    processMap_["dfs_remote_open"] = &DFSProcessor::process_dfs_remote_open;
-    processMap_["dfs_remote_write"] = &DFSProcessor::process_dfs_remote_write;
-    processMap_["dfs_remote_flush"] = &DFSProcessor::process_dfs_remote_flush;
-    processMap_["dfs_remote_release"] = &DFSProcessor::process_dfs_remote_release;
-    processMap_["dfs_remote_fsync"] = &DFSProcessor::process_dfs_remote_fsync;
-    processMap_["dfs_remote_fallocate"] = &DFSProcessor::process_dfs_remote_fallocate;
-    processMap_["dfs_remote_lock"] = &DFSProcessor::process_dfs_remote_lock;
-    processMap_["dfs_remote_flock"] = &DFSProcessor::process_dfs_remote_flock;
+    processMap_["die"] = &DFSProcessor::process_die;
+    processMap_["addServer"] = &DFSProcessor::process_addServer;
+    processMap_["releaseJoinLock"] = &DFSProcessor::process_releaseJoinLock;
+    processMap_["lock"] = &DFSProcessor::process_lock;
+    processMap_["join"] = &DFSProcessor::process_join;
+    processMap_["requestJoinLock"] = &DFSProcessor::process_requestJoinLock;
+    processMap_["getJoinLock"] = &DFSProcessor::process_getJoinLock;
+    processMap_["releasedir"] = &DFSProcessor::process_releasedir;
+    processMap_["mkdir"] = &DFSProcessor::process_mkdir;
+    processMap_["unlink"] = &DFSProcessor::process_unlink;
+    processMap_["rmdir"] = &DFSProcessor::process_rmdir;
+    processMap_["symlink"] = &DFSProcessor::process_symlink;
+    processMap_["rename"] = &DFSProcessor::process_rename;
+    processMap_["link"] = &DFSProcessor::process_link;
+    processMap_["chmod"] = &DFSProcessor::process_chmod;
+    processMap_["chown"] = &DFSProcessor::process_chown;
+    processMap_["truncate"] = &DFSProcessor::process_truncate;
+    processMap_["ftruncate"] = &DFSProcessor::process_ftruncate;
+    processMap_["create"] = &DFSProcessor::process_create;
+    processMap_["write"] = &DFSProcessor::process_write;
+    processMap_["flush"] = &DFSProcessor::process_flush;
+    processMap_["release"] = &DFSProcessor::process_release;
+    processMap_["flock"] = &DFSProcessor::process_flock;
+    processMap_["fallocate"] = &DFSProcessor::process_fallocate;
+    processMap_["fsync"] = &DFSProcessor::process_fsync;
+    processMap_["open"] = &DFSProcessor::process_open;
+    processMap_["opendir"] = &DFSProcessor::process_opendir;
   }
 
   virtual ~DFSProcessor() {}
@@ -1867,256 +2682,266 @@ class DFSMultiface : virtual public DFSIf {
     ifaces_.push_back(iface);
   }
  public:
-  bool lock(const std::string& path, const std::string& hostname) {
+  void ping(const HostID& sender) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->lock(path, hostname);
+      ifaces_[i]->ping(sender);
     }
-    return ifaces_[i]->lock(path, hostname);
+    ifaces_[i]->ping(sender);
   }
 
-  bool unlock(const std::string& path, const std::string& hostname) {
+  void unlock(const HostID& sender, const std::string& file) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->unlock(path, hostname);
+      ifaces_[i]->unlock(sender, file);
     }
-    return ifaces_[i]->unlock(path, hostname);
+    ifaces_[i]->unlock(sender, file);
   }
 
-  void commit(const int64_t id, const std::string& hostname) {
+  void die(const HostID& sender) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->commit(id, hostname);
+      ifaces_[i]->die(sender);
     }
-    ifaces_[i]->commit(id, hostname);
+    ifaces_[i]->die(sender);
   }
 
-  void Bla() {
+  void addServer(const HostID& sender, const HostID& newServer) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->Bla();
+      ifaces_[i]->addServer(sender, newServer);
     }
-    ifaces_[i]->Bla();
+    ifaces_[i]->addServer(sender, newServer);
   }
 
-  void Ping() {
+  void releaseJoinLock(const HostID& sender) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->Ping();
+      ifaces_[i]->releaseJoinLock(sender);
     }
-    ifaces_[i]->Ping();
+    ifaces_[i]->releaseJoinLock(sender);
   }
 
-  void Pong() {
+  void lock(const HostID& sender, const std::string& file) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->Pong();
+      ifaces_[i]->lock(sender, file);
     }
-    ifaces_[i]->Pong();
+    ifaces_[i]->lock(sender, file);
   }
 
-  void dfs_remote_opendir(const std::string& hostname) {
+  void join(std::set<HostID> & _return, const HostID& sender) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_opendir(hostname);
+      ifaces_[i]->join(_return, sender);
     }
-    ifaces_[i]->dfs_remote_opendir(hostname);
+    ifaces_[i]->join(_return, sender);
+    return;
   }
 
-  void dfs_remote_readdir(const std::string& hostname) {
+  bool requestJoinLock(const HostID& sender) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_readdir(hostname);
+      ifaces_[i]->requestJoinLock(sender);
     }
-    ifaces_[i]->dfs_remote_readdir(hostname);
+    return ifaces_[i]->requestJoinLock(sender);
   }
 
-  void dfs_remote_releasedir(const std::string& hostname) {
+  bool getJoinLock(const HostID& sender) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_releasedir(hostname);
+      ifaces_[i]->getJoinLock(sender);
     }
-    ifaces_[i]->dfs_remote_releasedir(hostname);
+    return ifaces_[i]->getJoinLock(sender);
   }
 
-  void dfs_remote_mkdir(const std::string& hostname) {
+  void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_mkdir(hostname);
+      ifaces_[i]->releasedir(sender, path, fi);
     }
-    ifaces_[i]->dfs_remote_mkdir(hostname);
+    ifaces_[i]->releasedir(sender, path, fi);
   }
 
-  void dfs_remote_symlink(const std::string& hostname) {
+  void mkdir(const HostID& sender, const std::string& path, const int32_t mode) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_symlink(hostname);
+      ifaces_[i]->mkdir(sender, path, mode);
     }
-    ifaces_[i]->dfs_remote_symlink(hostname);
+    ifaces_[i]->mkdir(sender, path, mode);
   }
 
-  void dfs_remote_unlink(const std::string& hostname) {
+  void unlink(const HostID& sender, const std::string& path) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_unlink(hostname);
+      ifaces_[i]->unlink(sender, path);
     }
-    ifaces_[i]->dfs_remote_unlink(hostname);
+    ifaces_[i]->unlink(sender, path);
   }
 
-  void dfs_remote_rmdir(const std::string& hostname) {
+  void rmdir(const HostID& sender, const std::string& path) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_rmdir(hostname);
+      ifaces_[i]->rmdir(sender, path);
     }
-    ifaces_[i]->dfs_remote_rmdir(hostname);
+    ifaces_[i]->rmdir(sender, path);
   }
 
-  void dfs_remote_rename(const std::string& hostname) {
+  void symlink(const HostID& sender, const std::string& from, const std::string& to) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_rename(hostname);
+      ifaces_[i]->symlink(sender, from, to);
     }
-    ifaces_[i]->dfs_remote_rename(hostname);
+    ifaces_[i]->symlink(sender, from, to);
   }
 
-  void dfs_remote_link(const std::string& hostname) {
+  void rename(const HostID& sender, const std::string& from, const std::string& to) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_link(hostname);
+      ifaces_[i]->rename(sender, from, to);
     }
-    ifaces_[i]->dfs_remote_link(hostname);
+    ifaces_[i]->rename(sender, from, to);
   }
 
-  void dfs_remote_chmod(const std::string& hostname) {
+  void link(const HostID& sender, const std::string& from, const std::string& to) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_chmod(hostname);
+      ifaces_[i]->link(sender, from, to);
     }
-    ifaces_[i]->dfs_remote_chmod(hostname);
+    ifaces_[i]->link(sender, from, to);
   }
 
-  void dfs_remote_chown(const std::string& hostname) {
+  void chmod(const HostID& sender, const std::string& path, const int32_t mode) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_chown(hostname);
+      ifaces_[i]->chmod(sender, path, mode);
     }
-    ifaces_[i]->dfs_remote_chown(hostname);
+    ifaces_[i]->chmod(sender, path, mode);
   }
 
-  void dfs_remote_truncate(const std::string& hostname) {
+  void chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_truncate(hostname);
+      ifaces_[i]->chown(sender, path, uid, gid);
     }
-    ifaces_[i]->dfs_remote_truncate(hostname);
+    ifaces_[i]->chown(sender, path, uid, gid);
   }
 
-  void dfs_remote_ftruncate(const std::string& hostname) {
+  void truncate(const HostID& sender, const std::string& path, const int64_t size) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_ftruncate(hostname);
+      ifaces_[i]->truncate(sender, path, size);
     }
-    ifaces_[i]->dfs_remote_ftruncate(hostname);
+    ifaces_[i]->truncate(sender, path, size);
   }
 
-  void dfs_remote_create(const std::string& hostname) {
+  void ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_create(hostname);
+      ifaces_[i]->ftruncate(sender, path, size, fi);
     }
-    ifaces_[i]->dfs_remote_create(hostname);
+    ifaces_[i]->ftruncate(sender, path, size, fi);
   }
 
-  void dfs_remote_open(const std::string& hostname) {
+  void create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_open(hostname);
+      ifaces_[i]->create(sender, path, mode, fi);
     }
-    ifaces_[i]->dfs_remote_open(hostname);
+    ifaces_[i]->create(sender, path, mode, fi);
   }
 
-  void dfs_remote_write(const std::string& hostname) {
+  void write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_write(hostname);
+      ifaces_[i]->write(sender, path, buf, size, offset, fi);
     }
-    ifaces_[i]->dfs_remote_write(hostname);
+    ifaces_[i]->write(sender, path, buf, size, offset, fi);
   }
 
-  void dfs_remote_flush(const std::string& hostname) {
+  void flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_flush(hostname);
+      ifaces_[i]->flush(sender, path, fi);
     }
-    ifaces_[i]->dfs_remote_flush(hostname);
+    ifaces_[i]->flush(sender, path, fi);
   }
 
-  void dfs_remote_release(const std::string& hostname) {
+  void release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_release(hostname);
+      ifaces_[i]->release(sender, path, fi);
     }
-    ifaces_[i]->dfs_remote_release(hostname);
+    ifaces_[i]->release(sender, path, fi);
   }
 
-  void dfs_remote_fsync(const std::string& hostname) {
+  void flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_fsync(hostname);
+      ifaces_[i]->flock(sender, path, fi, op);
     }
-    ifaces_[i]->dfs_remote_fsync(hostname);
+    ifaces_[i]->flock(sender, path, fi, op);
   }
 
-  void dfs_remote_fallocate(const std::string& hostname) {
+  void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_fallocate(hostname);
+      ifaces_[i]->fallocate(sender, path, mode, offset, length, fi);
     }
-    ifaces_[i]->dfs_remote_fallocate(hostname);
+    ifaces_[i]->fallocate(sender, path, mode, offset, length, fi);
   }
 
-  void dfs_remote_lock(const std::string& hostname) {
+  bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_lock(hostname);
+      ifaces_[i]->fsync(sender, path, isdatasync, fi);
     }
-    ifaces_[i]->dfs_remote_lock(hostname);
+    return ifaces_[i]->fsync(sender, path, isdatasync, fi);
   }
 
-  void dfs_remote_flock(const std::string& hostname) {
+  bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_flock(hostname);
+      ifaces_[i]->open(sender, path, fi);
     }
-    ifaces_[i]->dfs_remote_flock(hostname);
+    return ifaces_[i]->open(sender, path, fi);
+  }
+
+  bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->opendir(sender, path, fi);
+    }
+    return ifaces_[i]->opendir(sender, path, fi);
   }
 
 };

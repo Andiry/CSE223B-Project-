@@ -11,6 +11,8 @@ FUSE_PKGS=`pkg-config fuse --cflags --libs`
 THRIFT_PKGS=-L/usr/local/lib -lthrift
 
 fusexmp_fh_DEPS=fusexmp_fh.cpp
+connected_DEPS=connected.o $(DFS_OBJ) DFS_server.o LFS_operations.o fuse_operations.o \
+			   Host.o lockmanager.o
 
 CXXFLAGS := -g -Wall -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H -std=c++0x
 
@@ -23,17 +25,19 @@ all: dfs_server dfs_client fusexmp_fh connected
 %.o: include/%.cpp
 	$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
 
-connected.o: connected.cpp
-	$(CXX) $(CXXFLAGS) ${FUSE_PKGS} $(INC) -c $< -o $@
-
-LFS_operations.o: LFS_operations.cpp
-	$(CXX) $(CXXFLAGS) ${FUSE_PKGS} $(INC) -c $< -o $@
-
-fuse_operations.o: fuse_operations.cpp
-	$(CXX) $(CXXFLAGS) ${FUSE_PKGS} $(INC) -c $< -o $@
-
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CXXFLAGS) ${FUSE_PKGS} $(INC) -c $< -o $@
+#connected.o: connected.cpp
+#	$(CXX) $(CXXFLAGS) ${FUSE_PKGS} $(INC) -c $< -o $@
+#
+#LFS_operations.o: LFS_operations.cpp
+#	$(CXX) $(CXXFLAGS) ${FUSE_PKGS} $(INC) -c $< -o $@
+#
+#fuse_operations.o: fuse_operations.cpp
+#	$(CXX) $(CXXFLAGS) ${FUSE_PKGS} $(INC) -c $< -o $@
+
+#%.o: %.cpp
+#	$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
 
 dfs_server: DFS_server.skeleton.o $(DFS_OBJ)
 	$(CXX) $^ -o $@ -L/usr/local/lib -lthrift
@@ -48,7 +52,6 @@ fusexmp_fh: ${fusexmp_fh_DEPS}
 	$(CXX) -Wall $^ ${FUSE_PKGS} -o $@
 #	gcc -Wall ${fusexmp_fh_DEPS} ${FUSE_PKGS} -lulockmgr -o $@
 
-connected: connected.o $(DFS_OBJ) DFS_server.o LFS_operations.o fuse_operations.o
+connected: $(connected_DEPS)
 	$(CXX) -Wall $^ ${FUSE_PKGS} ${THRIFT_PKGS} -o $@
-
 

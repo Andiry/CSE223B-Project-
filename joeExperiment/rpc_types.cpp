@@ -10,4 +10,263 @@
 
 namespace DFS {
 
+const char* FUSEFileInfoTransport::ascii_fingerprint = "BE5E44D98B2BCC2B88857EC323D2F13D";
+const uint8_t FUSEFileInfoTransport::binary_fingerprint[16] = {0xBE,0x5E,0x44,0xD9,0x8B,0x2B,0xCC,0x2B,0x88,0x85,0x7E,0xC3,0x23,0xD2,0xF1,0x3D};
+
+uint32_t FUSEFileInfoTransport::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->flags);
+          this->__isset.flags = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->fh_old);
+          this->__isset.fh_old = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->writepage);
+          this->__isset.writepage = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->direct_io);
+          this->__isset.direct_io = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->keep_cache);
+          this->__isset.keep_cache = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->flush);
+          this->__isset.flush = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->nonseekable);
+          this->__isset.nonseekable = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->padding);
+          this->__isset.padding = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 9:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->fh);
+          this->__isset.fh = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->lock_owner);
+          this->__isset.lock_owner = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t FUSEFileInfoTransport::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("FUSEFileInfoTransport");
+
+  xfer += oprot->writeFieldBegin("flags", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->flags);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("fh_old", ::apache::thrift::protocol::T_I64, 2);
+  xfer += oprot->writeI64(this->fh_old);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("writepage", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32(this->writepage);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("direct_io", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32(this->direct_io);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("keep_cache", ::apache::thrift::protocol::T_I32, 5);
+  xfer += oprot->writeI32(this->keep_cache);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("flush", ::apache::thrift::protocol::T_I32, 6);
+  xfer += oprot->writeI32(this->flush);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("nonseekable", ::apache::thrift::protocol::T_I32, 7);
+  xfer += oprot->writeI32(this->nonseekable);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("padding", ::apache::thrift::protocol::T_I32, 8);
+  xfer += oprot->writeI32(this->padding);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("fh", ::apache::thrift::protocol::T_I64, 9);
+  xfer += oprot->writeI64(this->fh);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("lock_owner", ::apache::thrift::protocol::T_I64, 10);
+  xfer += oprot->writeI64(this->lock_owner);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(FUSEFileInfoTransport &a, FUSEFileInfoTransport &b) {
+  using ::std::swap;
+  swap(a.flags, b.flags);
+  swap(a.fh_old, b.fh_old);
+  swap(a.writepage, b.writepage);
+  swap(a.direct_io, b.direct_io);
+  swap(a.keep_cache, b.keep_cache);
+  swap(a.flush, b.flush);
+  swap(a.nonseekable, b.nonseekable);
+  swap(a.padding, b.padding);
+  swap(a.fh, b.fh);
+  swap(a.lock_owner, b.lock_owner);
+  swap(a.__isset, b.__isset);
+}
+
+const char* HostID::ascii_fingerprint = "3628A1EB414F66736E1B2A082E79475F";
+const uint8_t HostID::binary_fingerprint[16] = {0x36,0x28,0xA1,0xEB,0x41,0x4F,0x66,0x73,0x6E,0x1B,0x2A,0x08,0x2E,0x79,0x47,0x5F};
+
+uint32_t HostID::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->hostname);
+          this->__isset.hostname = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I16) {
+          xfer += iprot->readI16(this->port);
+          this->__isset.port = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t HostID::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("HostID");
+
+  xfer += oprot->writeFieldBegin("hostname", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->hostname);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("port", ::apache::thrift::protocol::T_I16, 2);
+  xfer += oprot->writeI16(this->port);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(HostID &a, HostID &b) {
+  using ::std::swap;
+  swap(a.hostname, b.hostname);
+  swap(a.port, b.port);
+  swap(a.__isset, b.__isset);
+}
+
+bool DFS::HostID::operator<(DFS::HostID const& rhs) const {
+  return (hostname == rhs.hostname) ?
+    port < rhs.port : hostname < rhs.hostname;
+}
+
 } // namespace

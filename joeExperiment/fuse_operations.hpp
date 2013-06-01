@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <string>
 #include <iostream>
 
 int from_fuse_getattr(const char *path, struct stat *stbuf);
@@ -79,6 +80,7 @@ void initOpers(fuse_operations& oper);
 struct ArgStruct {
     int argc;
     char **argv;
+    std::string backupPath;
 };
 
 void * startFuse(void * arg);
