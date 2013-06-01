@@ -10,4 +10,121 @@
 
 namespace DFS {
 
+int _kDFS_statusValues[] = {
+  DFS_status::OK,
+  DFS_status::EKEYNOTFOUND,
+  DFS_status::EITEMNOTFOUND,
+  DFS_status::EPUTFAILED,
+  DFS_status::EITEMEXISTS,
+  DFS_status::INTERNAL_FAILURE,
+  DFS_status::NOT_IMPLEMENTED
+};
+const char* _kDFS_statusNames[] = {
+  "OK",
+  "EKEYNOTFOUND",
+  "EITEMNOTFOUND",
+  "EPUTFAILED",
+  "EITEMEXISTS",
+  "INTERNAL_FAILURE",
+  "NOT_IMPLEMENTED"
+};
+const std::map<int, const char*> _DFS_status_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kDFS_statusValues, _kDFS_statusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+const char* GetInfoResponse::ascii_fingerprint = "A22BE3E84688C9DA4E00CC902B4EE818";
+const uint8_t GetInfoResponse::binary_fingerprint[16] = {0xA2,0x2B,0xE3,0xE8,0x46,0x88,0xC9,0xDA,0x4E,0x00,0xCC,0x90,0x2B,0x4E,0xE8,0x18};
+
+uint32_t GetInfoResponse::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast0;
+          xfer += iprot->readI32(ecast0);
+          this->status = (DFS_status::type)ecast0;
+          this->__isset.status = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->values.clear();
+            uint32_t _size1;
+            ::apache::thrift::protocol::TType _etype4;
+            xfer += iprot->readListBegin(_etype4, _size1);
+            this->values.resize(_size1);
+            uint32_t _i5;
+            for (_i5 = 0; _i5 < _size1; ++_i5)
+            {
+              xfer += iprot->readString(this->values[_i5]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.values = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t GetInfoResponse::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("GetInfoResponse");
+
+  xfer += oprot->writeFieldBegin("status", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((int32_t)this->status);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("values", ::apache::thrift::protocol::T_LIST, 2);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->values.size()));
+    std::vector<std::string> ::const_iterator _iter6;
+    for (_iter6 = this->values.begin(); _iter6 != this->values.end(); ++_iter6)
+    {
+      xfer += oprot->writeString((*_iter6));
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(GetInfoResponse &a, GetInfoResponse &b) {
+  using ::std::swap;
+  swap(a.status, b.status);
+  swap(a.values, b.values);
+  swap(a.__isset, b.__isset);
+}
+
 } // namespace

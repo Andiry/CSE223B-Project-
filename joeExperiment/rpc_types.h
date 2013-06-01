@@ -16,6 +16,71 @@
 
 namespace DFS {
 
+struct DFS_status {
+  enum type {
+    OK = 1,
+    EKEYNOTFOUND = 2,
+    EITEMNOTFOUND = 3,
+    EPUTFAILED = 4,
+    EITEMEXISTS = 5,
+    INTERNAL_FAILURE = 6,
+    NOT_IMPLEMENTED = 7
+  };
+};
+
+extern const std::map<int, const char*> _DFS_status_VALUES_TO_NAMES;
+
+typedef struct _GetInfoResponse__isset {
+  _GetInfoResponse__isset() : status(false), values(false) {}
+  bool status;
+  bool values;
+} _GetInfoResponse__isset;
+
+class GetInfoResponse {
+ public:
+
+  static const char* ascii_fingerprint; // = "A22BE3E84688C9DA4E00CC902B4EE818";
+  static const uint8_t binary_fingerprint[16]; // = {0xA2,0x2B,0xE3,0xE8,0x46,0x88,0xC9,0xDA,0x4E,0x00,0xCC,0x90,0x2B,0x4E,0xE8,0x18};
+
+  GetInfoResponse() : status((DFS_status::type)0) {
+  }
+
+  virtual ~GetInfoResponse() throw() {}
+
+  DFS_status::type status;
+  std::vector<std::string>  values;
+
+  _GetInfoResponse__isset __isset;
+
+  void __set_status(const DFS_status::type val) {
+    status = val;
+  }
+
+  void __set_values(const std::vector<std::string> & val) {
+    values = val;
+  }
+
+  bool operator == (const GetInfoResponse & rhs) const
+  {
+    if (!(status == rhs.status))
+      return false;
+    if (!(values == rhs.values))
+      return false;
+    return true;
+  }
+  bool operator != (const GetInfoResponse &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const GetInfoResponse & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(GetInfoResponse &a, GetInfoResponse &b);
+
 } // namespace
 
 #endif

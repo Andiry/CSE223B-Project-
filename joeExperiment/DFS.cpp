@@ -581,7 +581,7 @@ uint32_t DFS_Pong_pargs::write(::apache::thrift::protocol::TProtocol* oprot) con
   return xfer;
 }
 
-uint32_t DFS_dfs_remote_opendir_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t DFS_dfs_doOperation_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -603,6 +603,14 @@ uint32_t DFS_dfs_remote_opendir_args::read(::apache::thrift::protocol::TProtocol
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->operation);
+          this->__isset.operation = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->hostname);
           this->__isset.hostname = true;
         } else {
@@ -621,11 +629,15 @@ uint32_t DFS_dfs_remote_opendir_args::read(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-uint32_t DFS_dfs_remote_opendir_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t DFS_dfs_doOperation_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("DFS_dfs_remote_opendir_args");
+  xfer += oprot->writeStructBegin("DFS_dfs_doOperation_args");
 
-  xfer += oprot->writeFieldBegin("hostname", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("operation", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->operation);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("hostname", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->hostname);
   xfer += oprot->writeFieldEnd();
 
@@ -634,11 +646,15 @@ uint32_t DFS_dfs_remote_opendir_args::write(::apache::thrift::protocol::TProtoco
   return xfer;
 }
 
-uint32_t DFS_dfs_remote_opendir_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t DFS_dfs_doOperation_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("DFS_dfs_remote_opendir_pargs");
+  xfer += oprot->writeStructBegin("DFS_dfs_doOperation_pargs");
 
-  xfer += oprot->writeFieldBegin("hostname", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("operation", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->operation)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("hostname", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->hostname)));
   xfer += oprot->writeFieldEnd();
 
@@ -1901,138 +1917,6 @@ uint32_t DFS_dfs_remote_fallocate_pargs::write(::apache::thrift::protocol::TProt
   return xfer;
 }
 
-uint32_t DFS_dfs_remote_lock_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->hostname);
-          this->__isset.hostname = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t DFS_dfs_remote_lock_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("DFS_dfs_remote_lock_args");
-
-  xfer += oprot->writeFieldBegin("hostname", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->hostname);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t DFS_dfs_remote_lock_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("DFS_dfs_remote_lock_pargs");
-
-  xfer += oprot->writeFieldBegin("hostname", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString((*(this->hostname)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t DFS_dfs_remote_flock_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->hostname);
-          this->__isset.hostname = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t DFS_dfs_remote_flock_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("DFS_dfs_remote_flock_args");
-
-  xfer += oprot->writeFieldBegin("hostname", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->hostname);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t DFS_dfs_remote_flock_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("DFS_dfs_remote_flock_pargs");
-
-  xfer += oprot->writeFieldBegin("hostname", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString((*(this->hostname)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
 bool DFSClient::lock(const std::string& path, const std::string& hostname)
 {
   send_lock(path, hostname);
@@ -2225,17 +2109,18 @@ void DFSClient::send_Pong()
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::dfs_remote_opendir(const std::string& hostname)
+void DFSClient::dfs_doOperation(const std::string& operation, const std::string& hostname)
 {
-  send_dfs_remote_opendir(hostname);
+  send_dfs_doOperation(operation, hostname);
 }
 
-void DFSClient::send_dfs_remote_opendir(const std::string& hostname)
+void DFSClient::send_dfs_doOperation(const std::string& operation, const std::string& hostname)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("dfs_remote_opendir", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("dfs_doOperation", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  DFS_dfs_remote_opendir_pargs args;
+  DFS_dfs_doOperation_pargs args;
+  args.operation = &operation;
   args.hostname = &hostname;
   args.write(oprot_);
 
@@ -2605,44 +2490,6 @@ void DFSClient::send_dfs_remote_fallocate(const std::string& hostname)
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::dfs_remote_lock(const std::string& hostname)
-{
-  send_dfs_remote_lock(hostname);
-}
-
-void DFSClient::send_dfs_remote_lock(const std::string& hostname)
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("dfs_remote_lock", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  DFS_dfs_remote_lock_pargs args;
-  args.hostname = &hostname;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-void DFSClient::dfs_remote_flock(const std::string& hostname)
-{
-  send_dfs_remote_flock(hostname);
-}
-
-void DFSClient::send_dfs_remote_flock(const std::string& hostname)
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("dfs_remote_flock", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  DFS_dfs_remote_flock_pargs args;
-  args.hostname = &hostname;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
 bool DFSProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
   ProcessMap::iterator pfn;
   pfn = processMap_.find(fname);
@@ -2918,38 +2765,38 @@ void DFSProcessor::process_Pong(int32_t, ::apache::thrift::protocol::TProtocol* 
   return;
 }
 
-void DFSProcessor::process_dfs_remote_opendir(int32_t, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol*, void* callContext)
+void DFSProcessor::process_dfs_doOperation(int32_t, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol*, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("DFS.dfs_remote_opendir", callContext);
+    ctx = this->eventHandler_->getContext("DFS.dfs_doOperation", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "DFS.dfs_remote_opendir");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "DFS.dfs_doOperation");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "DFS.dfs_remote_opendir");
+    this->eventHandler_->preRead(ctx, "DFS.dfs_doOperation");
   }
 
-  DFS_dfs_remote_opendir_args args;
+  DFS_dfs_doOperation_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "DFS.dfs_remote_opendir", bytes);
+    this->eventHandler_->postRead(ctx, "DFS.dfs_doOperation", bytes);
   }
 
   try {
-    iface_->dfs_remote_opendir(args.hostname);
+    iface_->dfs_doOperation(args.operation, args.hostname);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "DFS.dfs_remote_opendir");
+      this->eventHandler_->handlerError(ctx, "DFS.dfs_doOperation");
     }
     return;
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->asyncComplete(ctx, "DFS.dfs_remote_opendir");
+    this->eventHandler_->asyncComplete(ctx, "DFS.dfs_doOperation");
   }
 
   return;
@@ -3653,80 +3500,6 @@ void DFSProcessor::process_dfs_remote_fallocate(int32_t, ::apache::thrift::proto
 
   if (this->eventHandler_.get() != NULL) {
     this->eventHandler_->asyncComplete(ctx, "DFS.dfs_remote_fallocate");
-  }
-
-  return;
-}
-
-void DFSProcessor::process_dfs_remote_lock(int32_t, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol*, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("DFS.dfs_remote_lock", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "DFS.dfs_remote_lock");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "DFS.dfs_remote_lock");
-  }
-
-  DFS_dfs_remote_lock_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "DFS.dfs_remote_lock", bytes);
-  }
-
-  try {
-    iface_->dfs_remote_lock(args.hostname);
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "DFS.dfs_remote_lock");
-    }
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->asyncComplete(ctx, "DFS.dfs_remote_lock");
-  }
-
-  return;
-}
-
-void DFSProcessor::process_dfs_remote_flock(int32_t, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol*, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("DFS.dfs_remote_flock", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "DFS.dfs_remote_flock");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "DFS.dfs_remote_flock");
-  }
-
-  DFS_dfs_remote_flock_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "DFS.dfs_remote_flock", bytes);
-  }
-
-  try {
-    iface_->dfs_remote_flock(args.hostname);
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "DFS.dfs_remote_flock");
-    }
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->asyncComplete(ctx, "DFS.dfs_remote_flock");
   }
 
   return;

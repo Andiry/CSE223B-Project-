@@ -21,7 +21,7 @@ class DFSIf {
   virtual void Bla() = 0;
   virtual void Ping() = 0;
   virtual void Pong() = 0;
-  virtual void dfs_remote_opendir(const std::string& hostname) = 0;
+  virtual void dfs_doOperation(const std::string& operation, const std::string& hostname) = 0;
   virtual void dfs_remote_readdir(const std::string& hostname) = 0;
   virtual void dfs_remote_releasedir(const std::string& hostname) = 0;
   virtual void dfs_remote_mkdir(const std::string& hostname) = 0;
@@ -41,8 +41,6 @@ class DFSIf {
   virtual void dfs_remote_release(const std::string& hostname) = 0;
   virtual void dfs_remote_fsync(const std::string& hostname) = 0;
   virtual void dfs_remote_fallocate(const std::string& hostname) = 0;
-  virtual void dfs_remote_lock(const std::string& hostname) = 0;
-  virtual void dfs_remote_flock(const std::string& hostname) = 0;
 };
 
 class DFSIfFactory {
@@ -92,7 +90,7 @@ class DFSNull : virtual public DFSIf {
   void Pong() {
     return;
   }
-  void dfs_remote_opendir(const std::string& /* hostname */) {
+  void dfs_doOperation(const std::string& /* operation */, const std::string& /* hostname */) {
     return;
   }
   void dfs_remote_readdir(const std::string& /* hostname */) {
@@ -150,12 +148,6 @@ class DFSNull : virtual public DFSIf {
     return;
   }
   void dfs_remote_fallocate(const std::string& /* hostname */) {
-    return;
-  }
-  void dfs_remote_lock(const std::string& /* hostname */) {
-    return;
-  }
-  void dfs_remote_flock(const std::string& /* hostname */) {
     return;
   }
 };
@@ -565,38 +557,46 @@ class DFS_Pong_pargs {
 
 };
 
-typedef struct _DFS_dfs_remote_opendir_args__isset {
-  _DFS_dfs_remote_opendir_args__isset() : hostname(false) {}
+typedef struct _DFS_dfs_doOperation_args__isset {
+  _DFS_dfs_doOperation_args__isset() : operation(false), hostname(false) {}
+  bool operation;
   bool hostname;
-} _DFS_dfs_remote_opendir_args__isset;
+} _DFS_dfs_doOperation_args__isset;
 
-class DFS_dfs_remote_opendir_args {
+class DFS_dfs_doOperation_args {
  public:
 
-  DFS_dfs_remote_opendir_args() : hostname() {
+  DFS_dfs_doOperation_args() : operation(), hostname() {
   }
 
-  virtual ~DFS_dfs_remote_opendir_args() throw() {}
+  virtual ~DFS_dfs_doOperation_args() throw() {}
 
+  std::string operation;
   std::string hostname;
 
-  _DFS_dfs_remote_opendir_args__isset __isset;
+  _DFS_dfs_doOperation_args__isset __isset;
+
+  void __set_operation(const std::string& val) {
+    operation = val;
+  }
 
   void __set_hostname(const std::string& val) {
     hostname = val;
   }
 
-  bool operator == (const DFS_dfs_remote_opendir_args & rhs) const
+  bool operator == (const DFS_dfs_doOperation_args & rhs) const
   {
+    if (!(operation == rhs.operation))
+      return false;
     if (!(hostname == rhs.hostname))
       return false;
     return true;
   }
-  bool operator != (const DFS_dfs_remote_opendir_args &rhs) const {
+  bool operator != (const DFS_dfs_doOperation_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const DFS_dfs_remote_opendir_args & ) const;
+  bool operator < (const DFS_dfs_doOperation_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -604,12 +604,13 @@ class DFS_dfs_remote_opendir_args {
 };
 
 
-class DFS_dfs_remote_opendir_pargs {
+class DFS_dfs_doOperation_pargs {
  public:
 
 
-  virtual ~DFS_dfs_remote_opendir_pargs() throw() {}
+  virtual ~DFS_dfs_doOperation_pargs() throw() {}
 
+  const std::string* operation;
   const std::string* hostname;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1585,108 +1586,6 @@ class DFS_dfs_remote_fallocate_pargs {
 
 };
 
-typedef struct _DFS_dfs_remote_lock_args__isset {
-  _DFS_dfs_remote_lock_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_lock_args__isset;
-
-class DFS_dfs_remote_lock_args {
- public:
-
-  DFS_dfs_remote_lock_args() : hostname() {
-  }
-
-  virtual ~DFS_dfs_remote_lock_args() throw() {}
-
-  std::string hostname;
-
-  _DFS_dfs_remote_lock_args__isset __isset;
-
-  void __set_hostname(const std::string& val) {
-    hostname = val;
-  }
-
-  bool operator == (const DFS_dfs_remote_lock_args & rhs) const
-  {
-    if (!(hostname == rhs.hostname))
-      return false;
-    return true;
-  }
-  bool operator != (const DFS_dfs_remote_lock_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const DFS_dfs_remote_lock_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class DFS_dfs_remote_lock_pargs {
- public:
-
-
-  virtual ~DFS_dfs_remote_lock_pargs() throw() {}
-
-  const std::string* hostname;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _DFS_dfs_remote_flock_args__isset {
-  _DFS_dfs_remote_flock_args__isset() : hostname(false) {}
-  bool hostname;
-} _DFS_dfs_remote_flock_args__isset;
-
-class DFS_dfs_remote_flock_args {
- public:
-
-  DFS_dfs_remote_flock_args() : hostname() {
-  }
-
-  virtual ~DFS_dfs_remote_flock_args() throw() {}
-
-  std::string hostname;
-
-  _DFS_dfs_remote_flock_args__isset __isset;
-
-  void __set_hostname(const std::string& val) {
-    hostname = val;
-  }
-
-  bool operator == (const DFS_dfs_remote_flock_args & rhs) const
-  {
-    if (!(hostname == rhs.hostname))
-      return false;
-    return true;
-  }
-  bool operator != (const DFS_dfs_remote_flock_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const DFS_dfs_remote_flock_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class DFS_dfs_remote_flock_pargs {
- public:
-
-
-  virtual ~DFS_dfs_remote_flock_pargs() throw() {}
-
-  const std::string* hostname;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
 class DFSClient : virtual public DFSIf {
  public:
   DFSClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -1721,8 +1620,8 @@ class DFSClient : virtual public DFSIf {
   void send_Ping();
   void Pong();
   void send_Pong();
-  void dfs_remote_opendir(const std::string& hostname);
-  void send_dfs_remote_opendir(const std::string& hostname);
+  void dfs_doOperation(const std::string& operation, const std::string& hostname);
+  void send_dfs_doOperation(const std::string& operation, const std::string& hostname);
   void dfs_remote_readdir(const std::string& hostname);
   void send_dfs_remote_readdir(const std::string& hostname);
   void dfs_remote_releasedir(const std::string& hostname);
@@ -1761,10 +1660,6 @@ class DFSClient : virtual public DFSIf {
   void send_dfs_remote_fsync(const std::string& hostname);
   void dfs_remote_fallocate(const std::string& hostname);
   void send_dfs_remote_fallocate(const std::string& hostname);
-  void dfs_remote_lock(const std::string& hostname);
-  void send_dfs_remote_lock(const std::string& hostname);
-  void dfs_remote_flock(const std::string& hostname);
-  void send_dfs_remote_flock(const std::string& hostname);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -1786,7 +1681,7 @@ class DFSProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_Bla(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Pong(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_opendir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_dfs_doOperation(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_dfs_remote_readdir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_dfs_remote_releasedir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_dfs_remote_mkdir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -1806,8 +1701,6 @@ class DFSProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_dfs_remote_release(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_dfs_remote_fsync(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_dfs_remote_fallocate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_lock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_dfs_remote_flock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   DFSProcessor(boost::shared_ptr<DFSIf> iface) :
     iface_(iface) {
@@ -1817,7 +1710,7 @@ class DFSProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["Bla"] = &DFSProcessor::process_Bla;
     processMap_["Ping"] = &DFSProcessor::process_Ping;
     processMap_["Pong"] = &DFSProcessor::process_Pong;
-    processMap_["dfs_remote_opendir"] = &DFSProcessor::process_dfs_remote_opendir;
+    processMap_["dfs_doOperation"] = &DFSProcessor::process_dfs_doOperation;
     processMap_["dfs_remote_readdir"] = &DFSProcessor::process_dfs_remote_readdir;
     processMap_["dfs_remote_releasedir"] = &DFSProcessor::process_dfs_remote_releasedir;
     processMap_["dfs_remote_mkdir"] = &DFSProcessor::process_dfs_remote_mkdir;
@@ -1837,8 +1730,6 @@ class DFSProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["dfs_remote_release"] = &DFSProcessor::process_dfs_remote_release;
     processMap_["dfs_remote_fsync"] = &DFSProcessor::process_dfs_remote_fsync;
     processMap_["dfs_remote_fallocate"] = &DFSProcessor::process_dfs_remote_fallocate;
-    processMap_["dfs_remote_lock"] = &DFSProcessor::process_dfs_remote_lock;
-    processMap_["dfs_remote_flock"] = &DFSProcessor::process_dfs_remote_flock;
   }
 
   virtual ~DFSProcessor() {}
@@ -1921,13 +1812,13 @@ class DFSMultiface : virtual public DFSIf {
     ifaces_[i]->Pong();
   }
 
-  void dfs_remote_opendir(const std::string& hostname) {
+  void dfs_doOperation(const std::string& operation, const std::string& hostname) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_opendir(hostname);
+      ifaces_[i]->dfs_doOperation(operation, hostname);
     }
-    ifaces_[i]->dfs_remote_opendir(hostname);
+    ifaces_[i]->dfs_doOperation(operation, hostname);
   }
 
   void dfs_remote_readdir(const std::string& hostname) {
@@ -2099,24 +1990,6 @@ class DFSMultiface : virtual public DFSIf {
       ifaces_[i]->dfs_remote_fallocate(hostname);
     }
     ifaces_[i]->dfs_remote_fallocate(hostname);
-  }
-
-  void dfs_remote_lock(const std::string& hostname) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_lock(hostname);
-    }
-    ifaces_[i]->dfs_remote_lock(hostname);
-  }
-
-  void dfs_remote_flock(const std::string& hostname) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_remote_flock(hostname);
-    }
-    ifaces_[i]->dfs_remote_flock(hostname);
   }
 
 };

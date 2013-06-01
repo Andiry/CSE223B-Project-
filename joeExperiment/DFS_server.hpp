@@ -2,6 +2,7 @@
 #define DFS_SERVER_HPP_INC 1
 
 #include "DFS.h"
+#include "rpc_types.h"
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TServerSocket.h>
@@ -10,6 +11,7 @@
 #include <cstdint>
 #include <vector>
 #include <map>
+#include <stdlib.h>
 
 #ifndef _ARG_STRUCT_
 #define _ARG_STRUCT_
@@ -28,6 +30,7 @@ class DFSHandler : virtual public DFS::DFSIf {
         void Bla();
         void Ping();
         void Pong();
+        void dfs_doOperation(const std::string& operation, const std::string& hostname);
         void dfs_remote_opendir(const std::string& hostname);
         void dfs_remote_readdir(const std::string& hostname);
         void dfs_remote_releasedir(const std::string& hostname);
@@ -50,9 +53,15 @@ class DFSHandler : virtual public DFS::DFSIf {
         void dfs_remote_fallocate(const std::string& hostname);
         void dfs_remote_lock(const std::string& hostname);
         void dfs_remote_flock(const std::string& hostname);
+
+//	void GetInfo(GetInfoResponse& _return, const std::string& key);
+
+	/* Request send to other servers */
+	void RsyncWithOtherServers(void);
  
 	int _id;
 	std::vector < std::pair<std::string, int> > _backendServerVector;
+	std::string _backup_path;
 };
 
 void * startServer(void * port);

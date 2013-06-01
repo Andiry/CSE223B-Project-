@@ -52,9 +52,9 @@ class DFSHandler : virtual public DFSIf {
     printf("Pong\n");
   }
 
-  void dfs_remote_opendir(const std::string& hostname) {
+  void dfs_doOperation(const std::string& operation, const std::string& hostname) {
     // Your implementation goes here
-    printf("dfs_remote_opendir\n");
+    printf("dfs_doOperation\n");
   }
 
   void dfs_remote_readdir(const std::string& hostname) {
@@ -150,16 +150,6 @@ class DFSHandler : virtual public DFSIf {
   void dfs_remote_fallocate(const std::string& hostname) {
     // Your implementation goes here
     printf("dfs_remote_fallocate\n");
-  }
-
-  void dfs_remote_lock(const std::string& hostname) {
-    // Your implementation goes here
-    printf("dfs_remote_lock\n");
-  }
-
-  void dfs_remote_flock(const std::string& hostname) {
-    // Your implementation goes here
-    printf("dfs_remote_flock\n");
   }
 
 };

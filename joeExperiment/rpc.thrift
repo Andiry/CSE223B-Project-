@@ -1,6 +1,23 @@
 
 namespace cpp DFS
 
+enum DFS_status {
+	OK = 1,
+	EKEYNOTFOUND = 2,
+	EITEMNOTFOUND = 3, // item not found in lists
+	EPUTFAILED = 4,
+	EITEMEXISTS = 5, // duplicate in lists
+	INTERNAL_FAILURE = 6,
+	NOT_IMPLEMENTED = 7
+}
+
+
+struct GetInfoResponse {
+	1: DFS_status status,
+	2: list<string> values
+}
+
+
 service DFS {
     
     bool   lock(1:string path, 2:string hostname),
@@ -13,7 +30,7 @@ service DFS {
     oneway void Ping(),
     oneway void Pong(),
 
-	oneway void dfs_remote_opendir(1:string hostname),
+	oneway void dfs_doOperation(1:string operation, 2:string hostname),
 	oneway void dfs_remote_readdir(1:string hostname),
 	oneway void dfs_remote_releasedir(1:string hostname),
 	oneway void dfs_remote_mkdir(1:string hostname),
@@ -36,6 +53,5 @@ service DFS {
 #ifdef HAVE_POSIX_FALLOCATE
 	oneway void dfs_remote_fallocate(1:string hostname),
 #endif
-	oneway void dfs_remote_lock(1:string hostname),
-	oneway void dfs_remote_flock(1:string hostname),
+
 }

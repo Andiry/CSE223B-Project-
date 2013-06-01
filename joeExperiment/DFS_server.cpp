@@ -17,12 +17,21 @@ DFSHandler::DFSHandler(int argc, char **argv) {
     // Your initialization goes here
     _id = atoi(argv[3]);
 
+    //FIXME: support indirect path
+    if (argv[2][0] == '/') {
+	_backup_path = argv[2];
+    } else {
+	cerr << "Must use direct path for backup!" << endl;
+    }
+
     for (int i = 5; i + 1 < argc; i += 2) {
 	string peer_ip(argv[i]);
 	int peer_port = atoi(argv[i+1]);
 	_backendServerVector.push_back(make_pair(peer_ip, peer_port));
 	cout << "Backend server at: " << peer_ip << " on port: " << peer_port << endl;
     }
+
+    RsyncWithOtherServers();
 }
 
 bool DFSHandler::lock(const std::string& path, const std::string& hostname) {
@@ -55,6 +64,11 @@ void DFSHandler::Ping() {
 void DFSHandler::Pong() {
     // Your implementation goes here
     printf("Pong\n");
+}
+
+void DFSHandler::dfs_doOperation(const std::string& operation, const std::string& hostname) {
+    // Your implementation goes here
+    printf("dfs_doOperation\n");
 }
 
 void DFSHandler::dfs_remote_opendir(const std::string& hostname) {
@@ -167,6 +181,59 @@ void DFSHandler::dfs_remote_flock(const std::string& hostname) {
     printf("dfs_remote_flock\n");
 }
 
+# if 0
+void DFSHandler::GetInfo(GetInfoResponse& _return, const std::string& key) {
+    if (key == "backup_path") {
+	_return.status = DFS_status::OK;
+	_return.values.push_back(_backup_path);
+    }
+    return;
+}
+#endif
+
+/* Get information from other servers */
+void DFSHandler::RsyncWithOtherServers(void) {
+    std::vector<pair<string, int> >::iterator iter;
+    std::string storageServer;
+    int storageServerPort;
+    GetInfoResponse _return;
+    bool retry = true;
+
+    for (iter = _backendServerVector.begin(); iter != _backendServerVector.end(); ++iter) {
+	storageServer = iter->first;
+	storageServerPort = iter->second;
+	cout << "Retrieve data from server " << storageServer << " " << storageServerPort << endl;
+#if 0
+	boost::shared_ptr<TSocket> socket(new TSocket(storageServer, storageServerPort));
+	boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+	boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+	DFSClient client(protocol);
+	socket->setConnTimeout(100);
+	socket->setRecvTimeout(100);
+	socket->setSendTimeout(100);
+	try {
+	    transport->open();
+	    client.GetInfo(_return, "backup_path");
+	    if (_return.status == DFS_status::OK) {
+		cout << "Get backup path " << _return.values[0] << " on server " << storageServer << endl;
+		std::string backup_path(_return.values[0]);
+		system(("rsync -ru " + storageServer + ":" + backup_path + " " + _backup_path).c_str());
+		retry = false;
+	    }
+
+	    transport->close();
+	    if (!retry)
+		break;
+	} catch (TException &tx) {
+	    cout << "ERROR: %s" << tx.what() << endl;
+	    continue;
+	}
+#endif
+    }
+    return;
+}
+
+
 void * startServer(void * arg) {
     ArgStruct *args = (ArgStruct *) arg;
     int port = atoi(args->argv[4]);
@@ -182,6 +249,7 @@ void * startServer(void * arg) {
     TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
     server.serve();
 
+    pthread_exit(NULL);
     return NULL;
 }
 
