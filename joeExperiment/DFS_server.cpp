@@ -201,7 +201,6 @@ void DFSHandler::RsyncWithOtherServers(void) {
 	storageServer = iter->first;
 	storageServerPort = iter->second;
 	cout << "Retrieve data from server " << storageServer << " " << storageServerPort << endl;
-#if 0
 	boost::shared_ptr<TSocket> socket(new TSocket(storageServer, storageServerPort));
 	boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
 	boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
@@ -226,7 +225,6 @@ void DFSHandler::RsyncWithOtherServers(void) {
 	    cout << "ERROR: %s" << tx.what() << endl;
 	    continue;
 	}
-#endif
     }
     return;
 }

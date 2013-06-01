@@ -7,6 +7,7 @@
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
+#include <transport/TSocket.h>
 
 #include <cstdint>
 #include <vector>
