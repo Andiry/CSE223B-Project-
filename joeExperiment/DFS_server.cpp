@@ -173,7 +173,7 @@ void DFSServer::stop() {
 
 void * DFSServer::start(void * arg) {
     int port = (intptr_t) arg;
-    cerr << "Starting Thrift Server..." << endl;
+    cerr << "Starting Thrift server..." << endl;
 
     boost::shared_ptr<DFSHandler> handler(new DFSHandler());
     boost::shared_ptr<TProcessor> processor(new DFSProcessor(handler));
@@ -183,6 +183,8 @@ void * DFSServer::start(void * arg) {
 
     server_.reset(new TSimpleServer(processor, serverTransport, transportFactory, protocolFactory));
     server_->serve();
+
+    cerr << "Thrift server done!" << endl;
 
     return NULL;
 }

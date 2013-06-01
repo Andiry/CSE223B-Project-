@@ -53,12 +53,16 @@ int local_readlink(const char *path, char *buf, size_t size)
 
 int local_opendir(const char *path, struct fuse_file_info *fi)
 {
+    static int count = 0;
+    cerr << "Trying to local_opendir " << path << " : " << count << endl;
     int res;
     struct dirp *d = (dirp *) malloc(sizeof(struct dirp));
     if (d == NULL)
         return -ENOMEM;
 
+    ++count;
     d->dp = opendir(path);
+    --count;
     if (d->dp == NULL) {
         res = -errno;
         free(d);
@@ -375,58 +379,3 @@ int local_flock(const char *path, struct fuse_file_info *fi, int op)
     return 0;
 }
 
-/*
-void initOpers(fuse_operations& oper) {
-    oper.getattr	= local_getattr;
-    oper.fgetattr	= local_fgetattr;
-    oper.access		= local_access;
-    oper.readlink	= local_readlink;
-    oper.read		= local_read;
-    oper.read_buf	= local_read_buf;
-
-    oper.opendir	= local_opendir;
-    oper.readdir	= local_readdir;
-    oper.releasedir	= local_releasedir;
-    oper.mkdir		= local_mkdir;
-    oper.symlink	= local_symlink;
-    oper.unlink		= local_unlink;
-    oper.rmdir		= local_rmdir;
-    oper.rename		= local_rename;
-    oper.link		= local_link;
-    oper.chmod		= local_chmod;
-    oper.chown		= local_chown;
-    oper.truncate	= local_truncate;
-    oper.ftruncate	= local_ftruncate;
-    oper.create		= local_create;
-    oper.open		= local_open;
-    oper.write		= local_write;
-
-    oper.flush		= local_flush;
-    oper.release	= local_release;
-    oper.fsync		= local_fsync;
-#ifdef HAVE_POSIX_FALLOCATE
-    oper.fallocate	= local_fallocate;
-#endif
-    //oper.lock		    = local_lock;
-    oper.flock		= local_flock;
-
-    oper.flag_nullpath_ok   = 1;
-#if HAVE_UTIMENSAT
-    oper.flag_utime_omit_ok = 1;
-#endif
-}
-
-void * startFuse(void * arg) {
-    cerr << "Starting FUSE..." << endl;
-    ArgStruct * args = (ArgStruct *) arg;
-
-    fuse_operations local_oper;
-    initOpers(local_oper);
-    int ret = fuse_main(args->argc, args->argv, &local_oper, NULL);
-    //if (int ret = fuse_main(argc, argv, &local_oper, NULL) != 0)
-    //    return ret;
-
-    delete args;
-
-    return NULL;
-}*/

@@ -23,23 +23,21 @@ static void killall(int signal) {
 
     }
     else if (self == sThread) {
-        cerr << "Trying to kill Thrift server..." << endl;
         DFSServer::stop();
         return;
     }
     else if (self == fThread) {
-        cerr << "Trying to kill FUSE..." << endl;
         FUSEService::stop();
-        cerr << "HINT: Go do an \"ls\" in the mounted directory to exit." << endl;
+        cerr << endl << "\t == "
+             << "HINT: Do an \"ls\" in the mounted directory to exit."
+             << " ==" << endl;
         return;
     }
     else if (self == lThread) {
-        cerr << "Trying to kill Lock Manager..." << endl;
         LockManager::stop();
         return;
     }
     else {
-        // What the hell...
         cerr << "ERROR: Caught signal in an unknown thread...?" << endl;
         pthread_exit(NULL);
         return;
@@ -93,6 +91,7 @@ int main(int argc, char *argv[])
         cerr << "Remote Port:\t" << port << endl;
     }
 
+    cerr << endl;
     cerr << "Setting up signal handler..." << endl;
     if (signal(SIGINT, killall) == SIG_ERR) {
         cerr << "ERROR: Unable to set signal handler." << endl;

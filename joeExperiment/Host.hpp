@@ -21,10 +21,12 @@ class Host {
     Host(const Host& rhs);
 
     bool operator<(const Host& rhs) const;
+    std::string identifier() const;
 
     bool ping();
 
   private:
+    void setup();
     bool tryConnect();
 
     boost::shared_ptr<apache::thrift::transport::TSocket> socket_;

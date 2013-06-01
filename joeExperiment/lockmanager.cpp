@@ -62,6 +62,8 @@ void * LockManager::start(void * lockManagerArgs) {
         nanoSleep(SLEEP_SECONDS, SLEEP_NANOSECONDS);
     }
 
+    cerr << "Lock Manager done!" << endl;
+
     return NULL;
 }
 

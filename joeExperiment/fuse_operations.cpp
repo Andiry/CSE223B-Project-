@@ -6,203 +6,218 @@ using namespace FUSEService;
 
 namespace FUSEService {
     void initOpers(fuse_operations& oper);
-    const char * convert(const char *path);
     static int fuseMain(int argc, char *argv[], const fuse_operations *op, void *user_data);
 
-    fuse * fuse_ = NULL;
-    string backup_path_;
+    extern "C" {
+        fuse * fuse_ = NULL;
+        string backup_path_;
+        string convert(const char *path);
+    }
 }
 
-
-const char * FUSEService::convert(const char *path)
+string FUSEService::convert(const char *path)
 {
-	return (backup_path_ + path).c_str();
+/*
+    cerr << "Backup Path: " << backup_path_ << endl;
+    cerr << "Path: " << path << endl;
+    stringstream ss;
+    ss << backup_path_ << "/" << path;
+	string newPath = ss.str();
+    cerr << "New path: " << newPath << endl;
+    return newPath;
+*/
+    return path;
 }
 
-int FUSEService::getattr(const char *path, struct stat *stbuf)
+int FUSEService::fuse_getattr(const char *path, struct stat *stbuf)
 {
-    return local_getattr(convert(path), stbuf);
+    return local_getattr(convert(path).c_str(), stbuf);
 }
 
-int FUSEService::fgetattr(const char *path, struct stat *stbuf,
+int FUSEService::fuse_fgetattr(const char *path, struct stat *stbuf,
         struct fuse_file_info *fi)
 {
-    return local_fgetattr(convert(path), stbuf, fi);
+    return local_fgetattr(convert(path).c_str(), stbuf, fi);
 }
 
-int FUSEService::access(const char *path, int mask)
+int FUSEService::fuse_access(const char *path, int mask)
 {
-    return local_access(convert(path), mask);
+    return local_access(convert(path).c_str(), mask);
 }
 
-int FUSEService::readlink(const char *path, char *buf, size_t size)
+int FUSEService::fuse_readlink(const char *path, char *buf, size_t size)
 {
-    return local_readlink(convert(path), buf, size);
+    return local_readlink(convert(path).c_str(), buf, size);
 }
 
-int FUSEService::opendir(const char *path, struct fuse_file_info *fi)
+int FUSEService::fuse_opendir(const char *path, struct fuse_file_info *fi)
 {
-    return local_opendir(convert(path), fi);
+    cerr << "Trying to fuse_opendir " << path << endl;
+    const char * converted = convert(path).c_str();
+    cerr << "Converted " << converted << endl;
+    //if (path == NULL || path[0] == 0)
+    //    return -1;
+    return local_opendir(converted, fi);
 }
 
-inline dirp * FUSEService::get_dirp(struct fuse_file_info *fi)
+inline dirp * FUSEService::fuse_get_dirp(struct fuse_file_info *fi)
 {
     return local_get_dirp(fi);
 }
 
-int FUSEService::readdir(const char *path, void *buf, fuse_fill_dir_t filler,
+int FUSEService::fuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
         off_t offset, struct fuse_file_info *fi)
 {
-    return local_readdir(convert(path), buf, filler, offset, fi);
+    cerr << "Managed to call readdir" << endl;
+    return local_readdir(convert(path).c_str(), buf, filler, offset, fi);
 }
 
-int FUSEService::releasedir(const char *path, struct fuse_file_info *fi)
+int FUSEService::fuse_releasedir(const char *path, struct fuse_file_info *fi)
 {
-    return local_releasedir(convert(path), fi);
+    return local_releasedir(convert(path).c_str(), fi);
 }
 
-int FUSEService::mkdir(const char *path, mode_t mode)
+int FUSEService::fuse_mkdir(const char *path, mode_t mode)
 {
-    return local_mkdir(convert(path), mode);
+    return local_mkdir(convert(path).c_str(), mode);
 }
 
-int FUSEService::unlink(const char *path)
+int FUSEService::fuse_unlink(const char *path)
 {
-    return local_unlink(convert(path));
+    return local_unlink(convert(path).c_str());
 }
 
-int FUSEService::rmdir(const char *path)
+int FUSEService::fuse_rmdir(const char *path)
 {
-    return local_rmdir(convert(path));
+    return local_rmdir(convert(path).c_str());
 }
 
-int FUSEService::symlink(const char *from, const char *to)
+int FUSEService::fuse_symlink(const char *from, const char *to)
 {
     return local_symlink(from, to);
 }
 
-int FUSEService::rename(const char *from, const char *to)
+int FUSEService::fuse_rename(const char *from, const char *to)
 {
     return local_rename(from, to);
 }
 
-int FUSEService::link(const char *from, const char *to)
+int FUSEService::fuse_link(const char *from, const char *to)
 {
     return local_link(from, to);
 }
 
-int FUSEService::chmod(const char *path, mode_t mode)
+int FUSEService::fuse_chmod(const char *path, mode_t mode)
 {
-    return local_chmod(convert(path), mode);
+    return local_chmod(convert(path).c_str(), mode);
 }
 
-int FUSEService::chown(const char *path, uid_t uid, gid_t gid)
+int FUSEService::fuse_chown(const char *path, uid_t uid, gid_t gid)
 {
-    return local_chown(convert(path), uid, gid);
+    return local_chown(convert(path).c_str(), uid, gid);
 }
 
-int FUSEService::truncate(const char *path, off_t size)
+int FUSEService::fuse_truncate(const char *path, off_t size)
 {
-    return local_truncate(convert(path), size);
+    return local_truncate(convert(path).c_str(), size);
 }
 
-int FUSEService::ftruncate(const char *path, off_t size,
+int FUSEService::fuse_ftruncate(const char *path, off_t size,
         struct fuse_file_info *fi)
 {
-    return local_ftruncate(convert(path), size, fi);
+    return local_ftruncate(convert(path).c_str(), size, fi);
 }
 
-int FUSEService::create(const char *path, mode_t mode, struct fuse_file_info *fi)
+int FUSEService::fuse_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
-    return local_create(convert(path), mode, fi);
+    return local_create(convert(path).c_str(), mode, fi);
 }
 
-int FUSEService::open(const char *path, struct fuse_file_info *fi)
+int FUSEService::fuse_open(const char *path, struct fuse_file_info *fi)
 {
-    return local_open(convert(path), fi);
+    return local_open(convert(path).c_str(), fi);
 }
 
-int FUSEService::read(const char *path, char *buf, size_t size, off_t offset,
+int FUSEService::fuse_read(const char *path, char *buf, size_t size, off_t offset,
         struct fuse_file_info *fi)
 {
-    return local_read(convert(path), buf, size, offset, fi);
+    return local_read(convert(path).c_str(), buf, size, offset, fi);
 }
 
-int FUSEService::read_buf(const char *path, struct fuse_bufvec **bufp,
+int FUSEService::fuse_read_buf(const char *path, struct fuse_bufvec **bufp,
         size_t size, off_t offset, struct fuse_file_info *fi)
 {
-    return local_read_buf(convert(path), bufp, size, offset, fi);
+    return local_read_buf(convert(path).c_str(), bufp, size, offset, fi);
 }
 
-int FUSEService::write(const char *path, const char *buf, size_t size,
+int FUSEService::fuse_write(const char *path, const char *buf, size_t size,
         off_t offset, struct fuse_file_info *fi)
 {
-    return local_write(convert(path), buf, size, offset, fi);
+    return local_write(convert(path).c_str(), buf, size, offset, fi);
 }
 
-int FUSEService::flush(const char *path, struct fuse_file_info *fi)
+int FUSEService::fuse_flush(const char *path, struct fuse_file_info *fi)
 {
-    return local_flush(convert(path), fi);
+    return local_flush(convert(path).c_str(), fi);
 }
 
-int FUSEService::release(const char *path, struct fuse_file_info *fi)
+int FUSEService::fuse_release(const char *path, struct fuse_file_info *fi)
 {
-    return local_release(convert(path), fi);
+    return local_release(convert(path).c_str(), fi);
 }
 
-int FUSEService::fsync(const char *path, int isdatasync,
+int FUSEService::fuse_fsync(const char *path, int isdatasync,
         struct fuse_file_info *fi)
 {
-    return local_fsync(convert(path), isdatasync, fi);
+    return local_fsync(convert(path).c_str(), isdatasync, fi);
 }
 
 #ifdef HAVE_POSIX_FALLOCATE
-int FUSEService::fallocate(const char *path, int mode,
+int FUSEService::fuse_fallocate(const char *path, int mode,
         off_t offset, off_t length, struct fuse_file_info *fi)
 {
-    return local_fallocate(convert(path), mode, offset, length, fi);
+    return local_fallocate(convert(path).c_str(), mode, offset, length, fi);
 }
 #endif
 
-int FUSEService::flock(const char *path, struct fuse_file_info *fi, int op)
+int FUSEService::fuse_flock(const char *path, struct fuse_file_info *fi, int op)
 {
-    return local_flock(convert(path), fi, op);
+    return local_flock(convert(path).c_str(), fi, op);
 }
-
 
 void FUSEService::initOpers(fuse_operations& oper) {
-    oper.getattr     = FUSEService::getattr;
-    oper.fgetattr    = FUSEService::fgetattr;
-    oper.access      = FUSEService::access;
-    oper.readlink    = FUSEService::readlink;
-    oper.read        = FUSEService::read;
-    oper.read_buf    = FUSEService::read_buf;
+    oper.getattr     = FUSEService::fuse_getattr;
+    oper.fgetattr    = FUSEService::fuse_fgetattr;
+    oper.access      = FUSEService::fuse_access;
+    oper.readlink    = FUSEService::fuse_readlink;
+    oper.read        = FUSEService::fuse_read;
+    oper.read_buf    = FUSEService::fuse_read_buf;
 
-    oper.opendir     = FUSEService::opendir;
-    oper.readdir     = FUSEService::readdir;
-    oper.releasedir  = FUSEService::releasedir;
-    oper.mkdir       = FUSEService::mkdir;
-    oper.symlink     = FUSEService::symlink;
-    oper.unlink      = FUSEService::unlink;
-    oper.rmdir       = FUSEService::rmdir;
-    oper.rename      = FUSEService::rename;
-    oper.link        = FUSEService::link;
-    oper.chmod       = FUSEService::chmod;
-    oper.chown       = FUSEService::chown;
-    oper.truncate    = FUSEService::truncate;
-    oper.ftruncate   = FUSEService::ftruncate;
-    oper.create      = FUSEService::create;
-    oper.open        = FUSEService::open;
-    oper.write       = FUSEService::write;
+    oper.opendir     = FUSEService::fuse_opendir;
+    oper.readdir     = FUSEService::fuse_readdir;
+    oper.releasedir  = FUSEService::fuse_releasedir;
+    oper.mkdir       = FUSEService::fuse_mkdir;
+    oper.symlink     = FUSEService::fuse_symlink;
+    oper.unlink      = FUSEService::fuse_unlink;
+    oper.rmdir       = FUSEService::fuse_rmdir;
+    oper.rename      = FUSEService::fuse_rename;
+    oper.link        = FUSEService::fuse_link;
+    oper.chmod       = FUSEService::fuse_chmod;
+    oper.chown       = FUSEService::fuse_chown;
+    oper.truncate    = FUSEService::fuse_truncate;
+    oper.ftruncate   = FUSEService::fuse_ftruncate;
+    oper.create      = FUSEService::fuse_create;
+    oper.open        = FUSEService::fuse_open;
+    oper.write       = FUSEService::fuse_write;
 
-    oper.flush       = FUSEService::flush;
-    oper.release     = FUSEService::release;
-    oper.fsync       = FUSEService::fsync;
+    oper.flush       = FUSEService::fuse_flush;
+    oper.release     = FUSEService::fuse_release;
+    oper.fsync       = FUSEService::fuse_fsync;
 #ifdef HAVE_POSIX_FALLOCATE
-    oper.fallocate   = FUSEService::fallocate;
+    oper.fallocate   = FUSEService::fuse_fallocate;
 #endif
     //oper.lock            = FUSEService::lock;
-    oper.flock       = FUSEService::flock;
+    oper.flock       = FUSEService::fuse_flock;
 
     oper.flag_nullpath_ok   = 1;
 #if HAVE_UTIMENSAT
@@ -217,6 +232,11 @@ static int FUSEService::fuseMain(int argc, char *argv[],
     char *mountpoint;
     int multithreaded;
     int res;
+
+    if (op->readdir)
+        cerr << "Found readdir..." << endl;
+    else
+        cerr << "No readdir implemented..." << endl;
 
     fuse_ = fuse_setup(argc, argv, op, sizeof(op), &mountpoint,
                        &multithreaded, user_data);
@@ -244,7 +264,11 @@ void * FUSEService::start(void * arg) {
     cerr << "Starting FUSE..." << endl;
     ArgStruct * args = (ArgStruct *) arg;
 
-    backup_path_ = args->backupPath;
+    char *bup = realpath(args->backupPath.c_str(), NULL);
+    backup_path_ = bup;
+    free(bup);
+
+    cerr << "Absolute Backup Path: " << backup_path_ << endl;
 
     if (backup_path_.back() == '/')
         backup_path_.erase(--backup_path_.end());
@@ -259,7 +283,7 @@ void * FUSEService::start(void * arg) {
     delete [] args->argv;
     delete args;
 
-    cerr << "FUSE Done..." << endl;
+    cerr << "FUSE done!" << endl;
 
     return NULL;
 }

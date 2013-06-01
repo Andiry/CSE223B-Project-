@@ -69,17 +69,5 @@ int local_fallocate(const char *path, int mode,
         off_t offset, off_t length, struct fuse_file_info *fi);
 #endif
 
-
-/*
-void initOpers(fuse_operations& oper);
-
-struct ArgStruct {
-    int argc;
-    char **argv;
-};
-
-void * startFuse(void * arg);
-*/
-
 #endif
 
