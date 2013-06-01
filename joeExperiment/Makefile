@@ -48,7 +48,7 @@ fusexmp_fh: ${fusexmp_fh_DEPS}
 	$(CXX) -Wall $^ ${FUSE_PKGS} -o $@
 #	gcc -Wall ${fusexmp_fh_DEPS} ${FUSE_PKGS} -lulockmgr -o $@
 
-connected: connected.o $(DFS_OBJ) DFS_server.o LFS_operations.o fuse_operations.o
-	$(CXX) -Wall $^ ${FUSE_PKGS} ${THRIFT_PKGS} -o $@
+connected: connected.o DFS_server.o $(DFS_OBJ) LFS_operations.o fuse_operations.o
+	$(CXX) -Wall $^ ${FUSE_PKGS} -o $@ ${THRIFT_PKGS} 
 
 

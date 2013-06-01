@@ -152,6 +152,11 @@ class DFSHandler : virtual public DFSIf {
     printf("dfs_remote_fallocate\n");
   }
 
+  void GetInfo(GetInfoResponse& _return, const std::string& key) {
+    // Your implementation goes here
+    printf("GetInfo\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

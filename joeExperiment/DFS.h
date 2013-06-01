@@ -41,6 +41,7 @@ class DFSIf {
   virtual void dfs_remote_release(const std::string& hostname) = 0;
   virtual void dfs_remote_fsync(const std::string& hostname) = 0;
   virtual void dfs_remote_fallocate(const std::string& hostname) = 0;
+  virtual void GetInfo(GetInfoResponse& _return, const std::string& key) = 0;
 };
 
 class DFSIfFactory {
@@ -148,6 +149,9 @@ class DFSNull : virtual public DFSIf {
     return;
   }
   void dfs_remote_fallocate(const std::string& /* hostname */) {
+    return;
+  }
+  void GetInfo(GetInfoResponse& /* _return */, const std::string& /* key */) {
     return;
   }
 };
@@ -1586,6 +1590,114 @@ class DFS_dfs_remote_fallocate_pargs {
 
 };
 
+typedef struct _DFS_GetInfo_args__isset {
+  _DFS_GetInfo_args__isset() : key(false) {}
+  bool key;
+} _DFS_GetInfo_args__isset;
+
+class DFS_GetInfo_args {
+ public:
+
+  DFS_GetInfo_args() : key() {
+  }
+
+  virtual ~DFS_GetInfo_args() throw() {}
+
+  std::string key;
+
+  _DFS_GetInfo_args__isset __isset;
+
+  void __set_key(const std::string& val) {
+    key = val;
+  }
+
+  bool operator == (const DFS_GetInfo_args & rhs) const
+  {
+    if (!(key == rhs.key))
+      return false;
+    return true;
+  }
+  bool operator != (const DFS_GetInfo_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DFS_GetInfo_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class DFS_GetInfo_pargs {
+ public:
+
+
+  virtual ~DFS_GetInfo_pargs() throw() {}
+
+  const std::string* key;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _DFS_GetInfo_result__isset {
+  _DFS_GetInfo_result__isset() : success(false) {}
+  bool success;
+} _DFS_GetInfo_result__isset;
+
+class DFS_GetInfo_result {
+ public:
+
+  DFS_GetInfo_result() {
+  }
+
+  virtual ~DFS_GetInfo_result() throw() {}
+
+  GetInfoResponse success;
+
+  _DFS_GetInfo_result__isset __isset;
+
+  void __set_success(const GetInfoResponse& val) {
+    success = val;
+  }
+
+  bool operator == (const DFS_GetInfo_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const DFS_GetInfo_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DFS_GetInfo_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _DFS_GetInfo_presult__isset {
+  _DFS_GetInfo_presult__isset() : success(false) {}
+  bool success;
+} _DFS_GetInfo_presult__isset;
+
+class DFS_GetInfo_presult {
+ public:
+
+
+  virtual ~DFS_GetInfo_presult() throw() {}
+
+  GetInfoResponse* success;
+
+  _DFS_GetInfo_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class DFSClient : virtual public DFSIf {
  public:
   DFSClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -1660,6 +1772,9 @@ class DFSClient : virtual public DFSIf {
   void send_dfs_remote_fsync(const std::string& hostname);
   void dfs_remote_fallocate(const std::string& hostname);
   void send_dfs_remote_fallocate(const std::string& hostname);
+  void GetInfo(GetInfoResponse& _return, const std::string& key);
+  void send_GetInfo(const std::string& key);
+  void recv_GetInfo(GetInfoResponse& _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -1701,6 +1816,7 @@ class DFSProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_dfs_remote_release(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_dfs_remote_fsync(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_dfs_remote_fallocate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_GetInfo(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   DFSProcessor(boost::shared_ptr<DFSIf> iface) :
     iface_(iface) {
@@ -1730,6 +1846,7 @@ class DFSProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["dfs_remote_release"] = &DFSProcessor::process_dfs_remote_release;
     processMap_["dfs_remote_fsync"] = &DFSProcessor::process_dfs_remote_fsync;
     processMap_["dfs_remote_fallocate"] = &DFSProcessor::process_dfs_remote_fallocate;
+    processMap_["GetInfo"] = &DFSProcessor::process_GetInfo;
   }
 
   virtual ~DFSProcessor() {}
@@ -1990,6 +2107,16 @@ class DFSMultiface : virtual public DFSIf {
       ifaces_[i]->dfs_remote_fallocate(hostname);
     }
     ifaces_[i]->dfs_remote_fallocate(hostname);
+  }
+
+  void GetInfo(GetInfoResponse& _return, const std::string& key) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->GetInfo(_return, key);
+    }
+    ifaces_[i]->GetInfo(_return, key);
+    return;
   }
 
 };

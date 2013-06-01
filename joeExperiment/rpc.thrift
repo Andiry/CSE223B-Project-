@@ -53,5 +53,5 @@ service DFS {
 #ifdef HAVE_POSIX_FALLOCATE
 	oneway void dfs_remote_fallocate(1:string hostname),
 #endif
-
+	GetInfoResponse GetInfo(1:string key)
 }

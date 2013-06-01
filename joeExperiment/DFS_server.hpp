@@ -13,6 +13,15 @@
 #include <map>
 #include <stdlib.h>
 
+using namespace ::apache::thrift;
+using namespace ::apache::thrift::protocol;
+using namespace ::apache::thrift::transport;
+using namespace ::apache::thrift::server;
+
+using boost::shared_ptr;
+
+using namespace ::DFS;
+
 #ifndef _ARG_STRUCT_
 #define _ARG_STRUCT_
 struct ArgStruct {
@@ -55,6 +64,7 @@ class DFSHandler : virtual public DFS::DFSIf {
         void dfs_remote_flock(const std::string& hostname);
 
 //	void GetInfo(GetInfoResponse& _return, const std::string& key);
+	void GetInfo(GetInfoResponse& _return, const std::string& key);
 
 	/* Request send to other servers */
 	void RsyncWithOtherServers(void);

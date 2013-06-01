@@ -181,7 +181,6 @@ void DFSHandler::dfs_remote_flock(const std::string& hostname) {
     printf("dfs_remote_flock\n");
 }
 
-# if 0
 void DFSHandler::GetInfo(GetInfoResponse& _return, const std::string& key) {
     if (key == "backup_path") {
 	_return.status = DFS_status::OK;
@@ -189,7 +188,6 @@ void DFSHandler::GetInfo(GetInfoResponse& _return, const std::string& key) {
     }
     return;
 }
-#endif
 
 /* Get information from other servers */
 void DFSHandler::RsyncWithOtherServers(void) {

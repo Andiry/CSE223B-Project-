@@ -17,7 +17,9 @@ int main(int argc, char **argv) {
         exit(0);
     }
     string server = string(argv[1]);                                       
-    int port = atoi(argv[2]);                                                      
+    int port = atoi(argv[2]);
+    GetInfoResponse test;
+
     boost::shared_ptr<TSocket> socket(new TSocket(server, port));          
     boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));       
     boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));         
