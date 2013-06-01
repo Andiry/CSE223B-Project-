@@ -21,6 +21,7 @@ void nanoSleep(time_t seconds, long nanoseconds) {
 
 void LockManager::stop() {
     dead_ = true;
+    pthread_exit(NULL);
 }
 
 void * LockManager::start(void * lockManagerArgs) {

@@ -48,8 +48,6 @@ static void killall(int signal) {
     pthread_kill(sThread, signal);
     pthread_kill(fThread, signal);
     pthread_kill(lThread, signal);
-    pthread_exit(NULL);
-    exit(1);
 }
 
 void usage(string script) {
@@ -111,14 +109,6 @@ int main(int argc, char *argv[])
         {argv[0], "-f", "-s", mountPoint});
     copy(newArgv.begin(), newArgv.end(), args->argv);
 
-    /*
-    cerr << args->argv[0] << endl;
-    cerr << args->argv[1] << endl;
-    cerr << args->argv[2] << endl;
-    cerr << args->argv[3] << endl;
-    */
-    //args->argv = argv;
-
     cerr << "Starting Thrift server thread..." << endl;
     rc = pthread_create(&sThread, NULL, &DFSServer::start, (void *) (size_t) port);
     if (rc) {
@@ -135,7 +125,6 @@ int main(int argc, char *argv[])
 
     cerr << "Starting Lock Manager thread..." << endl;
     LockManager::LMArgs lmArgs(me, hostMap, hostLock);
-    
     rc = pthread_create(&lThread, NULL, &LockManager::start, (void *) &lmArgs);
     if (rc) {
         cerr << "ERROR: return code from pthread_create() is " << rc << endl;
@@ -144,11 +133,8 @@ int main(int argc, char *argv[])
 
     void * val = NULL;
     pthread_join(sThread, &val);
-    cerr << "Joined Thrift server thread." << endl;
     pthread_join(fThread, &val);
-    cerr << "Joined FUSE thread." << endl;
     pthread_join(lThread, &val);
-    cerr << "Joined Lock Manager thread." << endl;
 
     cerr << "Done!" << endl;
 

@@ -252,11 +252,6 @@ void * FUSEService::start(void * arg) {
     fuse_operations oper;
     initOpers(oper);
 
-    for (int i = 0; i < args->argc; ++i) {
-        cerr << i << ": " << args->argv[i] << endl;
-    }
-    //intptr_t ret = fuse_main(args->argc, args->argv, &oper, NULL);
-    //intptr_t ret = fuse_main(argc, args->argv, &oper, NULL);
     intptr_t ret = fuseMain(args->argc, args->argv, &oper, NULL);
     if (ret)
         return (void *) ret;
@@ -265,8 +260,6 @@ void * FUSEService::start(void * arg) {
     delete args;
 
     cerr << "FUSE Done..." << endl;
-
-    //pthread_exit(NULL);
 
     return NULL;
 }
