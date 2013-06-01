@@ -234,8 +234,7 @@ void * startFuse(void * arg) {
     cerr << "Starting FUSE..." << endl;
     ArgStruct * args = (ArgStruct *) arg;
     int argc = 3;
-    backup_path = args->argv[2];
-    args->argv[2] = "-f";
+    backup_path = args->argv[3];
 
     fuse_operations from_fuse_oper;
     initOpers(from_fuse_oper);

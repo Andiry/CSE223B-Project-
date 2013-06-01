@@ -15,20 +15,21 @@ using namespace std;
 
 DFSHandler::DFSHandler(int argc, char **argv) {
     // Your initialization goes here
-    _id = atoi(argv[3]);
+    _id = atoi(argv[4]);
 
     //FIXME: support indirect path
-    if (argv[2][0] == '/') {
-	_backup_path = argv[2];
+    if (argv[3][0] == '/') {
+	_backup_path = argv[3];
+	cout << "backup path at " << _backup_path << endl;
     } else {
-	cerr << "Must use direct path for backup!" << endl;
+	cerr << "Must use direct path for backup! " << argv[3] << endl;
     }
 
-    for (int i = 5; i + 1 < argc; i += 2) {
+    for (int i = 6; i + 1 < argc; i += 2) {
 	string peer_ip(argv[i]);
 	int peer_port = atoi(argv[i+1]);
 	_backendServerVector.push_back(make_pair(peer_ip, peer_port));
-	cout << "Backend server at: " << peer_ip << " on port: " << peer_port << endl;
+	cout << "Backend server at " << peer_ip << " on port " << peer_port << endl;
     }
 
     RsyncWithOtherServers();
@@ -214,7 +215,9 @@ void DFSHandler::RsyncWithOtherServers(void) {
 	    if (_return.status == DFS_status::OK) {
 		cout << "Get backup path " << _return.values[0] << " on server " << storageServer << endl;
 		std::string backup_path(_return.values[0]);
-		system(("rsync -ru " + storageServer + ":" + backup_path + " " + _backup_path).c_str());
+		std::string command("rsync -ru " + storageServer + ":" + backup_path + "/ " + _backup_path);
+		cout << command << endl;
+		system(command.c_str());
 		retry = false;
 	    }
 
@@ -232,7 +235,7 @@ void DFSHandler::RsyncWithOtherServers(void) {
 
 void * startServer(void * arg) {
     ArgStruct *args = (ArgStruct *) arg;
-    int port = atoi(args->argv[4]);
+    int port = atoi(args->argv[5]);
 
     cerr << "Starting Thrift Server on port " << port << " ..." << endl;
 
