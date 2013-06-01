@@ -1,0 +1,6 @@
+*.o
+*.swp
+connected
+dfs_client
+dfs_server
+fusexmp_fh

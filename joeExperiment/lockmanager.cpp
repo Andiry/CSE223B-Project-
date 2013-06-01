@@ -4,22 +4,29 @@
 using namespace std;
 using namespace LockManager;
 
-void nanoSleep(time_t seconds, long nanoseconds, bool & death) {
+namespace LockManager {
+    bool dead_ = false;
+}
+
+void nanoSleep(time_t seconds, long nanoseconds) {
     struct timespec tim, tim2;
     tim.tv_sec = seconds;
     tim.tv_nsec = nanoseconds;
 
     if(nanosleep(&tim , &tim2) < 0 ) {
         cerr << "Lock Manager interrupted..." << endl;
-        death = true;
         pthread_exit(NULL);
     }
+}
+
+void LockManager::stop() {
+    dead_ = true;
 }
 
 void * LockManager::start(void * lockManagerArgs) {
     LMArgs * args = static_cast<LMArgs *>(lockManagerArgs);
 
-    while (true) {
+    while (!dead_) {
         int numDead = 0;
         int numAlive = 0;
         pthread_mutex_lock(&(args->hostLock_));
@@ -48,12 +55,12 @@ void * LockManager::start(void * lockManagerArgs) {
 
         if (numDead > numAlive) {
             cerr << "ALERT: NO QUORUM DETECTED... EXITING." << endl;
-            args->dead_ = true;
             pthread_exit(NULL);
         }
 
-        nanoSleep(SLEEP_SECONDS, SLEEP_NANOSECONDS, args->dead_);
+        nanoSleep(SLEEP_SECONDS, SLEEP_NANOSECONDS);
     }
 
+    return NULL;
 }
 

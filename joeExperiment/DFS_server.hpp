@@ -43,6 +43,9 @@ class DFSHandler : virtual public DFS::DFSIf {
     bool opendir(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi);
 };
 
-void * startServer(void * port);
+namespace DFSServer {
+    void stop();
+    void * start(void * port);
+}
 
 #endif

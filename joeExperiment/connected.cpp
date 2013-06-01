@@ -14,22 +14,43 @@ using namespace std;
 pthread_t sThread;
 pthread_t fThread;
 pthread_t lThread;
-bool started = false;
 
-/*
+pthread_t mainThread;
+
 static void killall(int signal) {
-    cerr << "Caught Signal" << endl;
-    if (!started)
-        return;
-    started = false;
+    pthread_t self = pthread_self();
+    if (self == mainThread) {
 
-    pthread_kill(sThread, 15);
-    pthread_kill(fThread, 15);
-    pthread_kill(lThread, 15);
+    }
+    else if (self == sThread) {
+        cerr << "Trying to kill Thrift server..." << endl;
+        DFSServer::stop();
+        return;
+    }
+    else if (self == fThread) {
+        cerr << "Trying to kill FUSE..." << endl;
+        FUSEService::stop();
+        cerr << "HINT: Go do an \"ls\" in the mounted directory to exit." << endl;
+        return;
+    }
+    else if (self == lThread) {
+        cerr << "Trying to kill Lock Manager..." << endl;
+        LockManager::stop();
+        return;
+    }
+    else {
+        // What the hell...
+        cerr << "ERROR: Caught signal in an unknown thread...?" << endl;
+        pthread_exit(NULL);
+        return;
+    }
+
+    pthread_kill(sThread, signal);
+    pthread_kill(fThread, signal);
+    pthread_kill(lThread, signal);
     pthread_exit(NULL);
     exit(1);
 }
-*/
 
 void usage(string script) {
     cerr << "Usage: " << script <<
@@ -44,9 +65,10 @@ int main(int argc, char *argv[])
     int rc;
     umask(0);
 
+    mainThread = pthread_self();
+
     HostMap_t hostMap;
     pthread_mutex_t hostLock;
-    bool dead = false;
 
     if (argc != 5 && argc != 7)
         usage(argv[0]);
@@ -73,13 +95,13 @@ int main(int argc, char *argv[])
         cerr << "Remote Port:\t" << port << endl;
     }
 
-    /*cerr << "Setting up signal handler..." << endl;
+    cerr << "Setting up signal handler..." << endl;
     if (signal(SIGINT, killall) == SIG_ERR) {
         cerr << "ERROR: Unable to set signal handler." << endl;
         return EXIT_FAILURE;
-    }*/
+    }
 
-    ArgStruct * args = new ArgStruct;
+    FUSEService::ArgStruct * args = new FUSEService::ArgStruct;
 
     args->argc = 4;
     args->argv = (char **) (new char *[4]);
@@ -98,21 +120,21 @@ int main(int argc, char *argv[])
     //args->argv = argv;
 
     cerr << "Starting Thrift server thread..." << endl;
-    rc = pthread_create(&sThread, NULL, &startServer, (void *) (size_t) port);
+    rc = pthread_create(&sThread, NULL, &DFSServer::start, (void *) (size_t) port);
     if (rc) {
         cerr << "ERROR: return code from pthread_create() is " << rc << endl;
         exit(-1);
     }
 
     cerr << "Starting FUSE thread..." << endl;
-    rc = pthread_create(&fThread, NULL, &startFuse, (void *) args);
+    rc = pthread_create(&fThread, NULL, &FUSEService::start, (void *) args);
     if (rc) {
         cerr << "ERROR: return code from pthread_create() is " << rc << endl;
         exit(-1);
     }
 
     cerr << "Starting Lock Manager thread..." << endl;
-    LockManager::LMArgs lmArgs(me, hostMap, hostLock, dead);
+    LockManager::LMArgs lmArgs(me, hostMap, hostLock);
     
     rc = pthread_create(&lThread, NULL, &LockManager::start, (void *) &lmArgs);
     if (rc) {
@@ -120,16 +142,15 @@ int main(int argc, char *argv[])
         exit(-1);
     }
 
-    started = true;
-
-    //startServer(9090);
-    
     void * val = NULL;
     pthread_join(sThread, &val);
+    cerr << "Joined Thrift server thread." << endl;
     pthread_join(fThread, &val);
+    cerr << "Joined FUSE thread." << endl;
     pthread_join(lThread, &val);
+    cerr << "Joined Lock Manager thread." << endl;
 
-    cerr << "Done..." << endl;
+    cerr << "Done!" << endl;
 
     return 0;
 }

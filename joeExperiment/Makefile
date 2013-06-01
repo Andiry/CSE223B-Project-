@@ -27,17 +27,6 @@ all: dfs_server dfs_client fusexmp_fh connected
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) ${FUSE_PKGS} $(INC) -c $< -o $@
-#connected.o: connected.cpp
-#	$(CXX) $(CXXFLAGS) ${FUSE_PKGS} $(INC) -c $< -o $@
-#
-#LFS_operations.o: LFS_operations.cpp
-#	$(CXX) $(CXXFLAGS) ${FUSE_PKGS} $(INC) -c $< -o $@
-#
-#fuse_operations.o: fuse_operations.cpp
-#	$(CXX) $(CXXFLAGS) ${FUSE_PKGS} $(INC) -c $< -o $@
-
-#%.o: %.cpp
-#	$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
 
 dfs_server: DFS_server.skeleton.o $(DFS_OBJ)
 	$(CXX) $^ -o $@ -L/usr/local/lib -lthrift
@@ -50,8 +39,7 @@ clean:
 
 fusexmp_fh: ${fusexmp_fh_DEPS}
 	$(CXX) -Wall $^ ${FUSE_PKGS} -o $@
-#	gcc -Wall ${fusexmp_fh_DEPS} ${FUSE_PKGS} -lulockmgr -o $@
 
 connected: $(connected_DEPS)
-	$(CXX) -Wall $^ ${FUSE_PKGS} ${THRIFT_PKGS} -o $@
+	$(CXX) $(CXXFLAGS) $^ ${FUSE_PKGS} ${THRIFT_PKGS} -o $@
 

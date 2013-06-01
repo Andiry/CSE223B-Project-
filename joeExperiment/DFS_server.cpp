@@ -165,7 +165,13 @@ bool DFSHandler::opendir(const HostID& sender, const std::string& path, const FU
   return false;
 }
 
-void * startServer(void * arg) {
+boost::shared_ptr<TSimpleServer> server_;
+
+void DFSServer::stop() {
+    server_->stop();
+}
+
+void * DFSServer::start(void * arg) {
     int port = (intptr_t) arg;
     cerr << "Starting Thrift Server..." << endl;
 
@@ -175,8 +181,8 @@ void * startServer(void * arg) {
     boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
     boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
-    TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
-    server.serve();
+    server_.reset(new TSimpleServer(processor, serverTransport, transportFactory, protocolFactory));
+    server_->serve();
 
     return NULL;
 }
