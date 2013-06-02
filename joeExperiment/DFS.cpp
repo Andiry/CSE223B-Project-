@@ -611,8 +611,24 @@ uint32_t DFS_dfs_doOperation_args::read(::apache::thrift::protocol::TProtocol* i
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->hostname);
-          this->__isset.hostname = true;
+          xfer += iprot->readString(this->path);
+          this->__isset.path = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->mode);
+          this->__isset.mode = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->flags);
+          this->__isset.flags = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -637,8 +653,16 @@ uint32_t DFS_dfs_doOperation_args::write(::apache::thrift::protocol::TProtocol* 
   xfer += oprot->writeString(this->operation);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("hostname", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->hostname);
+  xfer += oprot->writeFieldBegin("path", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->path);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("mode", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32(this->mode);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("flags", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32(this->flags);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -654,8 +678,16 @@ uint32_t DFS_dfs_doOperation_pargs::write(::apache::thrift::protocol::TProtocol*
   xfer += oprot->writeString((*(this->operation)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("hostname", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString((*(this->hostname)));
+  xfer += oprot->writeFieldBegin("path", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->path)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("mode", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((*(this->mode)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("flags", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((*(this->flags)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -2271,19 +2303,21 @@ void DFSClient::send_Pong()
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::dfs_doOperation(const std::string& operation, const std::string& hostname)
+void DFSClient::dfs_doOperation(const std::string& operation, const std::string& path, const int32_t mode, const int32_t flags)
 {
-  send_dfs_doOperation(operation, hostname);
+  send_dfs_doOperation(operation, path, mode, flags);
 }
 
-void DFSClient::send_dfs_doOperation(const std::string& operation, const std::string& hostname)
+void DFSClient::send_dfs_doOperation(const std::string& operation, const std::string& path, const int32_t mode, const int32_t flags)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("dfs_doOperation", ::apache::thrift::protocol::T_CALL, cseqid);
 
   DFS_dfs_doOperation_pargs args;
   args.operation = &operation;
-  args.hostname = &hostname;
+  args.path = &path;
+  args.mode = &mode;
+  args.flags = &flags;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -3007,7 +3041,7 @@ void DFSProcessor::process_dfs_doOperation(int32_t, ::apache::thrift::protocol::
   }
 
   try {
-    iface_->dfs_doOperation(args.operation, args.hostname);
+    iface_->dfs_doOperation(args.operation, args.path, args.mode, args.flags);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.dfs_doOperation");

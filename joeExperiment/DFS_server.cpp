@@ -80,14 +80,20 @@ void DFSHandler::Pong() {
     printf("Pong\n");
 }
 
-void DFSHandler::dfs_doOperation(const std::string& operation, const std::string& path) {
+void DFSHandler::dfs_doOperation(const std::string& operation, const std::string& path, const int32_t mode, const int32_t flags) {
     // Your implementation goes here
     string local_path = convert(path);
+    struct fuse_file_info *fi = NULL;
 
-    cout << "dfs_doOperation " << operation << " " << local_path << endl;
+    cout << "dfs_doOperation " << operation << " " << local_path << " " << mode_t(mode) << " " << flags << endl;
     if (operation == "create") {
-//	local_create(path, mode, &fi);
+	fi = new(struct fuse_file_info);
+	fi->flags = flags;
+	local_create(local_path.c_str(), (mode_t)mode, fi);
     }
+
+    if (fi)
+	delete fi;
 }
 
 void DFSHandler::dfs_remote_opendir(const std::string& hostname) {
@@ -284,7 +290,7 @@ void PropagateToOtherServers(const string op, const char *path, mode_t mode, str
 	socket->setSendTimeout(100);
 	try {
 	    transport->open();
-	    client.dfs_doOperation(op, path);
+	    client.dfs_doOperation(op, path, mode, fi->flags);
 
 	    transport->close();
 	} catch (TException &tx) {

@@ -8,6 +8,7 @@
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
 #include <transport/TSocket.h>
+#include "LFS_operations.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -40,7 +41,7 @@ class DFSHandler : virtual public DFS::DFSIf {
         void Bla();
         void Ping();
         void Pong();
-        void dfs_doOperation(const std::string& operation, const std::string& hostname);
+	void dfs_doOperation(const std::string& operation, const std::string& path, const int32_t mode, const int32_t flags);
         void dfs_remote_opendir(const std::string& hostname);
         void dfs_remote_readdir(const std::string& hostname);
         void dfs_remote_releasedir(const std::string& hostname);

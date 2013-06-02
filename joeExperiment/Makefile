@@ -33,7 +33,7 @@ fuse_operations.o: fuse_operations.cpp
 	$(CXX) $(CXXFLAGS) ${FUSE_PKGS} $(INC) -c $< -o $@
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CXXFLAGS) ${FUSE_PKGS} $(INC) -c $< -o $@
 
 dfs_server: DFS_server.skeleton.o $(DFS_OBJ)
 	$(CXX) $^ -o $@ -L/usr/local/lib -lthrift
