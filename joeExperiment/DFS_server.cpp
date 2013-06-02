@@ -172,7 +172,9 @@ void DFSServer::stop() {
 }
 
 void * DFSServer::start(void * arg) {
-    int port = (intptr_t) arg;
+    GlobalBucket * globals = (GlobalBucket *) arg;
+    int port = globals->me_.port;
+
     cerr << "Starting Thrift server..." << endl;
 
     boost::shared_ptr<DFSHandler> handler(new DFSHandler());

@@ -3,18 +3,14 @@ BOOST_DIR := /usr/local/include
 DFS_SRC := DFS.cpp rpc_constants.cpp rpc_types.cpp
 DFS_OBJ := $(patsubst %.cpp,%.o, $(DFS_SRC))
 
-#SRC_FILES=`ls *.cpp`
-#ALL_OBJS = $(patsubst %.cpp,%.o, $(SRC_FILES))
-
 BINS    := dfs_server dfs_client fusexmp_fh connected
 
 FUSE_PKGS=`pkg-config fuse --cflags --libs`
-#FUSE_LIBS=-L/usr/local/lib -lthrift -lulockmgr
 THRIFT_PKGS := -L/usr/local/lib -lthrift
 
 fusexmp_fh_DEPS=fusexmp_fh.cpp
 connected_DEPS=connected.o $(DFS_OBJ) DFS_server.o LFS_operations.o fuse_operations.o \
-			   Host.o lockmanager.o
+			   Host.o lockmanager.o Lock.o LockSet.o
 
 CXXFLAGS := -g -Wall -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H -std=c++0x -I$(THRIFT_DIR) -I$(BOOST_DIR)
 

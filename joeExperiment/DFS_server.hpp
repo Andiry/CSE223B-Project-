@@ -2,6 +2,7 @@
 #define DFS_SERVER_HPP_INC 1
 
 #include "DFS.h"
+#include "GlobalBucket.hpp"
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TServerSocket.h>

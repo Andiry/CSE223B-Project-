@@ -4,6 +4,7 @@
 #define FUSE_USE_VERSION 26
 
 #include "LFS_operations.hpp"
+#include "GlobalBucket.hpp"
 
 extern "C" {
     #ifdef HAVE_CONFIG_H
@@ -36,6 +37,7 @@ namespace FUSEService {
         int argc;
         char **argv;
         std::string backupPath;
+        GlobalBucket * globals;
     };
     
     extern "C" {

@@ -8,24 +8,15 @@ extern "C" {
     #include <time.h>
 }
 
+#include "GlobalBucket.hpp"
 #include "Host.hpp"
 
 namespace LockManager {
-    const time_t    SLEEP_SECONDS       = 0;
+    const time_t    SLEEP_SECONDS       = 2;
     const long      SLEEP_NANOSECONDS   = 500000000L;
 
-    void * start(void * lockManagerArgs);
+    void * start(void * globals);
     void stop();
-
-    struct LMArgs {
-        Host & me_;
-        HostMap_t & hostMap_;
-        pthread_mutex_t & hostLock_;
-    
-        LMArgs(Host& me, HostMap_t& hostMap, pthread_mutex_t& hostLock)
-            : me_(me), hostMap_(hostMap), hostLock_(hostLock) { }
-    };
 }
-
 
 #endif
