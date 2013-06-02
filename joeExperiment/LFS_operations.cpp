@@ -141,6 +141,17 @@ int local_unlink(const char *path)
     return 0;
 }
 
+int local_utime(const char *path, const struct utimbuf *times)
+{
+    int res;
+
+    res = utime(path, times);
+    if (res == -1)
+        return -errno;
+
+    return 0;
+}
+
 int local_rmdir(const char *path)
 {
     int res;

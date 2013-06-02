@@ -42,6 +42,7 @@ int local_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 int local_releasedir(const char *path, struct fuse_file_info *fi);
 int local_mkdir(const char *path, mode_t mode);
 int local_unlink(const char *path);
+int local_utime(const char *path, const struct utimbuf *times);
 int local_rmdir(const char *path);
 int local_symlink(const char *from, const char *to);
 int local_rename(const char *from, const char *to);

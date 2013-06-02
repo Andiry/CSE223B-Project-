@@ -77,7 +77,7 @@ void DFSHandler::Pong() {
 
 void DFSHandler::dfs_doOperation(const std::string& operation, const std::string& hostname) {
     // Your implementation goes here
-    printf("dfs_doOperation\n");
+    cout << "dfs_doOperation " << operation << endl;
     if (operation == "create") {
 //	local_create(path, mode, &fi);
     }
@@ -263,10 +263,11 @@ void PropagateToOtherServers(const string op, const char *path, mode_t mode, str
     std::string storageServer;
     int storageServerPort;
 
+    cout << "Propagate to other servers" << endl;
     for (iter = global_backendServerVector.begin(); iter != global_backendServerVector.end(); ++iter) {
 	storageServer = iter->first;
 	storageServerPort = iter->second;
-	cout << "Retrieve data from server " << storageServer << " " << storageServerPort << endl;
+	cout << "Post data to server " << storageServer << " " << storageServerPort << endl;
 	boost::shared_ptr<TSocket> socket(new TSocket(storageServer, storageServerPort));
 	boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
 	boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));

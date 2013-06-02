@@ -62,6 +62,11 @@ int from_fuse_unlink(const char *path)
     return local_unlink(convert(path));
 }
 
+int from_fuse_utime(const char *path, struct utimbuf *times)
+{
+    return local_utime(convert(path), times);
+}
+
 int from_fuse_rmdir(const char *path)
 {
     return local_rmdir(convert(path));
@@ -113,7 +118,10 @@ int from_fuse_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 
 int from_fuse_open(const char *path, struct fuse_file_info *fi)
 {
-    return local_open(convert(path), fi);
+    int ret;
+    ret = local_open(convert(path), fi);
+    PropagateToOtherServers("open", path, 0, fi);
+    return ret;
 }
 
 int from_fuse_read(const char *path, char *buf, size_t size, off_t offset,
@@ -131,7 +139,10 @@ int from_fuse_read_buf(const char *path, struct fuse_bufvec **bufp,
 int from_fuse_write(const char *path, const char *buf, size_t size,
         off_t offset, struct fuse_file_info *fi)
 {
-    return local_write(convert(path), buf, size, offset, fi);
+    int ret;
+    ret = local_write(convert(path), buf, size, offset, fi);
+    PropagateToOtherServers("write", path, 0, fi);
+    return ret;
 }
 
 int from_fuse_flush(const char *path, struct fuse_file_info *fi)
@@ -177,6 +188,7 @@ void initOpers(fuse_operations& oper) {
     oper.mkdir        = from_fuse_mkdir;
     oper.symlink    = from_fuse_symlink;
     oper.unlink        = from_fuse_unlink;
+    oper.utime        = from_fuse_utime;
     oper.rmdir        = from_fuse_rmdir;
     oper.rename        = from_fuse_rename;
     oper.link        = from_fuse_link;
