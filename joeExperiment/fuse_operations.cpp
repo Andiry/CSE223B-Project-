@@ -5,7 +5,7 @@ using namespace std;
 
 string backup_path;
 
-const char *convert(const char *path)
+static const char *convert(const char *path)
 {
 	return (backup_path + path).c_str();
 }

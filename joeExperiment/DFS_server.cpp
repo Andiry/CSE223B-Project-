@@ -17,6 +17,11 @@ int global_id;
 std::vector < std::pair<std::string, int> > global_backendServerVector;
 std::string global_backup_path;
 
+static const string convert(const string path)
+{
+	return global_backup_path + path;
+}
+
 DFSHandler::DFSHandler(int argc, char **argv) {
     // Your initialization goes here
     _id = atoi(argv[4]);
@@ -75,9 +80,11 @@ void DFSHandler::Pong() {
     printf("Pong\n");
 }
 
-void DFSHandler::dfs_doOperation(const std::string& operation, const std::string& hostname) {
+void DFSHandler::dfs_doOperation(const std::string& operation, const std::string& path) {
     // Your implementation goes here
-    cout << "dfs_doOperation " << operation << endl;
+    string local_path = convert(path);
+
+    cout << "dfs_doOperation " << operation << " " << local_path << endl;
     if (operation == "create") {
 //	local_create(path, mode, &fi);
     }
@@ -277,7 +284,7 @@ void PropagateToOtherServers(const string op, const char *path, mode_t mode, str
 	socket->setSendTimeout(100);
 	try {
 	    transport->open();
-	    client.dfs_doOperation(op, "test");
+	    client.dfs_doOperation(op, path);
 
 	    transport->close();
 	} catch (TException &tx) {
