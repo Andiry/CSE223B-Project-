@@ -3,37 +3,42 @@
 
 #define FUSE_USE_VERSION 26
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <fuse.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <errno.h>
-#include <sys/time.h>
-#ifdef HAVE_SETXATTR
-#include <sys/xattr.h>
-#endif
-#include <sys/file.h> /* flock(2) */
+extern "C" {
+    #ifdef HAVE_CONFIG_H
+    #include <config.h>
+    #endif
+    
+    #include <fuse.h>
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <unistd.h>
+    #include <fcntl.h>
+    #include <sys/stat.h>
+    #include <dirent.h>
+    #include <errno.h>
+    #include <sys/time.h>
+    #ifdef HAVE_SETXATTR
+    #include <sys/xattr.h>
+    #endif
+    #include <sys/file.h> /* flock(2) */
+}
 
 #include <iostream>
+
+extern "C" {
+    struct dirp {
+        DIR *dp;
+        struct dirent *entry;
+        off_t offset;
+    };
+}
 
 int local_getattr(const char *path, struct stat *stbuf);
 int local_fgetattr(const char *path, struct stat *stbuf,
         struct fuse_file_info *fi);
 int local_access(const char *path, int mask);
 int local_readlink(const char *path, char *buf, size_t size);
-struct dirp {
-    DIR *dp;
-    struct dirent *entry;
-    off_t offset;
-};
 
 int local_opendir(const char *path, struct fuse_file_info *fi);
 struct dirp *local_get_dirp(struct fuse_file_info *fi);

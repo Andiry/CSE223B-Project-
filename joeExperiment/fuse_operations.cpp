@@ -17,16 +17,10 @@ namespace FUSEService {
 
 string FUSEService::convert(const char *path)
 {
-/*
-    cerr << "Backup Path: " << backup_path_ << endl;
-    cerr << "Path: " << path << endl;
     stringstream ss;
-    ss << backup_path_ << "/" << path;
+    ss << backup_path_ << path;
 	string newPath = ss.str();
-    cerr << "New path: " << newPath << endl;
     return newPath;
-*/
-    return path;
 }
 
 int FUSEService::fuse_getattr(const char *path, struct stat *stbuf)
@@ -52,12 +46,7 @@ int FUSEService::fuse_readlink(const char *path, char *buf, size_t size)
 
 int FUSEService::fuse_opendir(const char *path, struct fuse_file_info *fi)
 {
-    cerr << "Trying to fuse_opendir " << path << endl;
-    const char * converted = convert(path).c_str();
-    cerr << "Converted " << converted << endl;
-    //if (path == NULL || path[0] == 0)
-    //    return -1;
-    return local_opendir(converted, fi);
+    return local_opendir(convert(path).c_str(), fi);
 }
 
 inline dirp * FUSEService::fuse_get_dirp(struct fuse_file_info *fi)
@@ -68,7 +57,6 @@ inline dirp * FUSEService::fuse_get_dirp(struct fuse_file_info *fi)
 int FUSEService::fuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
         off_t offset, struct fuse_file_info *fi)
 {
-    cerr << "Managed to call readdir" << endl;
     return local_readdir(convert(path).c_str(), buf, filler, offset, fi);
 }
 
@@ -186,36 +174,44 @@ int FUSEService::fuse_flock(const char *path, struct fuse_file_info *fi, int op)
 }
 
 void FUSEService::initOpers(fuse_operations& oper) {
-    oper.getattr     = FUSEService::fuse_getattr;
-    oper.fgetattr    = FUSEService::fuse_fgetattr;
-    oper.access      = FUSEService::fuse_access;
-    oper.readlink    = FUSEService::fuse_readlink;
-    oper.read        = FUSEService::fuse_read;
-    oper.read_buf    = FUSEService::fuse_read_buf;
+    oper.getattr    = FUSEService::fuse_getattr;
+    oper.fgetattr   = FUSEService::fuse_fgetattr;
+    oper.access     = FUSEService::fuse_access;
+    oper.readlink   = FUSEService::fuse_readlink;
+    oper.read       = FUSEService::fuse_read;
+    oper.read_buf   = FUSEService::fuse_read_buf;
 
-    oper.opendir     = FUSEService::fuse_opendir;
-    oper.readdir     = FUSEService::fuse_readdir;
-    oper.releasedir  = FUSEService::fuse_releasedir;
-    oper.mkdir       = FUSEService::fuse_mkdir;
-    oper.symlink     = FUSEService::fuse_symlink;
-    oper.unlink      = FUSEService::fuse_unlink;
-    oper.rmdir       = FUSEService::fuse_rmdir;
-    oper.rename      = FUSEService::fuse_rename;
-    oper.link        = FUSEService::fuse_link;
-    oper.chmod       = FUSEService::fuse_chmod;
-    oper.chown       = FUSEService::fuse_chown;
-    oper.truncate    = FUSEService::fuse_truncate;
-    oper.ftruncate   = FUSEService::fuse_ftruncate;
-    oper.create      = FUSEService::fuse_create;
-    oper.open        = FUSEService::fuse_open;
-    oper.write       = FUSEService::fuse_write;
+    oper.opendir    = FUSEService::fuse_opendir;
+    oper.readdir    = FUSEService::fuse_readdir;
+    oper.releasedir = FUSEService::fuse_releasedir;
+    oper.mkdir      = FUSEService::fuse_mkdir;
+    oper.symlink    = FUSEService::fuse_symlink;
+    oper.unlink     = FUSEService::fuse_unlink;
+    oper.rmdir      = FUSEService::fuse_rmdir;
+    oper.rename     = FUSEService::fuse_rename;
+    oper.link       = FUSEService::fuse_link;
+    oper.chmod      = FUSEService::fuse_chmod;
+    oper.chown      = FUSEService::fuse_chown;
+    oper.truncate   = FUSEService::fuse_truncate;
+    oper.ftruncate  = FUSEService::fuse_ftruncate;
+    oper.create     = FUSEService::fuse_create;
+    oper.open       = FUSEService::fuse_open;
+    oper.write      = FUSEService::fuse_write;
 
-    oper.flush       = FUSEService::fuse_flush;
-    oper.release     = FUSEService::fuse_release;
-    oper.fsync       = FUSEService::fuse_fsync;
+    oper.flush      = FUSEService::fuse_flush;
+    oper.release    = FUSEService::fuse_release;
+    oper.fsync      = FUSEService::fuse_fsync;
 #ifdef HAVE_POSIX_FALLOCATE
-    oper.fallocate   = FUSEService::fuse_fallocate;
+    oper.fallocate  = FUSEService::fuse_fallocate;
 #endif
+    /*
+#ifdef HAVE_SETXATTR
+	.setxattr	    = FUSEService::fuse_setxattr,
+	.getxattr	    = FUSEService::fuse_getxattr,
+	.listxattr	    = FUSEService::fuse_listxattr,
+	.removexattr	= FUSEService::fuse_removexattr,
+#endif
+    */
     //oper.lock            = FUSEService::lock;
     oper.flock       = FUSEService::fuse_flock;
 
@@ -233,12 +229,7 @@ static int FUSEService::fuseMain(int argc, char *argv[],
     int multithreaded;
     int res;
 
-    if (op->readdir)
-        cerr << "Found readdir..." << endl;
-    else
-        cerr << "No readdir implemented..." << endl;
-
-    fuse_ = fuse_setup(argc, argv, op, sizeof(op), &mountpoint,
+    fuse_ = fuse_setup(argc, argv, op, sizeof(fuse_operations), &mountpoint,
                        &multithreaded, user_data);
 
     if (fuse_ == NULL)
@@ -267,9 +258,6 @@ void * FUSEService::start(void * arg) {
     char *bup = realpath(args->backupPath.c_str(), NULL);
     backup_path_ = bup;
     free(bup);
-
-    cerr << "Absolute Backup Path: " << backup_path_ << endl;
-
     if (backup_path_.back() == '/')
         backup_path_.erase(--backup_path_.end());
 

@@ -54,7 +54,6 @@ int local_readlink(const char *path, char *buf, size_t size)
 int local_opendir(const char *path, struct fuse_file_info *fi)
 {
     static int count = 0;
-    cerr << "Trying to local_opendir " << path << " : " << count << endl;
     int res;
     struct dirp *d = (dirp *) malloc(sizeof(struct dirp));
     if (d == NULL)

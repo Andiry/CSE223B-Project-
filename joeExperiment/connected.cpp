@@ -5,7 +5,10 @@
 
 #include "Host.hpp"
 
-#include <pthread.h>
+extern "C" {
+    #include <pthread.h>
+}
+
 #include <csignal>
 #include <map>
 

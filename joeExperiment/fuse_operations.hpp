@@ -5,21 +5,23 @@
 
 #include "LFS_operations.hpp"
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <fuse.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <errno.h>
-#include <sys/time.h>
-#ifdef HAVE_SETXATTR
-#include <sys/xattr.h>
-#endif
-#include <sys/file.h> /* flock(2) */
+extern "C" {
+    #ifdef HAVE_CONFIG_H
+    #include <config.h>
+    #endif
+    
+    #include <fuse.h>
+    #include <unistd.h>
+    #include <fcntl.h>
+    #include <sys/stat.h>
+    #include <dirent.h>
+    #include <errno.h>
+    #include <sys/time.h>
+    #ifdef HAVE_SETXATTR
+    #include <sys/xattr.h>
+    #endif
+    #include <sys/file.h> /* flock(2) */
+}
 
 #include <cstdio>
 #include <cstdlib>

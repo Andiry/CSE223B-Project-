@@ -2,8 +2,11 @@
 #define LOCKMANAGER_HPP_INC 1
 
 #include <map>
-#include <pthread.h>
-#include <time.h>
+
+extern "C" {
+    #include <pthread.h>
+    #include <time.h>
+}
 
 #include "Host.hpp"
 
