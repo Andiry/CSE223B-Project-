@@ -13,6 +13,10 @@ using boost::shared_ptr;
 using namespace ::DFS;
 using namespace std;
 
+int global_id;
+std::vector < std::pair<std::string, int> > global_backendServerVector;
+std::string global_backup_path;
+
 DFSHandler::DFSHandler(int argc, char **argv) {
     // Your initialization goes here
     _id = atoi(argv[4]);
@@ -31,6 +35,10 @@ DFSHandler::DFSHandler(int argc, char **argv) {
 	_backendServerVector.push_back(make_pair(peer_ip, peer_port));
 	cout << "Backend server at " << peer_ip << " on port " << peer_port << endl;
     }
+
+    global_id = _id;
+    global_backendServerVector = _backendServerVector;
+    global_backup_path = _backup_path;
 
     RsyncWithOtherServers();
 }
@@ -70,6 +78,9 @@ void DFSHandler::Pong() {
 void DFSHandler::dfs_doOperation(const std::string& operation, const std::string& hostname) {
     // Your implementation goes here
     printf("dfs_doOperation\n");
+    if (operation == "create") {
+//	local_create(path, mode, &fi);
+    }
 }
 
 void DFSHandler::dfs_remote_opendir(const std::string& hostname) {
@@ -232,6 +243,49 @@ void DFSHandler::RsyncWithOtherServers(void) {
     return;
 }
 
+/* Run file operations pushed by other servers */
+#if 0
+void PushData(const string op, const char *path, mode_t mode, struct fuse_file_info fi) {
+
+    switch (op) {
+    case "create":
+	local_create(path, mode, &fi);
+	break;
+    default:
+	break;
+    }
+}
+#endif
+
+/* Post information to other servers */
+void PropagateToOtherServers(const string op, const char *path, mode_t mode, struct fuse_file_info *fi) {
+    std::vector<pair<string, int> >::iterator iter;
+    std::string storageServer;
+    int storageServerPort;
+
+    for (iter = global_backendServerVector.begin(); iter != global_backendServerVector.end(); ++iter) {
+	storageServer = iter->first;
+	storageServerPort = iter->second;
+	cout << "Retrieve data from server " << storageServer << " " << storageServerPort << endl;
+	boost::shared_ptr<TSocket> socket(new TSocket(storageServer, storageServerPort));
+	boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+	boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+	DFSClient client(protocol);
+	socket->setConnTimeout(100);
+	socket->setRecvTimeout(100);
+	socket->setSendTimeout(100);
+	try {
+	    transport->open();
+	    client.dfs_doOperation(op, "test");
+
+	    transport->close();
+	} catch (TException &tx) {
+	    cout << "ERROR: %s" << tx.what() << endl;
+	    continue;
+	}
+    }
+    return;
+}
 
 void * startServer(void * arg) {
     ArgStruct *args = (ArgStruct *) arg;

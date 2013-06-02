@@ -27,6 +27,8 @@
 
 #include <iostream>
 
+using namespace std;
+
 int from_fuse_getattr(const char *path, struct stat *stbuf);
 int from_fuse_fgetattr(const char *path, struct stat *stbuf,
         struct fuse_file_info *fi);
@@ -85,5 +87,6 @@ struct ArgStruct {
 #endif
 
 void * startFuse(void * arg);
+void PropagateToOtherServers(const string op, const char *path, mode_t mode, struct fuse_file_info *fi);
 
 #endif

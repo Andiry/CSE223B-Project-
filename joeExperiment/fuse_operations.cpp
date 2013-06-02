@@ -105,7 +105,10 @@ int from_fuse_ftruncate(const char *path, off_t size,
 
 int from_fuse_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
-    return local_create(convert(path), mode, fi);
+    int ret;
+    ret = local_create(convert(path), mode, fi);
+    PropagateToOtherServers("create", path, mode, fi);
+    return ret;
 }
 
 int from_fuse_open(const char *path, struct fuse_file_info *fi)
