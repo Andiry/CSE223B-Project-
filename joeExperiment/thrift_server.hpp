@@ -3,6 +3,7 @@
 
 #include "DFS.h"
 #include "GlobalBucket.hpp"
+#include "LFS_operations.hpp"
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TServerSocket.h>
@@ -16,6 +17,7 @@ class DFSHandler : virtual public DFS::DFSIf {
   private:
     GlobalBucket * globals_;
     bool checkForDead(const DFS::HostID& sender);
+    void ffit2ffi(const DFS::FUSEFileInfoTransport& ffit, fuse_file_info& ffi);
 
   public:
     DFSHandler(GlobalBucket* globals);
@@ -24,7 +26,7 @@ class DFSHandler : virtual public DFS::DFSIf {
     void die(const DFS::HostID& sender);    
     void addServer(const DFS::HostID& sender, const DFS::HostID& newServer);    
     void releaseJoinLock(const DFS::HostID& sender);    
-    void lock(const DFS::HostID& sender, const std::string& file);    
+    bool lock(const DFS::HostID& sender, const std::string& file, const DFS::LockType::type lockType);
     void join(std::set<DFS::HostID> & _return, const DFS::HostID& sender);    
     void requestJoinLock(std::string & _return, const DFS::HostID& sender);    
     bool getJoinLock(const DFS::HostID& sender);    

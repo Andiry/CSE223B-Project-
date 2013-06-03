@@ -47,6 +47,7 @@ int FUSEService::fuse_readlink(const char *path, char *buf, size_t size)
 
 int FUSEService::fuse_opendir(const char *path, struct fuse_file_info *fi)
 {
+    // don't forget to lock!
     fi->fh = globals_->randGen_();
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     return local_opendir(convert(path).c_str(), fi, fh);
@@ -67,6 +68,7 @@ int FUSEService::fuse_readdir(const char *path, void *buf, fuse_fill_dir_t fille
 
 int FUSEService::fuse_releasedir(const char *path, struct fuse_file_info *fi)
 {
+    // don't forget to unlock!
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     return local_releasedir(convert(path).c_str(), fi, fh);
 }
@@ -125,6 +127,7 @@ int FUSEService::fuse_ftruncate(const char *path, off_t size,
 
 int FUSEService::fuse_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
+    // don't forget to lock!
     fi->fh = globals_->randGen_();
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     return local_create(convert(path).c_str(), mode, fi, fh);
@@ -132,6 +135,7 @@ int FUSEService::fuse_create(const char *path, mode_t mode, struct fuse_file_inf
 
 int FUSEService::fuse_open(const char *path, struct fuse_file_info *fi)
 {
+    // don't forget to lock!
     fi->fh = globals_->randGen_();
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     return local_open(convert(path).c_str(), fi, fh);
@@ -166,6 +170,7 @@ int FUSEService::fuse_flush(const char *path, struct fuse_file_info *fi)
 
 int FUSEService::fuse_release(const char *path, struct fuse_file_info *fi)
 {
+    // don't forget to unlock!
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     return local_release(convert(path).c_str(), fi, fh);
 }

@@ -47,7 +47,7 @@ class DFSHandler : virtual public DFSIf {
     printf("releaseJoinLock\n");
   }
 
-  void lock(const HostID& sender, const std::string& file) {
+  bool lock(const HostID& sender, const std::string& file, const LockType::type lockType) {
     // Your implementation goes here
     printf("lock\n");
   }

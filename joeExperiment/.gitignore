@@ -4,3 +4,5 @@ ajfs
 dfs_client
 dfs_server
 fusexmp_fh
+backup*
+Makefile~

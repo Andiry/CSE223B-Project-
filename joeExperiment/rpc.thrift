@@ -19,6 +19,10 @@ struct HostID {
     2:  i16     port,
 }
 
+enum LockType {
+  READ = 1,
+  WRITE = 2,
+}
 
 service DFS {
 
@@ -28,7 +32,7 @@ service DFS {
     oneway void addServer(1:HostID sender, 2:HostID newServer),
     oneway void releaseJoinLock(1:HostID sender),
 
-    void        lock(1:HostID sender, 2:string file),
+    bool        lock(1:HostID sender, 2:string file, 3:LockType lockType),
     set<HostID> join(1:HostID sender),
     string      requestJoinLock(1:HostID sender),
     bool        getJoinLock(1:HostID sender),

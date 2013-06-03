@@ -20,7 +20,7 @@ class DFSIf {
   virtual void die(const HostID& sender) = 0;
   virtual void addServer(const HostID& sender, const HostID& newServer) = 0;
   virtual void releaseJoinLock(const HostID& sender) = 0;
-  virtual void lock(const HostID& sender, const std::string& file) = 0;
+  virtual bool lock(const HostID& sender, const std::string& file, const LockType::type lockType) = 0;
   virtual void join(std::set<HostID> & _return, const HostID& sender) = 0;
   virtual void requestJoinLock(std::string& _return, const HostID& sender) = 0;
   virtual bool getJoinLock(const HostID& sender) = 0;
@@ -88,8 +88,9 @@ class DFSNull : virtual public DFSIf {
   void releaseJoinLock(const HostID& /* sender */) {
     return;
   }
-  void lock(const HostID& /* sender */, const std::string& /* file */) {
-    return;
+  bool lock(const HostID& /* sender */, const std::string& /* file */, const LockType::type /* lockType */) {
+    bool _return = false;
+    return _return;
   }
   void join(std::set<HostID> & /* _return */, const HostID& /* sender */) {
     return;
@@ -440,21 +441,23 @@ class DFS_releaseJoinLock_pargs {
 };
 
 typedef struct _DFS_lock_args__isset {
-  _DFS_lock_args__isset() : sender(false), file(false) {}
+  _DFS_lock_args__isset() : sender(false), file(false), lockType(false) {}
   bool sender;
   bool file;
+  bool lockType;
 } _DFS_lock_args__isset;
 
 class DFS_lock_args {
  public:
 
-  DFS_lock_args() : file() {
+  DFS_lock_args() : file(), lockType((LockType::type)0) {
   }
 
   virtual ~DFS_lock_args() throw() {}
 
   HostID sender;
   std::string file;
+  LockType::type lockType;
 
   _DFS_lock_args__isset __isset;
 
@@ -466,11 +469,17 @@ class DFS_lock_args {
     file = val;
   }
 
+  void __set_lockType(const LockType::type val) {
+    lockType = val;
+  }
+
   bool operator == (const DFS_lock_args & rhs) const
   {
     if (!(sender == rhs.sender))
       return false;
     if (!(file == rhs.file))
+      return false;
+    if (!(lockType == rhs.lockType))
       return false;
     return true;
   }
@@ -494,23 +503,37 @@ class DFS_lock_pargs {
 
   const HostID* sender;
   const std::string* file;
+  const LockType::type* lockType;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
+typedef struct _DFS_lock_result__isset {
+  _DFS_lock_result__isset() : success(false) {}
+  bool success;
+} _DFS_lock_result__isset;
 
 class DFS_lock_result {
  public:
 
-  DFS_lock_result() {
+  DFS_lock_result() : success(0) {
   }
 
   virtual ~DFS_lock_result() throw() {}
 
+  bool success;
 
-  bool operator == (const DFS_lock_result & /* rhs */) const
+  _DFS_lock_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  bool operator == (const DFS_lock_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     return true;
   }
   bool operator != (const DFS_lock_result &rhs) const {
@@ -524,6 +547,10 @@ class DFS_lock_result {
 
 };
 
+typedef struct _DFS_lock_presult__isset {
+  _DFS_lock_presult__isset() : success(false) {}
+  bool success;
+} _DFS_lock_presult__isset;
 
 class DFS_lock_presult {
  public:
@@ -531,6 +558,9 @@ class DFS_lock_presult {
 
   virtual ~DFS_lock_presult() throw() {}
 
+  bool* success;
+
+  _DFS_lock_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -2522,9 +2552,9 @@ class DFSClient : virtual public DFSIf {
   void send_addServer(const HostID& sender, const HostID& newServer);
   void releaseJoinLock(const HostID& sender);
   void send_releaseJoinLock(const HostID& sender);
-  void lock(const HostID& sender, const std::string& file);
-  void send_lock(const HostID& sender, const std::string& file);
-  void recv_lock();
+  bool lock(const HostID& sender, const std::string& file, const LockType::type lockType);
+  void send_lock(const HostID& sender, const std::string& file, const LockType::type lockType);
+  bool recv_lock();
   void join(std::set<HostID> & _return, const HostID& sender);
   void send_join(const HostID& sender);
   void recv_join(std::set<HostID> & _return);
@@ -2726,13 +2756,13 @@ class DFSMultiface : virtual public DFSIf {
     ifaces_[i]->releaseJoinLock(sender);
   }
 
-  void lock(const HostID& sender, const std::string& file) {
+  bool lock(const HostID& sender, const std::string& file, const LockType::type lockType) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->lock(sender, file);
+      ifaces_[i]->lock(sender, file, lockType);
     }
-    ifaces_[i]->lock(sender, file);
+    return ifaces_[i]->lock(sender, file, lockType);
   }
 
   void join(std::set<HostID> & _return, const HostID& sender) {

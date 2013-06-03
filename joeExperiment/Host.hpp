@@ -33,7 +33,7 @@ class Host {
     void die();
     void addServer(const DFS::HostID& newServer);
     void releaseJoinLock();
-    void lock(const std::string& file);
+    void lock(const std::string& file, DFS::LockType::type type);
     void join(std::set<DFS::HostID> & _return);
     bool requestJoinLock(std::string& path);
     bool getJoinLock();

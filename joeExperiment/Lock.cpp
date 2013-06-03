@@ -26,7 +26,7 @@ bool Lock::readLock(const HostID& host) {
     if (state_ == READ || state_ == UNLOCKED) {
         ++readCount_;
         state_ = READ;
-        hosts_.insert(host);
+        ++hosts_[host];
 
         pthread_mutex_unlock(&mutex_);
         return true;
@@ -38,8 +38,8 @@ bool Lock::readLock(const HostID& host) {
 bool Lock::readUnlock(const HostID& host) {
     pthread_mutex_lock(&mutex_);
 
-    if (state_ == READ && hosts_.count(host)) {
-        hosts_.erase(host);
+    if (state_ == READ && hosts_[host]) {
+        --hosts_[host];
 
         if (--readCount_ == 0)
             state_ = UNLOCKED;
@@ -51,17 +51,26 @@ bool Lock::readUnlock(const HostID& host) {
     return false;
 }
 
+bool Lock::unlock(const HostID& host) {
+    if (state_ == READ)
+        return readUnlock(host);
+    if (state_ == WRITE)
+        return writeUnlock(host);
+    return false;
+}
+
 bool Lock::writeLock(const HostID& host) {
     pthread_mutex_lock(&mutex_);
 
-    if (state_ == UNLOCKED) {
+    if (state_ == UNLOCKED || (state_ == WRITE && hosts_[host])) {
         state_ = WRITE;
 
-        hosts_.insert(host);
+        hosts_[host] = 1;
 
         pthread_mutex_unlock(&mutex_);
         return true;
     }
+
     pthread_mutex_unlock(&mutex_);
     return false;
 }
@@ -69,7 +78,7 @@ bool Lock::writeLock(const HostID& host) {
 bool Lock::writeUnlock(const HostID& host) {
     pthread_mutex_lock(&mutex_);
 
-    if (state_ == WRITE && hosts_.count(host)) {
+    if (state_ == WRITE && hosts_[host]) {
         state_ = UNLOCKED;
         hosts_.clear();
         pthread_mutex_unlock(&mutex_);

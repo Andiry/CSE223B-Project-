@@ -20,6 +20,7 @@ class LockSet {
         bool readLockPath(const std::string& path, const DFS::HostID& host);
         bool readUnlockPath(const std::string& path, const DFS::HostID& host);
         void unlockAll(const DFS::HostID& host);
+        void unlockPath(const std::string& path, const DFS::HostID& host);
     private:
         enum LockType { R, W };
         bool lockPath(const std::string& path, const DFS::HostID& host, LockType type);

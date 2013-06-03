@@ -16,7 +16,12 @@ void LockSet::splitPaths(const string& path, vector<string>& paths) {
         pos += delim.length();
         last = pos;
     }
-    paths.push_back(path.substr(0, path.length() - last));
+
+    string lastPart = path.substr(0, path.length() - last);
+    if (lastPart.back() == '/')
+        lastPart.erase(--lastPart.end());
+
+    paths.push_back(lastPart);
 }
 
 LockSet::LockSet() {
@@ -105,6 +110,11 @@ bool LockSet::readUnlockPath(const string& path, const HostID& host) {
     bool result = unlockPath(path, host, R); 
     pthread_mutex_unlock(&mutex_);
     return result;
+}
+
+void LockSet::unlockPath(const string& path, const HostID& host) {
+    unlockPath(path, host, R);
+    unlockPath(path, host, W);
 }
 
 void LockSet::unlockAll(const HostID& host) {

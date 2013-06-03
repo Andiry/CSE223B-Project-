@@ -10,6 +10,16 @@
 
 namespace DFS {
 
+int _kLockTypeValues[] = {
+  LockType::READ,
+  LockType::WRITE
+};
+const char* _kLockTypeNames[] = {
+  "READ",
+  "WRITE"
+};
+const std::map<int, const char*> _LockType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kLockTypeValues, _kLockTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 const char* FUSEFileInfoTransport::ascii_fingerprint = "BE5E44D98B2BCC2B88857EC323D2F13D";
 const uint8_t FUSEFileInfoTransport::binary_fingerprint[16] = {0xBE,0x5E,0x44,0xD9,0x8B,0x2B,0xCC,0x2B,0x88,0x85,0x7E,0xC3,0x23,0xD2,0xF1,0x3D};
 
@@ -257,7 +267,7 @@ uint32_t HostID::write(::apache::thrift::protocol::TProtocol* oprot) const {
   return xfer;
 }
 
-bool DFS::HostID::operator<(DFS::HostID const& rhs) const {
+bool HostID::operator<(DFS::HostID const& rhs) const {
     return (hostname == rhs.hostname) ?
         port < rhs.port : hostname < rhs.hostname;
 }

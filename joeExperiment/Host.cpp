@@ -114,9 +114,9 @@ void Host::releaseJoinLock() {
     POSTCHECK(return);
 }
 
-void Host::lock(const string& file) {
+void Host::lock(const string& file, LockType::type type) {
     PRECHECK(return, return);
-    client_->lock(*me_, file);
+    client_->lock(*me_, file, type);
     POSTCHECK(return);
 }
 

@@ -1,7 +1,7 @@
 #ifndef LOCK_HPP_INC
 #define LOCK_HPP_INC 1
 
-#include <set>
+#include <map>
 #include "DFS.h"
 
 extern "C" {
@@ -20,6 +20,7 @@ class Lock {
         bool readUnlock(const DFS::HostID& host);
         bool writeLock(const DFS::HostID& host);
         bool writeUnlock(const DFS::HostID& host);
+        bool unlock(const DFS::HostID& host);
 
         bool readLocked() const;
         bool writeLocked() const;
@@ -28,7 +29,7 @@ class Lock {
         State state_;
         unsigned readCount_;
         pthread_mutex_t mutex_;
-        std::set<DFS::HostID> hosts_;
+        std::map<DFS::HostID, unsigned> hosts_;
 };
 
 #endif

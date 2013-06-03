@@ -16,6 +16,15 @@
 
 namespace DFS {
 
+struct LockType {
+  enum type {
+    READ = 1,
+    WRITE = 2
+  };
+};
+
+extern const std::map<int, const char*> _LockType_VALUES_TO_NAMES;
+
 typedef struct _FUSEFileInfoTransport__isset {
   _FUSEFileInfoTransport__isset() : flags(false), fh_old(false), writepage(false), direct_io(false), keep_cache(false), flush(false), nonseekable(false), padding(false), fh(false), lock_owner(false) {}
   bool flags;

@@ -30,11 +30,10 @@ void DFSHandler::ping(const HostID& sender) {
 
 void DFSHandler::unlock(const HostID& sender, const std::string& file) {
     if (checkForDead(sender)) return;
+
+    globals_->locks_.unlockPath(file, sender);
+
     printf("unlock\n");
-    // TODO
-    // Is this even necessary? Inherent in close()?
-    cerr << "ERROR: Someone called Unlock?" << endl;
-    globals_->killall_();
 }
 
 void DFSHandler::die(const HostID& sender) {
@@ -59,21 +58,25 @@ void DFSHandler::releaseJoinLock(const HostID& sender) {
     globals_->joinLock_ = false;
 }
 
-void DFSHandler::lock(const HostID& sender, const std::string& file) {
-    if (checkForDead(sender)) return;
-    // Your implementation goes here
+bool DFSHandler::lock(const HostID& sender, const std::string& file, const LockType::type lockType) {
+    if (checkForDead(sender)) return false;
+
+    if (lockType == LockType::type::WRITE) {// writing
+        if(!globals_->locks_.writeLockPath(file, sender))
+            return false; // we couldn't get the lock
+    }
+    else {// reading
+        if(!globals_->locks_.readLockPath(file, sender))
+            return false; // we couldn't get the lock
+    }
+    return true;
+
     printf("lock\n");
-    // TODO
-    // Is this even necessary? Inherent in open()?
-    cerr << "ERROR: Someone called Lock?" << endl;
-    globals_->killall_();
 }
 
 void DFSHandler::join(std::set<HostID> & _return, const HostID& sender) {
     if (checkForDead(sender)) return;
     // Your implementation goes here
-
-    // TODO: Finish this...?
 
     // Call addServer on all of the hosts.
     pthread_mutex_lock(&globals_->hostLock_);
@@ -142,146 +145,197 @@ bool DFSHandler::getJoinLock(const HostID& sender) {
     return true;
 }
 
+void DFSHandler::ffit2ffi(const FUSEFileInfoTransport& ffit, fuse_file_info& ffi) {
+    ffi.flags       = ffit.flags;
+    ffi.fh_old      = ffit.fh_old;
+    ffi.writepage   = ffit.writepage;
+    ffi.direct_io   = ffit.direct_io;
+    ffi.keep_cache  = ffit.keep_cache;
+    ffi.flush       = ffit.flush;
+    ffi.nonseekable = ffit.nonseekable;
+    ffi.padding     = ffit.padding;
+    ffi.fh          = ffit.fh;
+    ffi.lock_owner  = ffit.lock_owner;
+}
+
 void DFSHandler::releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+
+    globals_->locks_.readUnlockPath(path, sender);
+
+    fuse_file_info ffi;
+    ffit2ffi(fi, ffi);
+    uint64_t& fh(globals_->fhMap_[fi.fh]);
+    local_releasedir(path.c_str(), &ffi, fh);
     printf("releasedir\n");
-    // TODO
 }
 
 void DFSHandler::mkdir(const HostID& sender, const std::string& path, const int32_t mode) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+    local_mkdir(path.c_str(), mode);
     printf("mkdir\n");
-    // TODO
 }
 
 void DFSHandler::unlink(const HostID& sender, const std::string& path) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+    local_unlink(path.c_str());
     printf("unlink\n");
-    // TODO
 }
 
 void DFSHandler::rmdir(const HostID& sender, const std::string& path) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+    local_rmdir(path.c_str());
     printf("rmdir\n");
-    // TODO
 }
 
 void DFSHandler::symlink(const HostID& sender, const std::string& from, const std::string& to) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+    local_symlink(from.c_str(), to.c_str());
     printf("symlink\n");
-    // TODO
 }
 
 void DFSHandler::rename(const HostID& sender, const std::string& from, const std::string& to) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+    local_rename(from.c_str(), to.c_str());
     printf("rename\n");
-    // TODO
 }
 
 void DFSHandler::link(const HostID& sender, const std::string& from, const std::string& to) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+    local_link(from.c_str(), to.c_str());
     printf("link\n");
-    // TODO
 }
 
 void DFSHandler::chmod(const HostID& sender, const std::string& path, const int32_t mode) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+    local_chmod(path.c_str(), mode);
     printf("chmod\n");
-    // TODO
 }
 
 void DFSHandler::chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+    local_chown(path.c_str(), uid, gid);
     printf("chown\n");
-    // TODO
 }
 
 void DFSHandler::truncate(const HostID& sender, const std::string& path, const int64_t size) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+    local_truncate(path.c_str(), size);
     printf("truncate\n");
-    // TODO
 }
 
 void DFSHandler::ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+    fuse_file_info ffi;
+    ffit2ffi(fi, ffi);
+    uint64_t& fh(globals_->fhMap_[fi.fh]);
+    local_ftruncate(path.c_str(), size, &ffi, fh);
     printf("ftruncate\n");
-    // TODO
 }
 
 void DFSHandler::create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+
+    fuse_file_info ffi;
+    ffit2ffi(fi, ffi);
+    uint64_t& fh(globals_->fhMap_[fi.fh]);
+    local_create(path.c_str(), mode, &ffi, fh);
     printf("create\n");
-    // TODO
 }
 
 void DFSHandler::write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+    fuse_file_info ffi;
+    ffit2ffi(fi, ffi);
+    uint64_t& fh(globals_->fhMap_[fi.fh]);
+    char * newbuf = (char *) (new char [size]);
+    copy(buf.begin(), buf.end(), newbuf);
+    local_write(path.c_str(), newbuf, size, offset, &ffi, fh);
+    delete [] newbuf;
     printf("write\n");
-    // TODO
 }
 
 void DFSHandler::flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+    fuse_file_info ffi;
+    ffit2ffi(fi, ffi);
+    uint64_t& fh(globals_->fhMap_[fi.fh]);
+    local_flush(path.c_str(), &ffi, fh);
     printf("flush\n");
-    // TODO
 }
 
 void DFSHandler::release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+
+    fuse_file_info ffi;
+    ffit2ffi(fi, ffi);
+    uint64_t& fh(globals_->fhMap_[fi.fh]);
+    local_release(path.c_str(), &ffi, fh);
     printf("release\n");
-    // TODO
 }
 
 void DFSHandler::flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+    fuse_file_info ffi;
+    ffit2ffi(fi, ffi);
+    uint64_t& fh(globals_->fhMap_[fi.fh]);
+    local_flock(path.c_str(), &ffi, op, fh);
     printf("flock\n");
-    // TODO
 }
 
 void DFSHandler::fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi) {
     if (checkForDead(sender)) return;
-    // Your implementation goes here
+#ifdef HAVE_POSIX_FALLOCATE
+    fuse_file_info ffi;
+    ffit2ffi(fi, ffi);
+    uint64_t& fh(globals_->fhMap_[fi.fh]);
+    local_fallocate(path.c_str(), mode, offset, length, &ffi, fh);
+#endif
     printf("fallocate\n");
-    // TODO
 }
 
 bool DFSHandler::fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) {
     if (checkForDead(sender)) return false;
-    // Your implementation goes here
+    fuse_file_info ffi;
+    ffit2ffi(fi, ffi);
+    uint64_t& fh(globals_->fhMap_[fi.fh]);
+    local_fsync(path.c_str(), isdatasync, &ffi, fh);
     printf("fsync\n");
     // TODO
-    return false;
+    return true;
 }
 
 bool DFSHandler::open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     if (checkForDead(sender)) return false;
-    // Your implementation goes here
+
+    /*
+    if (fi.flags & (O_WRONLY | O_RDWR)) // writing
+        if(!globals_->locks_.writeLockPath(path, sender))
+            return false; // we couldn't get the lock
+    else // reading
+        if(!globals_->locks_.readLockPath(path, sender))
+            return false; // we couldn't get the lock
+            */
+
+    fuse_file_info ffi;
+    ffit2ffi(fi, ffi);
+    uint64_t& fh(globals_->fhMap_[fi.fh]);
+    local_open(path.c_str(), &ffi, fh);
     printf("open\n");
-    // TODO
-    return false;
+    return true;
 }
 
 bool DFSHandler::opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     if (checkForDead(sender)) return false;
-    // Your implementation goes here
+
+    if(!globals_->locks_.readLockPath(path, sender))
+        return false; // we couldn't get the lock
+
+    fuse_file_info ffi;
+    ffit2ffi(fi, ffi);
+    uint64_t& fh(globals_->fhMap_[fi.fh]);
+    local_opendir(path.c_str(), &ffi, fh);
     printf("opendir\n");
-    // TODO
     return false;
 }
 

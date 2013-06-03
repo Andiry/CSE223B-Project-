@@ -406,6 +406,16 @@ uint32_t DFS_lock_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast0;
+          xfer += iprot->readI32(ecast0);
+          this->lockType = (LockType::type)ecast0;
+          this->__isset.lockType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -430,6 +440,10 @@ uint32_t DFS_lock_args::write(::apache::thrift::protocol::TProtocol* oprot) cons
   xfer += oprot->writeString(this->file);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("lockType", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)this->lockType);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -445,6 +459,10 @@ uint32_t DFS_lock_pargs::write(::apache::thrift::protocol::TProtocol* oprot) con
 
   xfer += oprot->writeFieldBegin("file", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->file)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("lockType", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)(*(this->lockType)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -470,7 +488,20 @@ uint32_t DFS_lock_result::read(::apache::thrift::protocol::TProtocol* iprot) {
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
@@ -485,6 +516,11 @@ uint32_t DFS_lock_result::write(::apache::thrift::protocol::TProtocol* oprot) co
 
   xfer += oprot->writeStructBegin("DFS_lock_result");
 
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
+    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -508,7 +544,20 @@ uint32_t DFS_lock_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
@@ -607,15 +656,15 @@ uint32_t DFS_join_result::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_SET) {
           {
             this->success.clear();
-            uint32_t _size0;
-            ::apache::thrift::protocol::TType _etype3;
-            xfer += iprot->readSetBegin(_etype3, _size0);
-            uint32_t _i4;
-            for (_i4 = 0; _i4 < _size0; ++_i4)
+            uint32_t _size1;
+            ::apache::thrift::protocol::TType _etype4;
+            xfer += iprot->readSetBegin(_etype4, _size1);
+            uint32_t _i5;
+            for (_i5 = 0; _i5 < _size1; ++_i5)
             {
-              HostID _elem5;
-              xfer += _elem5.read(iprot);
-              this->success.insert(_elem5);
+              HostID _elem6;
+              xfer += _elem6.read(iprot);
+              this->success.insert(_elem6);
             }
             xfer += iprot->readSetEnd();
           }
@@ -646,10 +695,10 @@ uint32_t DFS_join_result::write(::apache::thrift::protocol::TProtocol* oprot) co
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_SET, 0);
     {
       xfer += oprot->writeSetBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::set<HostID> ::const_iterator _iter6;
-      for (_iter6 = this->success.begin(); _iter6 != this->success.end(); ++_iter6)
+      std::set<HostID> ::const_iterator _iter7;
+      for (_iter7 = this->success.begin(); _iter7 != this->success.end(); ++_iter7)
       {
-        xfer += (*_iter6).write(oprot);
+        xfer += (*_iter7).write(oprot);
       }
       xfer += oprot->writeSetEnd();
     }
@@ -684,15 +733,15 @@ uint32_t DFS_join_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_SET) {
           {
             (*(this->success)).clear();
-            uint32_t _size7;
-            ::apache::thrift::protocol::TType _etype10;
-            xfer += iprot->readSetBegin(_etype10, _size7);
-            uint32_t _i11;
-            for (_i11 = 0; _i11 < _size7; ++_i11)
+            uint32_t _size8;
+            ::apache::thrift::protocol::TType _etype11;
+            xfer += iprot->readSetBegin(_etype11, _size8);
+            uint32_t _i12;
+            for (_i12 = 0; _i12 < _size8; ++_i12)
             {
-              HostID _elem12;
-              xfer += _elem12.read(iprot);
-              (*(this->success)).insert(_elem12);
+              HostID _elem13;
+              xfer += _elem13.read(iprot);
+              (*(this->success)).insert(_elem13);
             }
             xfer += iprot->readSetEnd();
           }
@@ -2269,14 +2318,14 @@ uint32_t DFS_write_args::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->buf.clear();
-            uint32_t _size13;
-            ::apache::thrift::protocol::TType _etype16;
-            xfer += iprot->readListBegin(_etype16, _size13);
-            this->buf.resize(_size13);
-            uint32_t _i17;
-            for (_i17 = 0; _i17 < _size13; ++_i17)
+            uint32_t _size14;
+            ::apache::thrift::protocol::TType _etype17;
+            xfer += iprot->readListBegin(_etype17, _size14);
+            this->buf.resize(_size14);
+            uint32_t _i18;
+            for (_i18 = 0; _i18 < _size14; ++_i18)
             {
-              xfer += iprot->readByte(this->buf[_i17]);
+              xfer += iprot->readByte(this->buf[_i18]);
             }
             xfer += iprot->readListEnd();
           }
@@ -2336,10 +2385,10 @@ uint32_t DFS_write_args::write(::apache::thrift::protocol::TProtocol* oprot) con
   xfer += oprot->writeFieldBegin("buf", ::apache::thrift::protocol::T_LIST, 3);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_BYTE, static_cast<uint32_t>(this->buf.size()));
-    std::vector<int8_t> ::const_iterator _iter18;
-    for (_iter18 = this->buf.begin(); _iter18 != this->buf.end(); ++_iter18)
+    std::vector<int8_t> ::const_iterator _iter19;
+    for (_iter19 = this->buf.begin(); _iter19 != this->buf.end(); ++_iter19)
     {
-      xfer += oprot->writeByte((*_iter18));
+      xfer += oprot->writeByte((*_iter19));
     }
     xfer += oprot->writeListEnd();
   }
@@ -2377,10 +2426,10 @@ uint32_t DFS_write_pargs::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += oprot->writeFieldBegin("buf", ::apache::thrift::protocol::T_LIST, 3);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_BYTE, static_cast<uint32_t>((*(this->buf)).size()));
-    std::vector<int8_t> ::const_iterator _iter19;
-    for (_iter19 = (*(this->buf)).begin(); _iter19 != (*(this->buf)).end(); ++_iter19)
+    std::vector<int8_t> ::const_iterator _iter20;
+    for (_iter20 = (*(this->buf)).begin(); _iter20 != (*(this->buf)).end(); ++_iter20)
     {
-      xfer += oprot->writeByte((*_iter19));
+      xfer += oprot->writeByte((*_iter20));
     }
     xfer += oprot->writeListEnd();
   }
@@ -3554,13 +3603,13 @@ void DFSClient::send_releaseJoinLock(const HostID& sender)
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::lock(const HostID& sender, const std::string& file)
+bool DFSClient::lock(const HostID& sender, const std::string& file, const LockType::type lockType)
 {
-  send_lock(sender, file);
-  recv_lock();
+  send_lock(sender, file, lockType);
+  return recv_lock();
 }
 
-void DFSClient::send_lock(const HostID& sender, const std::string& file)
+void DFSClient::send_lock(const HostID& sender, const std::string& file, const LockType::type lockType)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("lock", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -3568,6 +3617,7 @@ void DFSClient::send_lock(const HostID& sender, const std::string& file)
   DFS_lock_pargs args;
   args.sender = &sender;
   args.file = &file;
+  args.lockType = &lockType;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -3575,7 +3625,7 @@ void DFSClient::send_lock(const HostID& sender, const std::string& file)
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::recv_lock()
+bool DFSClient::recv_lock()
 {
 
   int32_t rseqid = 0;
@@ -3600,12 +3650,17 @@ void DFSClient::recv_lock()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
+  bool _return;
   DFS_lock_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
-  return;
+  if (result.__isset.success) {
+    return _return;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "lock failed: unknown result");
 }
 
 void DFSClient::join(std::set<HostID> & _return, const HostID& sender)
@@ -4555,7 +4610,8 @@ void DFSProcessor::process_lock(int32_t seqid, ::apache::thrift::protocol::TProt
 
   DFS_lock_result result;
   try {
-    iface_->lock(args.sender, args.file);
+    result.success = iface_->lock(args.sender, args.file, args.lockType);
+    result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.lock");
