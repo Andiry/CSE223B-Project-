@@ -1,0 +1,85 @@
+%!TEX root = ocm.tex
+
+\definecolor{deletedtext}{rgb}{1,0.5,0.5}
+\DeclareTextFontCommand{\textdel}{\color{deletedtext}}
+\newenvironment{deleteme}{\color{deletedtext}}{}
+
+\definecolor{annoteblue}{rgb}{0,0,1}
+\DeclareTextFontCommand{\textnote}{\color{annoteblue}}
+\newenvironment{notes}{\begin{quote}\itshape\color{annoteblue}}{\end{quote}}
+
+\newif\ifanonymous
+%\anonymoustrue
+
+\newcommand{\name}[2]{\ifanonymous #1\else #2\fi} 
+
+\newif\ifnotes
+\notestrue
+
+\newif\ifalt
+\alttrue
+
+\ifnotes
+\newcommand{\cas}[1]{\textnote{\textbf{[CAS: #1]}}}
+\newcommand{\meo}[1]{\textnote{\textbf{[MEO: #1]}}}
+\newcommand{\jm}[1]{\textnote{\textbf{[JM: #1]}}}
+\newcommand{\amc}[1]{\textnote{\textbf{[AMC: #1]}}}
+\newcommand{\sap}[1]{\textnote{\textbf{[SAP: #1]}}}
+\newcommand{\sab}[1]{\textnote{\textbf{[SAB: #1]}}}
+\newcommand{\mjd}[1]{\textnote{\textbf{[JD: #1]}}}
+\newcommand{\group}[1]{\textnote{\textbf{[GROUP: #1]}}}
+\else
+\newcommand{\cas}[1]{}
+\newcommand{\meo}[1]{}
+\newcommand{\jm}[1]{}
+\newcommand{\amc}[1]{}
+\newcommand{\sap}[1]{}
+\newcommand{\sab}[1]{}
+\newcommand{\mjd}[1]{}
+\newcommand{\group}[1]{}
+\fi
+
+
+\let\cTX\texttt
+\let\cTY\texttt
+\let\cRW\texttt
+\let\keyterm\emph
+\let\prim\texttt %CAS
+
+\newcommand{\atomic}{\cRW{atomic}\xspace}
+\newcommand{\spawn}{\cRW{spawn}\xspace}
+\newcommand{\yield}{\cRW{yield}\xspace}
+\newcommand{\YIELD}{\texttt{\textbf{yield}}\xspace}
+\newcommand{\yielding}{\cRW{yielding}\xspace}
+\newcommand{\maybeyield}{\cRW{maybeYield}\xspace}
+\newcommand{\blockuntil}{\cRW{blockUntil}\xspace}
+\newcommand{\retry}{\cRW{retry}\xspace}
+\newcommand{\orelse}{\cRW{orElse}\xspace}
+\newcommand{\unprotected}{\cRW{unprotected}\xspace}
+%\newcommand{\unsynchronized}{\cRW{unsynchronized}\xspace}
+\newcommand{\yieldUntil}{\cRW{yieldUntil}\xspace}
+\newcommand{\yielduntil}{\cRW{yieldUntil}\xspace}
+\newcommand{\fork}{\cRW{fork}\xspace}
+\newcommand{\synchronized}{\cRW{synchronized}\xspace}
+
+\newcommand{\Pthreads}{\textrm{Pthreads}\xspace}
+\newcommand{\Pth}{\textrm{Pth}\xspace}
+%\newcommand{\Unix}{\textrm{Unix}\xspace}
+\newcommand{\Posix}{\textrm{Posix}\xspace}
+\newcommand{\Tinystm}{\textrm{TinySTM}\xspace}
+\newcommand{\TLtwo}{TL2\xspace}
+\let\Unix\Posix
+\newcommand{\Java}{Java\xspace}
+\newcommand{\Naive}{Na\"{\i}ve\xspace}
+\newcommand{\naive}{na\"{\i}ve\xspace}
+
+% Maybe *Observably* Cooperative Multithreading would be simpler?
+\newcommand{\OCM}{Observationally Cooperative Multithreading\xspace}
+
+\hyphenation{time-stamp}
+\hyphenation{time-stamps}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "ocm"
+%%% End: 
