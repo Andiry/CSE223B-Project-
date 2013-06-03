@@ -258,6 +258,8 @@ void * FUSEService::start(void * arg) {
     fuse_operations oper;
     initOpers(oper);
 
+    globals_ = args->globals;
+
     intptr_t ret = fuseMain(args->argc, args->argv, &oper, NULL);
     if (ret)
         return (void *) ret;

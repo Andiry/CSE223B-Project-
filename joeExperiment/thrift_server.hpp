@@ -10,6 +10,8 @@
 
 #include <cstdint>
 
+#include <list>
+
 class DFSHandler : virtual public DFS::DFSIf {
   private:
     GlobalBucket * globals_;

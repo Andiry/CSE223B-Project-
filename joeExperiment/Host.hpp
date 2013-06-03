@@ -10,7 +10,7 @@
 class Host {
   public:
 
-    enum State { ME, JOINING, ALIVE, DEAD, UNKNOWN };
+    enum State { ME, /*JOINING,*/ ALIVE, DEAD, UNKNOWN };
 
     DFS::HostID id_;
     State state_;
@@ -27,7 +27,6 @@ class Host {
         return id_.hostname + ":" + std::to_string(id_.port);
     }
 
-
     bool ping();
 
     void unlock(const std::string& file);
@@ -36,7 +35,7 @@ class Host {
     void releaseJoinLock();
     void lock(const std::string& file);
     void join(std::set<DFS::HostID> & _return);
-    std::string requestJoinLock();
+    bool requestJoinLock(std::string& path);
     bool getJoinLock();
     void releasedir(const std::string& path, const DFS::FUSEFileInfoTransport& fi);
     void mkdir(const std::string& path, const int32_t mode);

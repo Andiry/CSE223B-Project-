@@ -34,13 +34,15 @@ void * LockManager::start(void * arg) {
         for (HostMap_t::iterator iter = globals->hostMap_.begin();
                 iter != globals->hostMap_.end();
                 ++iter) {
+            //cerr << "Checking " << iter->second.identifier() << endl;
             if (iter->second.state_ == Host::State::ME) {
+                //cerr << "Ignoring myself " << iter->second.identifier() << endl;
                 ++numAlive;
-            } else if (iter->second.state_ == Host::State::JOINING) {
-                cerr << "Ignoring joining host " << iter->second.identifier() << endl;
-                // Do nothing?
+            //} else if (iter->second.state_ == Host::State::JOINING) {
+            //    cerr << "Ignoring joining host " << iter->second.identifier() << endl;
+            //    // Do nothing?
             } else if (iter->second.state_ == Host::State::DEAD) {
-                cerr << "Ignoring dead host " << iter->second.identifier() << endl;
+                //cerr << "Ignoring dead host " << iter->second.identifier() << endl;
                 ++numDead;
             } else if (iter->second.state_ == Host::State::UNKNOWN) {
                 cerr << "Ignoring unknown host " << iter->second.identifier() << endl;

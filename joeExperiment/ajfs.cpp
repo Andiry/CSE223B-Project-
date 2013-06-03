@@ -73,6 +73,23 @@ void tryStartThread(pthread_t& thread,
     }
 }
 
+void syncPaths(const string& rHost, const string& lPath, const string& rPath) {
+    cerr << "Trying to rsync paths" << endl;
+    string command =
+        "rsync -az -e ssh --delete " + rHost + ":" + rPath + "/ " + lPath + "/";
+    //int ret = system(command.c_str());
+    
+    cerr << "I WOULD run: " << endl;
+    cerr << command << endl;
+    int ret = 0;
+    sleep(2);
+
+    if (ret) {
+        cerr << "ERROR: Unable to rsync. Returned " << ret << endl;
+        exit(1);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     umask(0);
@@ -92,20 +109,6 @@ int main(int argc, char *argv[])
     cerr << "Local IP/Port:\t" << localIP << ":" << port << endl;
 
     GlobalBucket globals(localIP, port, &killall); 
-    HostID meID; meID.hostname = localIP; meID.port = port;
-    Host me(localIP, port, Host::State::ME, meID);
-    globals.hostMap_[me.id_] = me;
-
-    if (argc == 7) {
-        string remoteIP(argv[5]);
-        int16_t remotePort = atoi(argv[6]);
-
-        Host remoteHost(remoteIP, remotePort, Host::State::ALIVE, meID);
-        globals.hostMap_[remoteHost.id_] = remoteHost;
-
-        cerr << "Remote IP:\t" << remoteIP << endl;
-        cerr << "Remote Port:\t" << remotePort << endl;
-    }
 
     // Determine full backup path.
     char *bup = realpath(backupPath.c_str(), NULL);
@@ -114,7 +117,34 @@ int main(int argc, char *argv[])
     if (globals.backupPath_.back() == '/')
         globals.backupPath_.erase(--globals.backupPath_.end());
 
-    // rsync -az -e REMOTEIP --delete backup/ backup2/
+    // Add the host entry for myself (needed when we give host sets away)
+    HostID meID; meID.hostname = localIP; meID.port = port;
+    Host me(localIP, port, Host::State::ME, meID);
+    globals.hostMap_[me.id_] = me;
+
+
+    HostID remoteHostID;
+    if (argc == 7) {
+        string remoteIP(argv[5]);
+        int16_t remotePort = atoi(argv[6]);
+
+        Host remoteHost(remoteIP, remotePort, Host::State::ALIVE, meID);
+        globals.hostMap_[remoteHost.id_] = remoteHost;
+        remoteHostID = remoteHost.id_;
+
+        cerr << "Remote IP:\t" << remoteIP << endl;
+        cerr << "Remote Port:\t" << remotePort << endl;
+
+        string remotePath;
+        if (!remoteHost.requestJoinLock(remotePath)) {
+            cerr << "ERROR: Unable to capture join lock. Exiting." << endl;
+            exit(1);
+        }
+        cerr << "Retrieved remote path of '" << remotePath << "'" << endl;
+
+        syncPaths(remoteIP, globals.backupPath_, remotePath);
+    }
+
 
     cerr << endl;
 
@@ -143,6 +173,28 @@ int main(int argc, char *argv[])
     tryStartThread(sThread, "Thrift",  &DFSServer::start,   (void *) &globals);
     tryStartThread(fThread, "FUSE",    &FUSEService::start, (void *) fuseArgs);
     tryStartThread(lThread, "LockMgr", &LockManager::start, (void *) &globals);
+
+    // Complete the join operation, if needed.
+    if (remoteHostID.hostname != "") {
+        // Join and retrieve new hosts
+        set<HostID> newHosts;
+        globals.hostMap_[remoteHostID].join(newHosts);
+        if (newHosts.size() == 0) {
+            cerr << "ERROR: Unable to receive hosts from other nodes." << endl;
+            globals.killall_();
+        }
+        // Add new hosts
+        else {
+            pthread_mutex_lock(&globals.hostLock_);
+            for(auto &newHostID : newHosts) {
+                if (globals.me_ == newHostID)
+                    continue;
+                Host newHost(newHostID, globals.me_);
+                globals.hostMap_[newHostID] = newHost;
+            }
+            pthread_mutex_unlock(&globals.hostLock_);
+        }
+    }
 
     // Join threads
     void * val = NULL;

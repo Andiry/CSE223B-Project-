@@ -9,7 +9,7 @@ Host::Host() : state_(UNKNOWN), me_(NULL) {
 }
 
 Host::Host(const HostID& id, const HostID& me)
-    : id_(id), state_(JOINING), me_(&me) {
+    : id_(id), state_(ALIVE), me_(&me) {
     setup();
 }
 
@@ -90,8 +90,8 @@ bool Host::ping() {
 
 
 void Host::unlock(const string& file) {
-    // TODO
     PRECHECK(return, return);
+    client_->unlock(*me_, file);
     POSTCHECK(return);
 }
 
@@ -103,163 +103,162 @@ void Host::die() {
 }
 
 void Host::addServer(const DFS::HostID& newServer) {
-    // TODO
     PRECHECK(return, return);
+    client_->addServer(*me_, newServer);
     POSTCHECK(return);
 }
 
 void Host::releaseJoinLock() {
-    // TODO
     PRECHECK(return, return);
+    client_->releaseJoinLock(*me_);
     POSTCHECK(return);
 }
 
 void Host::lock(const string& file) {
-    // TODO
     PRECHECK(return, return);
+    client_->lock(*me_, file);
     POSTCHECK(return);
 }
 
 void Host::join(set<DFS::HostID> & _return) {
-    // TODO
     PRECHECK(return, return);
+    client_->join(_return, *me_);
     POSTCHECK(return);
 }
 
-string Host::requestJoinLock() {
-    string ret;
-    PRECHECK(return "", return "");
-    client_->requestJoinLock(ret, *me_);
-    POSTCHECK(return "");
-    return ret;
+bool Host::requestJoinLock(string& _return) {
+    PRECHECK(return false, return false);
+    client_->requestJoinLock(_return, *me_);
+    POSTCHECK(return false);
+    return true;
 }
 
 bool Host::getJoinLock() {
-    // TODO
-    PRECHECK(return false, return false);
+    PRECHECK(return true, return false);
+    return client_->getJoinLock(*me_);
     POSTCHECK(return false);
     return false;
 }
 
 void Host::releasedir(const string& path, const DFS::FUSEFileInfoTransport& fi) {
-    // TODO
     PRECHECK(return, return);
+    client_->releasedir(*me_, path, fi);
     POSTCHECK(return);
 }
 
 void Host::mkdir(const string& path, const int32_t mode) {
-    // TODO
     PRECHECK(return, return);
+    client_->mkdir(*me_, path, mode);
     POSTCHECK(return);
 }
 
 void Host::unlink(const string& path) {
-    // TODO
     PRECHECK(return, return);
+    client_->unlink(*me_, path);
     POSTCHECK(return);
 }
 
 void Host::rmdir(const string& path) {
-    // TODO
     PRECHECK(return, return);
+    client_->rmdir(*me_, path);
     POSTCHECK(return);
 }
 
 void Host::symlink(const string& from, const string& to) {
-    // TODO
     PRECHECK(return, return);
+    client_->symlink(*me_, from, to);
     POSTCHECK(return);
 }
 
 void Host::rename(const string& from, const string& to) {
-    // TODO
     PRECHECK(return, return);
+    client_->rename(*me_, from, to);
     POSTCHECK(return);
 }
 
 void Host::link(const string& from, const string& to) {
-    // TODO
     PRECHECK(return, return);
+    client_->link(*me_, from, to);
     POSTCHECK(return);
 }
 
 void Host::chmod(const string& path, const int32_t mode) {
-    // TODO
     PRECHECK(return, return);
+    client_->chmod(*me_, path, mode);
     POSTCHECK(return);
 }
 
 void Host::chown(const string& path, const int32_t uid, const int32_t gid) {
-    // TODO
     PRECHECK(return, return);
+    client_->chown(*me_, path, uid, gid);
     POSTCHECK(return);
 }
 
 void Host::truncate(const string& path, const int64_t size) {
-    // TODO
     PRECHECK(return, return);
+    client_->truncate(*me_, path, size);
     POSTCHECK(return);
 }
 
 void Host::ftruncate(const string& path, const int64_t size, const DFS::FUSEFileInfoTransport& fi) {
-    // TODO
     PRECHECK(return, return);
+    client_->ftruncate(*me_, path, size, fi);
     POSTCHECK(return);
 }
 
 void Host::create(const string& path, const int32_t mode, const DFS::FUSEFileInfoTransport& fi) {
-    // TODO
     PRECHECK(return, return);
+    client_->create(*me_, path, mode, fi);
     POSTCHECK(return);
 }
 
 void Host::write(const string& path, const vector<int8_t> & buf, const int64_t size, const int64_t offset, const DFS::FUSEFileInfoTransport& fi) {
-    // TODO
     PRECHECK(return, return);
+    client_->write(*me_, path, buf, size, offset, fi);
     POSTCHECK(return);
 }
 
 void Host::flush(const string& path, const DFS::FUSEFileInfoTransport& fi) {
-    // TODO
     PRECHECK(return, return);
+    client_->flush(*me_, path, fi);
     POSTCHECK(return);
 }
 
 void Host::release(const string& path, const DFS::FUSEFileInfoTransport& fi) {
-    // TODO
     PRECHECK(return, return);
+    client_->release(*me_, path, fi);
     POSTCHECK(return);
 }
 
 void Host::flock(const string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t op) {
-    // TODO
     PRECHECK(return, return);
+    client_->flock(*me_, path, fi, op);
     POSTCHECK(return);
 }
 
 void Host::fallocate(const string& path, const int64_t mode, const int64_t offset, const int64_t length, const DFS::FUSEFileInfoTransport& fi) {
-    // TODO
     PRECHECK(return, return);
+    client_->fallocate(*me_, path, mode, offset, length, fi);
     POSTCHECK(return);
 }
 
 bool Host::fsync(const string& path, const int32_t isdatasync, const DFS::FUSEFileInfoTransport& fi) {
-    // TODO
-    PRECHECK(return false, return false);
+    PRECHECK(return true, return false);
+    return client_->fsync(*me_, path, isdatasync, fi);
     POSTCHECK(return false);
     return false;
 }
 
 bool Host::open(const string& path, const DFS::FUSEFileInfoTransport& fi) {
-    // TODO
-    PRECHECK(return false, return false);
+    PRECHECK(return true, return false);
+    return client_->open(*me_, path, fi);
     POSTCHECK(return false);
     return false;
 }
 
 bool Host::opendir(const string& path, const DFS::FUSEFileInfoTransport& fi) {
-    // TODO
-    PRECHECK(return false, return false);
+    PRECHECK(return true, return false);
+    return client_->opendir(*me_, path, fi);
     POSTCHECK(return false);
     return false;
 }

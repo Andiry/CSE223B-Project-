@@ -15,11 +15,12 @@ struct GlobalBucket {
     void (*killall_)(void);
 
     std::string backupPath_;
+    bool joinLock_;
    
-    GlobalBucket(const std::string& hostname, int16_t port, void (*killall)(void)) {
+    GlobalBucket(const std::string& hostname, int16_t port, void (*killall)(void))
+        : killall_(killall), joinLock_(false) {
         me_.hostname = hostname;
         me_.port     = port;
-        killall_     = killall;
         pthread_mutex_init(&hostLock_, NULL);
     }
 };

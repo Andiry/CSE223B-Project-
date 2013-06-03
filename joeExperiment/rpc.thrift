@@ -22,47 +22,13 @@ struct HostID {
 
 service DFS {
 
-/*
-    enum ASOperType {
-        CHOWN = 1,
-        CHMOD = 2,
-        RENAME = 3,
-        FLUSH = 4, 
-        RELEASE = 5,
-        FALLOCATE = 6,
-        CREATE = 7,
-        WRITE = 8,
-        TRUNCATE = 9,
-        FTRUNCATE = 10,
-        OPEN_DIR = 11,
-        RELEASE_DIR = 12,
-        MKDIR = 13,
-        UNLINK = 14
-    }
-    enum ASOperType {
-        OPEN = 1,
-        FSYNC = 2
-    }
-*/
-
-    #struct ASOper {
-    #    1:  ASOperType  type,
-    #    # TODO
-    #}
-    #struct SOper {
-    #    1:  SOperType  type,
-    #    # TODO
-    #}
-
     oneway void ping(1:HostID sender),
     oneway void unlock(1:HostID sender, 2:string file),
-    #oneway void doASOperation(1:HostID sender, 2:ASOper operation),
     oneway void die(1:HostID sender),
     oneway void addServer(1:HostID sender, 2:HostID newServer),
     oneway void releaseJoinLock(1:HostID sender),
 
     void        lock(1:HostID sender, 2:string file),
-    #void        doSOperation(1:HostID sender, 2:SOper operation),
     set<HostID> join(1:HostID sender),
     string      requestJoinLock(1:HostID sender),
     bool        getJoinLock(1:HostID sender),
