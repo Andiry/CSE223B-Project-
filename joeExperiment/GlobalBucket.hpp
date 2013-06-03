@@ -13,6 +13,8 @@ struct GlobalBucket {
     HostMap_t hostMap_;
     pthread_mutex_t hostLock_;
     void (*killall_)(void);
+
+    std::string backupPath_;
    
     GlobalBucket(const std::string& hostname, int16_t port, void (*killall)(void)) {
         me_.hostname = hostname;

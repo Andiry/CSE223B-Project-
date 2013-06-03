@@ -10,15 +10,15 @@ namespace FUSEService {
 
     extern "C" {
         fuse * fuse_ = NULL;
-        string backup_path_;
         string convert(const char *path);
     }
+    GlobalBucket * globals_;
 }
 
 string FUSEService::convert(const char *path)
 {
     stringstream ss;
-    ss << backup_path_ << path;
+    ss << globals_->backupPath_ << path;
 	string newPath = ss.str();
     return newPath;
 }
@@ -254,12 +254,6 @@ void FUSEService::stop() {
 void * FUSEService::start(void * arg) {
     cerr << "Starting FUSE..." << endl;
     ArgStruct * args = (ArgStruct *) arg;
-
-    char *bup = realpath(args->backupPath.c_str(), NULL);
-    backup_path_ = bup;
-    free(bup);
-    if (backup_path_.back() == '/')
-        backup_path_.erase(--backup_path_.end());
 
     fuse_operations oper;
     initOpers(oper);

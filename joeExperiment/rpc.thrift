@@ -64,7 +64,7 @@ service DFS {
     void        lock(1:HostID sender, 2:string file),
     #void        doSOperation(1:HostID sender, 2:SOper operation),
     set<HostID> join(1:HostID sender),
-    bool        requestJoinLock(1:HostID sender),
+    string      requestJoinLock(1:HostID sender),
     bool        getJoinLock(1:HostID sender),
 
     oneway void releasedir(1:HostID sender, 2:string path, 3:FUSEFileInfoTransport fi),

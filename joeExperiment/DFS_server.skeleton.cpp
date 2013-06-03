@@ -57,16 +57,14 @@ class DFSHandler : virtual public DFSIf {
     printf("join\n");
   }
 
-  bool requestJoinLock(const HostID& sender) {
+  void requestJoinLock(std::string& _return, const HostID& sender) {
     // Your implementation goes here
     printf("requestJoinLock\n");
-    return false;
   }
 
   bool getJoinLock(const HostID& sender) {
     // Your implementation goes here
     printf("getJoinLock\n");
-    return false;
   }
 
   void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
@@ -157,19 +155,16 @@ class DFSHandler : virtual public DFSIf {
   bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) {
     // Your implementation goes here
     printf("fsync\n");
-    return false;
   }
 
   bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     // Your implementation goes here
     printf("open\n");
-    return false;
   }
 
   bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     // Your implementation goes here
     printf("opendir\n");
-    return false;
   }
 
 };

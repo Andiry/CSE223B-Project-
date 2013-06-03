@@ -22,7 +22,7 @@ class DFSIf {
   virtual void releaseJoinLock(const HostID& sender) = 0;
   virtual void lock(const HostID& sender, const std::string& file) = 0;
   virtual void join(std::set<HostID> & _return, const HostID& sender) = 0;
-  virtual bool requestJoinLock(const HostID& sender) = 0;
+  virtual void requestJoinLock(std::string& _return, const HostID& sender) = 0;
   virtual bool getJoinLock(const HostID& sender) = 0;
   virtual void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
   virtual void mkdir(const HostID& sender, const std::string& path, const int32_t mode) = 0;
@@ -94,9 +94,8 @@ class DFSNull : virtual public DFSIf {
   void join(std::set<HostID> & /* _return */, const HostID& /* sender */) {
     return;
   }
-  bool requestJoinLock(const HostID& /* sender */) {
-    bool _return = false;
-    return _return;
+  void requestJoinLock(std::string& /* _return */, const HostID& /* sender */) {
+    return;
   }
   bool getJoinLock(const HostID& /* sender */) {
     bool _return = false;
@@ -704,16 +703,16 @@ typedef struct _DFS_requestJoinLock_result__isset {
 class DFS_requestJoinLock_result {
  public:
 
-  DFS_requestJoinLock_result() : success(0) {
+  DFS_requestJoinLock_result() : success() {
   }
 
   virtual ~DFS_requestJoinLock_result() throw() {}
 
-  bool success;
+  std::string success;
 
   _DFS_requestJoinLock_result__isset __isset;
 
-  void __set_success(const bool val) {
+  void __set_success(const std::string& val) {
     success = val;
   }
 
@@ -745,7 +744,7 @@ class DFS_requestJoinLock_presult {
 
   virtual ~DFS_requestJoinLock_presult() throw() {}
 
-  bool* success;
+  std::string* success;
 
   _DFS_requestJoinLock_presult__isset __isset;
 
@@ -2529,9 +2528,9 @@ class DFSClient : virtual public DFSIf {
   void join(std::set<HostID> & _return, const HostID& sender);
   void send_join(const HostID& sender);
   void recv_join(std::set<HostID> & _return);
-  bool requestJoinLock(const HostID& sender);
+  void requestJoinLock(std::string& _return, const HostID& sender);
   void send_requestJoinLock(const HostID& sender);
-  bool recv_requestJoinLock();
+  void recv_requestJoinLock(std::string& _return);
   bool getJoinLock(const HostID& sender);
   void send_getJoinLock(const HostID& sender);
   bool recv_getJoinLock();
@@ -2746,13 +2745,14 @@ class DFSMultiface : virtual public DFSIf {
     return;
   }
 
-  bool requestJoinLock(const HostID& sender) {
+  void requestJoinLock(std::string& _return, const HostID& sender) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->requestJoinLock(sender);
+      ifaces_[i]->requestJoinLock(_return, sender);
     }
-    return ifaces_[i]->requestJoinLock(sender);
+    ifaces_[i]->requestJoinLock(_return, sender);
+    return;
   }
 
   bool getJoinLock(const HostID& sender) {

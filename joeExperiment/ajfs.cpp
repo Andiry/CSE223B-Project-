@@ -2,7 +2,7 @@
 #include "thrift_server.hpp"
 #include "LFS_operations.hpp"
 #include "fuse_operations.hpp"
-#include "lockmanager.hpp"
+#include "LockManager.hpp"
 
 #include "Host.hpp"
 
@@ -107,6 +107,13 @@ int main(int argc, char *argv[])
         cerr << "Remote Port:\t" << remotePort << endl;
     }
 
+    // Determine full backup path.
+    char *bup = realpath(backupPath.c_str(), NULL);
+    globals.backupPath_ = bup;
+    free(bup);
+    if (globals.backupPath_.back() == '/')
+        globals.backupPath_.erase(--globals.backupPath_.end());
+
     // rsync -az -e REMOTEIP --delete backup/ backup2/
 
     cerr << endl;
@@ -126,7 +133,6 @@ int main(int argc, char *argv[])
     FUSEService::ArgStruct * fuseArgs = new FUSEService::ArgStruct;
     fuseArgs->argc       = 4;
     fuseArgs->argv       = (char **) (new char *[4]);
-    fuseArgs->backupPath = backupPath;
     fuseArgs->globals    = &globals;
 
     initializer_list<char*> newArgv = initializer_list<char *>(

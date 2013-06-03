@@ -126,11 +126,12 @@ void Host::join(set<DFS::HostID> & _return) {
     POSTCHECK(return);
 }
 
-bool Host::requestJoinLock() {
-    // TODO
-    PRECHECK(return false, return false);
-    POSTCHECK(return false);
-    return false;
+string Host::requestJoinLock() {
+    string ret;
+    PRECHECK(return "", return "");
+    client_->requestJoinLock(ret, *me_);
+    POSTCHECK(return "");
+    return ret;
 }
 
 bool Host::getJoinLock() {

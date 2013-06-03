@@ -11,7 +11,7 @@ using boost::shared_ptr;
 using namespace ::DFS;
 using namespace std;
 
-DFSHandler::DFSHandler() {
+DFSHandler::DFSHandler(GlobalBucket * globals) : globals_(globals) {
   // Your initialization goes here
 }
 
@@ -50,10 +50,10 @@ void DFSHandler::join(std::set<HostID> & _return, const HostID& sender) {
   printf("join\n");
 }
 
-bool DFSHandler::requestJoinLock(const HostID& sender) {
+void DFSHandler::requestJoinLock(string& _return, const HostID& sender) {
   // Your implementation goes here
   printf("requestJoinLock\n");
-  return false;
+  _return = globals_->backupPath_;
 }
 
 bool DFSHandler::getJoinLock(const HostID& sender) {
@@ -177,7 +177,7 @@ void * DFSServer::start(void * arg) {
 
     cerr << "Starting Thrift server..." << endl;
 
-    boost::shared_ptr<DFSHandler> handler(new DFSHandler());
+    boost::shared_ptr<DFSHandler> handler(new DFSHandler(globals));
     boost::shared_ptr<TProcessor> processor(new DFSProcessor(handler));
     boost::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
     boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());

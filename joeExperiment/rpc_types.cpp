@@ -257,16 +257,16 @@ uint32_t HostID::write(::apache::thrift::protocol::TProtocol* oprot) const {
   return xfer;
 }
 
+bool DFS::HostID::operator<(DFS::HostID const& rhs) const {
+    return (hostname == rhs.hostname) ?
+        port < rhs.port : hostname < rhs.hostname;
+}
+
 void swap(HostID &a, HostID &b) {
   using ::std::swap;
   swap(a.hostname, b.hostname);
   swap(a.port, b.port);
   swap(a.__isset, b.__isset);
-}
-
-bool DFS::HostID::operator<(DFS::HostID const& rhs) const {
-  return (hostname == rhs.hostname) ?
-    port < rhs.port : hostname < rhs.hostname;
 }
 
 } // namespace

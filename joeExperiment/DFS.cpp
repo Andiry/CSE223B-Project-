@@ -800,8 +800,8 @@ uint32_t DFS_requestJoinLock_result::read(::apache::thrift::protocol::TProtocol*
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->success);
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -826,8 +826,8 @@ uint32_t DFS_requestJoinLock_result::write(::apache::thrift::protocol::TProtocol
   xfer += oprot->writeStructBegin("DFS_requestJoinLock_result");
 
   if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
-    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -856,8 +856,8 @@ uint32_t DFS_requestJoinLock_presult::read(::apache::thrift::protocol::TProtocol
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool((*(this->success)));
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -3666,10 +3666,10 @@ void DFSClient::recv_join(std::set<HostID> & _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "join failed: unknown result");
 }
 
-bool DFSClient::requestJoinLock(const HostID& sender)
+void DFSClient::requestJoinLock(std::string& _return, const HostID& sender)
 {
   send_requestJoinLock(sender);
-  return recv_requestJoinLock();
+  recv_requestJoinLock(_return);
 }
 
 void DFSClient::send_requestJoinLock(const HostID& sender)
@@ -3686,7 +3686,7 @@ void DFSClient::send_requestJoinLock(const HostID& sender)
   oprot_->getTransport()->flush();
 }
 
-bool DFSClient::recv_requestJoinLock()
+void DFSClient::recv_requestJoinLock(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -3711,7 +3711,6 @@ bool DFSClient::recv_requestJoinLock()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  bool _return;
   DFS_requestJoinLock_presult result;
   result.success = &_return;
   result.read(iprot_);
@@ -3719,7 +3718,8 @@ bool DFSClient::recv_requestJoinLock()
   iprot_->getTransport()->readEnd();
 
   if (result.__isset.success) {
-    return _return;
+    // _return pointer has now been filled
+    return;
   }
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "requestJoinLock failed: unknown result");
 }
@@ -4662,7 +4662,7 @@ void DFSProcessor::process_requestJoinLock(int32_t seqid, ::apache::thrift::prot
 
   DFS_requestJoinLock_result result;
   try {
-    result.success = iface_->requestJoinLock(args.sender);
+    iface_->requestJoinLock(result.success, args.sender);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {

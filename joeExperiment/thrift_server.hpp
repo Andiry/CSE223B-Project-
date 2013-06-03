@@ -11,8 +11,11 @@
 #include <cstdint>
 
 class DFSHandler : virtual public DFS::DFSIf {
+  private:
+    GlobalBucket * globals_;
+
   public:
-    DFSHandler();
+    DFSHandler(GlobalBucket* globals);
     void ping(const DFS::HostID& sender);    
     void unlock(const DFS::HostID& sender, const std::string& file);    
     void die(const DFS::HostID& sender);    
@@ -20,7 +23,7 @@ class DFSHandler : virtual public DFS::DFSIf {
     void releaseJoinLock(const DFS::HostID& sender);    
     void lock(const DFS::HostID& sender, const std::string& file);    
     void join(std::set<DFS::HostID> & _return, const DFS::HostID& sender);    
-    bool requestJoinLock(const DFS::HostID& sender);    
+    void requestJoinLock(std::string & _return, const DFS::HostID& sender);    
     bool getJoinLock(const DFS::HostID& sender);    
     void releasedir(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi);    
     void mkdir(const DFS::HostID& sender, const std::string& path, const int32_t mode);    

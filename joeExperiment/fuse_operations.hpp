@@ -36,7 +36,6 @@ namespace FUSEService {
     struct ArgStruct {
         int argc;
         char **argv;
-        std::string backupPath;
         GlobalBucket * globals;
     };
     

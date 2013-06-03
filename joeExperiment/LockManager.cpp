@@ -1,5 +1,5 @@
 
-#include "lockmanager.hpp"
+#include "LockManager.hpp"
 
 using namespace std;
 using namespace LockManager;

@@ -1,6 +1,6 @@
 *.o
 *.swp
-connected
+ajfs
 dfs_client
 dfs_server
 fusexmp_fh

@@ -10,11 +10,13 @@ THRIFT_PKGS := -L/usr/local/lib -lthrift
 
 fusexmp_fh_DEPS=fusexmp_fh.cpp
 AJFS_DEPS=ajfs.o $(DFS_OBJ) thrift_server.o LFS_operations.o fuse_operations.o \
-			   Host.o lockmanager.o Lock.o LockSet.o
+			   Host.o LockManager.o Lock.o LockSet.o
 
 CXXFLAGS := -g -Wall -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H -std=c++0x -I$(THRIFT_DIR) -I$(BOOST_DIR)
 
 .PHONY: all clean
+
+default: ajfs
 	
 all: dfs_server dfs_client fusexmp_fh ajfs
 
