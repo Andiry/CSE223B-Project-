@@ -80,7 +80,7 @@ void DFSHandler::Pong() {
     printf("Pong\n");
 }
 
-void DFSHandler::dfs_doOperation(const int32_t operation, const std::string& path, const int32_t mode, const int32_t flags) {
+void DFSHandler::dfs_doOperation(const int32_t operation, const std::string& path, const std::string& buf, const int32_t mode, const int32_t size, const int32_t offset, const int32_t flags) {
     // Your implementation goes here
     string local_path = convert(path);
     struct fuse_file_info *fi = NULL;
@@ -91,6 +91,11 @@ void DFSHandler::dfs_doOperation(const int32_t operation, const std::string& pat
 	fi = new(struct fuse_file_info);
 	fi->flags = flags;
 	local_create(local_path.c_str(), (mode_t)mode, fi);
+	break;
+    case REMOTE_WRITE:
+	fi = new(struct fuse_file_info);
+	fi->flags = flags;
+	local_write(local_path.c_str(), buf.c_str(), (size_t)size, (off_t)offset, fi);
 	break;
     default:
 	break;
@@ -275,7 +280,7 @@ void PushData(const string op, const char *path, mode_t mode, struct fuse_file_i
 #endif
 
 /* Post information to other servers */
-void PropagateToOtherServers(enum FILE_OP op, const char *path, mode_t mode, struct fuse_file_info *fi) {
+void PropagateToOtherServers(const enum FILE_OP op, const char *path, const string buf, const mode_t mode, const size_t size, const off_t offset, struct fuse_file_info *fi) {
     std::vector<pair<string, int> >::iterator iter;
     std::string storageServer;
     int storageServerPort;
@@ -294,7 +299,7 @@ void PropagateToOtherServers(enum FILE_OP op, const char *path, mode_t mode, str
 	socket->setSendTimeout(100);
 	try {
 	    transport->open();
-	    client.dfs_doOperation(op, path, mode, fi->flags);
+	    client.dfs_doOperation(op, path, buf, mode, size, offset, fi->flags);
 
 	    transport->close();
 	} catch (TException &tx) {

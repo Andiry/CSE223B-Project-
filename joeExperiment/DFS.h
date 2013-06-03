@@ -21,7 +21,7 @@ class DFSIf {
   virtual void Bla() = 0;
   virtual void Ping() = 0;
   virtual void Pong() = 0;
-  virtual void dfs_doOperation(const int32_t operation, const std::string& path, const int32_t mode, const int32_t flags) = 0;
+  virtual void dfs_doOperation(const int32_t operation, const std::string& path, const std::string& buf, const int32_t mode, const int32_t size, const int32_t offset, const int32_t flags) = 0;
   virtual void dfs_remote_readdir(const std::string& hostname) = 0;
   virtual void dfs_remote_releasedir(const std::string& hostname) = 0;
   virtual void dfs_remote_mkdir(const std::string& hostname) = 0;
@@ -91,7 +91,7 @@ class DFSNull : virtual public DFSIf {
   void Pong() {
     return;
   }
-  void dfs_doOperation(const int32_t /* operation */, const std::string& /* path */, const int32_t /* mode */, const int32_t /* flags */) {
+  void dfs_doOperation(const int32_t /* operation */, const std::string& /* path */, const std::string& /* buf */, const int32_t /* mode */, const int32_t /* size */, const int32_t /* offset */, const int32_t /* flags */) {
     return;
   }
   void dfs_remote_readdir(const std::string& /* hostname */) {
@@ -562,24 +562,30 @@ class DFS_Pong_pargs {
 };
 
 typedef struct _DFS_dfs_doOperation_args__isset {
-  _DFS_dfs_doOperation_args__isset() : operation(false), path(false), mode(false), flags(false) {}
+  _DFS_dfs_doOperation_args__isset() : operation(false), path(false), buf(false), mode(false), size(false), offset(false), flags(false) {}
   bool operation;
   bool path;
+  bool buf;
   bool mode;
+  bool size;
+  bool offset;
   bool flags;
 } _DFS_dfs_doOperation_args__isset;
 
 class DFS_dfs_doOperation_args {
  public:
 
-  DFS_dfs_doOperation_args() : operation(0), path(), mode(0), flags(0) {
+  DFS_dfs_doOperation_args() : operation(0), path(), buf(), mode(0), size(0), offset(0), flags(0) {
   }
 
   virtual ~DFS_dfs_doOperation_args() throw() {}
 
   int32_t operation;
   std::string path;
+  std::string buf;
   int32_t mode;
+  int32_t size;
+  int32_t offset;
   int32_t flags;
 
   _DFS_dfs_doOperation_args__isset __isset;
@@ -592,8 +598,20 @@ class DFS_dfs_doOperation_args {
     path = val;
   }
 
+  void __set_buf(const std::string& val) {
+    buf = val;
+  }
+
   void __set_mode(const int32_t val) {
     mode = val;
+  }
+
+  void __set_size(const int32_t val) {
+    size = val;
+  }
+
+  void __set_offset(const int32_t val) {
+    offset = val;
   }
 
   void __set_flags(const int32_t val) {
@@ -606,7 +624,13 @@ class DFS_dfs_doOperation_args {
       return false;
     if (!(path == rhs.path))
       return false;
+    if (!(buf == rhs.buf))
+      return false;
     if (!(mode == rhs.mode))
+      return false;
+    if (!(size == rhs.size))
+      return false;
+    if (!(offset == rhs.offset))
       return false;
     if (!(flags == rhs.flags))
       return false;
@@ -632,7 +656,10 @@ class DFS_dfs_doOperation_pargs {
 
   const int32_t* operation;
   const std::string* path;
+  const std::string* buf;
   const int32_t* mode;
+  const int32_t* size;
+  const int32_t* offset;
   const int32_t* flags;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1750,8 +1777,8 @@ class DFSClient : virtual public DFSIf {
   void send_Ping();
   void Pong();
   void send_Pong();
-  void dfs_doOperation(const int32_t operation, const std::string& path, const int32_t mode, const int32_t flags);
-  void send_dfs_doOperation(const int32_t operation, const std::string& path, const int32_t mode, const int32_t flags);
+  void dfs_doOperation(const int32_t operation, const std::string& path, const std::string& buf, const int32_t mode, const int32_t size, const int32_t offset, const int32_t flags);
+  void send_dfs_doOperation(const int32_t operation, const std::string& path, const std::string& buf, const int32_t mode, const int32_t size, const int32_t offset, const int32_t flags);
   void dfs_remote_readdir(const std::string& hostname);
   void send_dfs_remote_readdir(const std::string& hostname);
   void dfs_remote_releasedir(const std::string& hostname);
@@ -1947,13 +1974,13 @@ class DFSMultiface : virtual public DFSIf {
     ifaces_[i]->Pong();
   }
 
-  void dfs_doOperation(const int32_t operation, const std::string& path, const int32_t mode, const int32_t flags) {
+  void dfs_doOperation(const int32_t operation, const std::string& path, const std::string& buf, const int32_t mode, const int32_t size, const int32_t offset, const int32_t flags) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->dfs_doOperation(operation, path, mode, flags);
+      ifaces_[i]->dfs_doOperation(operation, path, buf, mode, size, offset, flags);
     }
-    ifaces_[i]->dfs_doOperation(operation, path, mode, flags);
+    ifaces_[i]->dfs_doOperation(operation, path, buf, mode, size, offset, flags);
   }
 
   void dfs_remote_readdir(const std::string& hostname) {

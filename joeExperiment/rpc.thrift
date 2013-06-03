@@ -30,7 +30,7 @@ service DFS {
     oneway void Ping(),
     oneway void Pong(),
 
-	oneway void dfs_doOperation(1:i32 operation, 2:string path, 3:i32 mode, 4:i32 flags),
+	oneway void dfs_doOperation(1:i32 operation, 2:string path, 3:string buf, 4:i32 mode, 5:i32 size, 6:i32 offset, 7:i32 flags),
 	oneway void dfs_remote_readdir(1:string hostname),
 	oneway void dfs_remote_releasedir(1:string hostname),
 	oneway void dfs_remote_mkdir(1:string hostname),

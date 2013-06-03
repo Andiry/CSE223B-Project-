@@ -112,7 +112,7 @@ int from_fuse_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
     int ret;
     ret = local_create(convert(path), mode, fi);
-    PropagateToOtherServers(REMOTE_CREATE, path, mode, fi);
+    PropagateToOtherServers(REMOTE_CREATE, path, "", mode, 0, 0, fi);
     return ret;
 }
 
@@ -140,8 +140,10 @@ int from_fuse_write(const char *path, const char *buf, size_t size,
         off_t offset, struct fuse_file_info *fi)
 {
     int ret;
+    string s(buf);
+
     ret = local_write(convert(path), buf, size, offset, fi);
-    PropagateToOtherServers(REMOTE_WRITE, path, 0, fi);
+    PropagateToOtherServers(REMOTE_WRITE, path, s, 0, size, offset, fi);
     return ret;
 }
 
