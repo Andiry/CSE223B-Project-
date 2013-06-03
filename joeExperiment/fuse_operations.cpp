@@ -31,7 +31,8 @@ int FUSEService::fuse_getattr(const char *path, struct stat *stbuf)
 int FUSEService::fuse_fgetattr(const char *path, struct stat *stbuf,
         struct fuse_file_info *fi)
 {
-    return local_fgetattr(convert(path).c_str(), stbuf, fi);
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_fgetattr(convert(path).c_str(), stbuf, fi, fh);
 }
 
 int FUSEService::fuse_access(const char *path, int mask)
@@ -46,23 +47,28 @@ int FUSEService::fuse_readlink(const char *path, char *buf, size_t size)
 
 int FUSEService::fuse_opendir(const char *path, struct fuse_file_info *fi)
 {
-    return local_opendir(convert(path).c_str(), fi);
+    fi->fh = globals_->randGen_();
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_opendir(convert(path).c_str(), fi, fh);
 }
 
 inline dirp * FUSEService::fuse_get_dirp(struct fuse_file_info *fi)
 {
-    return local_get_dirp(fi);
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_get_dirp(fi, fh);
 }
 
 int FUSEService::fuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
         off_t offset, struct fuse_file_info *fi)
 {
-    return local_readdir(convert(path).c_str(), buf, filler, offset, fi);
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_readdir(convert(path).c_str(), buf, filler, offset, fi, fh);
 }
 
 int FUSEService::fuse_releasedir(const char *path, struct fuse_file_info *fi)
 {
-    return local_releasedir(convert(path).c_str(), fi);
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_releasedir(convert(path).c_str(), fi, fh);
 }
 
 int FUSEService::fuse_mkdir(const char *path, mode_t mode)
@@ -113,64 +119,77 @@ int FUSEService::fuse_truncate(const char *path, off_t size)
 int FUSEService::fuse_ftruncate(const char *path, off_t size,
         struct fuse_file_info *fi)
 {
-    return local_ftruncate(convert(path).c_str(), size, fi);
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_ftruncate(convert(path).c_str(), size, fi, fh);
 }
 
 int FUSEService::fuse_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
-    return local_create(convert(path).c_str(), mode, fi);
+    fi->fh = globals_->randGen_();
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_create(convert(path).c_str(), mode, fi, fh);
 }
 
 int FUSEService::fuse_open(const char *path, struct fuse_file_info *fi)
 {
-    return local_open(convert(path).c_str(), fi);
+    fi->fh = globals_->randGen_();
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_open(convert(path).c_str(), fi, fh);
 }
 
 int FUSEService::fuse_read(const char *path, char *buf, size_t size, off_t offset,
         struct fuse_file_info *fi)
 {
-    return local_read(convert(path).c_str(), buf, size, offset, fi);
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_read(convert(path).c_str(), buf, size, offset, fi, fh);
 }
 
 int FUSEService::fuse_read_buf(const char *path, struct fuse_bufvec **bufp,
         size_t size, off_t offset, struct fuse_file_info *fi)
 {
-    return local_read_buf(convert(path).c_str(), bufp, size, offset, fi);
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_read_buf(convert(path).c_str(), bufp, size, offset, fi, fh);
 }
 
 int FUSEService::fuse_write(const char *path, const char *buf, size_t size,
         off_t offset, struct fuse_file_info *fi)
 {
-    return local_write(convert(path).c_str(), buf, size, offset, fi);
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_write(convert(path).c_str(), buf, size, offset, fi, fh);
 }
 
 int FUSEService::fuse_flush(const char *path, struct fuse_file_info *fi)
 {
-    return local_flush(convert(path).c_str(), fi);
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_flush(convert(path).c_str(), fi, fh);
 }
 
 int FUSEService::fuse_release(const char *path, struct fuse_file_info *fi)
 {
-    return local_release(convert(path).c_str(), fi);
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_release(convert(path).c_str(), fi, fh);
 }
 
 int FUSEService::fuse_fsync(const char *path, int isdatasync,
         struct fuse_file_info *fi)
 {
-    return local_fsync(convert(path).c_str(), isdatasync, fi);
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_fsync(convert(path).c_str(), isdatasync, fi, fh);
 }
 
 #ifdef HAVE_POSIX_FALLOCATE
 int FUSEService::fuse_fallocate(const char *path, int mode,
         off_t offset, off_t length, struct fuse_file_info *fi)
 {
-    return local_fallocate(convert(path).c_str(), mode, offset, length, fi);
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_fallocate(convert(path).c_str(), mode, offset, length, fi, fh);
 }
 #endif
 
 int FUSEService::fuse_flock(const char *path, struct fuse_file_info *fi, int op)
 {
-    return local_flock(convert(path).c_str(), fi, op);
+    uint64_t& fh(globals_->fhMap_[fi->fh]);
+    return local_flock(convert(path).c_str(), fi, op, fh);
 }
 
 void FUSEService::initOpers(fuse_operations& oper) {

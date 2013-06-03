@@ -26,25 +26,23 @@ extern "C" {
 
 #include <iostream>
 
-extern "C" {
-    struct dirp {
-        DIR *dp;
-        struct dirent *entry;
-        off_t offset;
-    };
-}
+struct dirp {
+    DIR *dp;
+    dirent *entry;
+    off_t offset;
+};
 
 int local_getattr(const char *path, struct stat *stbuf);
 int local_fgetattr(const char *path, struct stat *stbuf,
-        struct fuse_file_info *fi);
+        fuse_file_info *fi, uint64_t& fh);
 int local_access(const char *path, int mask);
 int local_readlink(const char *path, char *buf, size_t size);
 
-int local_opendir(const char *path, struct fuse_file_info *fi);
-struct dirp *local_get_dirp(struct fuse_file_info *fi);
+int local_opendir(const char *path, fuse_file_info *fi, uint64_t& fh);
+dirp *local_get_dirp(fuse_file_info *fi, uint64_t& fh);
 int local_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
-        off_t offset, struct fuse_file_info *fi);
-int local_releasedir(const char *path, struct fuse_file_info *fi);
+        off_t offset, fuse_file_info *fi, uint64_t& fh);
+int local_releasedir(const char *path, fuse_file_info *fi, uint64_t& fh);
 int local_mkdir(const char *path, mode_t mode);
 int local_unlink(const char *path);
 int local_rmdir(const char *path);
@@ -55,23 +53,23 @@ int local_chmod(const char *path, mode_t mode);
 int local_chown(const char *path, uid_t uid, gid_t gid);
 int local_truncate(const char *path, off_t size);
 int local_ftruncate(const char *path, off_t size,
-        struct fuse_file_info *fi);
-int local_create(const char *path, mode_t mode, struct fuse_file_info *fi);
-int local_open(const char *path, struct fuse_file_info *fi);
+        fuse_file_info *fi, uint64_t& fh);
+int local_create(const char *path, mode_t mode, fuse_file_info *fi, uint64_t& fh);
+int local_open(const char *path, fuse_file_info *fi, uint64_t& fh);
 int local_read(const char *path, char *buf, size_t size, off_t offset,
-        struct fuse_file_info *fi);
-int local_read_buf(const char *path, struct fuse_bufvec **bufp,
-        size_t size, off_t offset, struct fuse_file_info *fi);
+        fuse_file_info *fi, uint64_t& fh);
+int local_read_buf(const char *path, fuse_bufvec **bufp,
+        size_t size, off_t offset, fuse_file_info *fi, uint64_t& fh);
 int local_write(const char *path, const char *buf, size_t size,
-        off_t offset, struct fuse_file_info *fi);
-int local_flush(const char *path, struct fuse_file_info *fi);
-int local_release(const char *path, struct fuse_file_info *fi);
+        off_t offset, fuse_file_info *fi, uint64_t& fh);
+int local_flush(const char *path, fuse_file_info *fi, uint64_t& fh);
+int local_release(const char *path, fuse_file_info *fi, uint64_t& fh);
 int local_fsync(const char *path, int isdatasync,
-        struct fuse_file_info *fi);
-int local_flock(const char *path, struct fuse_file_info *fi, int op);
+        fuse_file_info *fi, uint64_t& fh);
+int local_flock(const char *path, fuse_file_info *fi, int op, uint64_t& fh);
 #ifdef HAVE_POSIX_FALLOCATE
 int local_fallocate(const char *path, int mode,
-        off_t offset, off_t length, struct fuse_file_info *fi);
+        off_t offset, off_t length, fuse_file_info *fi, uint64_t& fh);
 #endif
 
 #endif

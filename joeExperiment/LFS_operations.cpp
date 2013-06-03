@@ -15,13 +15,13 @@ int local_getattr(const char *path, struct stat *stbuf)
 }
 
 int local_fgetattr(const char *path, struct stat *stbuf,
-        struct fuse_file_info *fi)
+        fuse_file_info *fi, uint64_t& fh)
 {
     int res;
 
     (void) path;
 
-    res = fstat(fi->fh, stbuf);
+    res = fstat(fh, stbuf);
     if (res == -1)
         return -errno;
 
@@ -51,11 +51,11 @@ int local_readlink(const char *path, char *buf, size_t size)
     return 0;
 }
 
-int local_opendir(const char *path, struct fuse_file_info *fi)
+int local_opendir(const char *path, fuse_file_info *fi, uint64_t& fh)
 {
     static int count = 0;
     int res;
-    struct dirp *d = (dirp *) malloc(sizeof(struct dirp));
+    dirp *d = (dirp *) malloc(sizeof(dirp));
     if (d == NULL)
         return -ENOMEM;
 
@@ -70,19 +70,19 @@ int local_opendir(const char *path, struct fuse_file_info *fi)
     d->offset = 0;
     d->entry = NULL;
 
-    fi->fh = (unsigned long) d;
+    fh = (unsigned long) d;
     return 0;
 }
 
-inline struct dirp *local_get_dirp(struct fuse_file_info *fi)
+inline dirp *local_get_dirp(uint64_t& fh)
 {
-    return (struct dirp *) (uintptr_t) fi->fh;
+    return (dirp *) (uintptr_t) fh;
 }
 
 int local_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
-        off_t offset, struct fuse_file_info *fi)
+        off_t offset, fuse_file_info *fi, uint64_t& fh)
 {
-    struct dirp *d = local_get_dirp(fi);
+    dirp *d = local_get_dirp(fh);
 
     (void) path;
     if (offset != d->offset) {
@@ -114,9 +114,9 @@ int local_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
     return 0;
 }
 
-int local_releasedir(const char *path, struct fuse_file_info *fi)
+int local_releasedir(const char *path, fuse_file_info *fi, uint64_t& fh)
 {
-    struct dirp *d = local_get_dirp(fi);
+    dirp *d = local_get_dirp(fh);
     (void) path;
     closedir(d->dp);
     free(d);
@@ -223,20 +223,20 @@ int local_truncate(const char *path, off_t size)
 }
 
 int local_ftruncate(const char *path, off_t size,
-        struct fuse_file_info *fi)
+        fuse_file_info *fi, uint64_t& fh)
 {
     int res;
 
     (void) path;
 
-    res = ftruncate(fi->fh, size);
+    res = ftruncate(fh, size);
     if (res == -1)
         return -errno;
 
     return 0;
 }
 
-int local_create(const char *path, mode_t mode, struct fuse_file_info *fi)
+int local_create(const char *path, mode_t mode, fuse_file_info *fi, uint64_t& fh)
 {
     int fd;
 
@@ -244,11 +244,11 @@ int local_create(const char *path, mode_t mode, struct fuse_file_info *fi)
     if (fd == -1)
         return -errno;
 
-    fi->fh = fd;
+    fh = fd;
     return 0;
 }
 
-int local_open(const char *path, struct fuse_file_info *fi)
+int local_open(const char *path, fuse_file_info *fi, uint64_t& fh)
 {
     int fd;
 
@@ -256,38 +256,38 @@ int local_open(const char *path, struct fuse_file_info *fi)
     if (fd == -1)
         return -errno;
 
-    fi->fh = fd;
+    fh = fd;
     return 0;
 }
 
 int local_read(const char *path, char *buf, size_t size, off_t offset,
-        struct fuse_file_info *fi)
+        fuse_file_info *fi, uint64_t& fh)
 {
     int res;
 
     (void) path;
-    res = pread(fi->fh, buf, size, offset);
+    res = pread(fh, buf, size, offset);
     if (res == -1)
         res = -errno;
 
     return res;
 }
 
-int local_read_buf(const char *path, struct fuse_bufvec **bufp,
-        size_t size, off_t offset, struct fuse_file_info *fi)
+int local_read_buf(const char *path, fuse_bufvec **bufp,
+        size_t size, off_t offset, fuse_file_info *fi, uint64_t& fh)
 {
-    struct fuse_bufvec *src;
+    fuse_bufvec *src;
 
     (void) path;
 
-    src = (fuse_bufvec *) malloc(sizeof(struct fuse_bufvec));
+    src = (fuse_bufvec *) malloc(sizeof(fuse_bufvec));
     if (src == NULL)
         return -ENOMEM;
 
     *src = FUSE_BUFVEC_INIT(size);
 
     src->buf[0].flags = (fuse_buf_flags) (FUSE_BUF_IS_FD | FUSE_BUF_FD_SEEK);
-    src->buf[0].fd = fi->fh;
+    src->buf[0].fd = fh;
     src->buf[0].pos = offset;
 
     *bufp = src;
@@ -296,19 +296,19 @@ int local_read_buf(const char *path, struct fuse_bufvec **bufp,
 }
 
 int local_write(const char *path, const char *buf, size_t size,
-        off_t offset, struct fuse_file_info *fi)
+        off_t offset, fuse_file_info *fi, uint64_t& fh)
 {
     int res;
 
     (void) path;
-    res = pwrite(fi->fh, buf, size, offset);
+    res = pwrite(fh, buf, size, offset);
     if (res == -1)
         res = -errno;
 
     return res;
 }
 
-int local_flush(const char *path, struct fuse_file_info *fi)
+int local_flush(const char *path, fuse_file_info *fi, uint64_t& fh)
 {
     int res;
 
@@ -318,23 +318,23 @@ int local_flush(const char *path, struct fuse_file_info *fi)
        called multiple times for an open file, this must not really
        close the file.  This is important if used on a network
        filesystem like NFS which flush the data/metadata on close() */
-    res = close(dup(fi->fh));
+    res = close(dup(fh));
     if (res == -1)
         return -errno;
 
     return 0;
 }
 
-int local_release(const char *path, struct fuse_file_info *fi)
+int local_release(const char *path, fuse_file_info *fi, uint64_t& fh)
 {
     (void) path;
-    close(fi->fh);
+    close(fh);
 
     return 0;
 }
 
 int local_fsync(const char *path, int isdatasync,
-        struct fuse_file_info *fi)
+        fuse_file_info *fi, uint64_t& fh)
 {
     int res;
     (void) path;
@@ -343,10 +343,10 @@ int local_fsync(const char *path, int isdatasync,
     (void) isdatasync;
 #else
     if (isdatasync)
-        res = fdatasync(fi->fh);
+        res = fdatasync(fh);
     else
 #endif
-        res = fsync(fi->fh);
+        res = fsync(fh);
     if (res == -1)
         return -errno;
 
@@ -355,23 +355,23 @@ int local_fsync(const char *path, int isdatasync,
 
 #ifdef HAVE_POSIX_FALLOCATE
 int local_fallocate(const char *path, int mode,
-        off_t offset, off_t length, struct fuse_file_info *fi)
+        off_t offset, off_t length, fuse_file_info *fi, uint64_t& fh)
 {
     (void) path;
 
     if (mode)
         return -EOPNOTSUPP;
 
-    return -posix_fallocate(fi->fh, offset, length);
+    return -posix_fallocate(fh, offset, length);
 }
 #endif
 
-int local_flock(const char *path, struct fuse_file_info *fi, int op)
+int local_flock(const char *path, fuse_file_info *fi, int op, uint64_t& fh)
 {
     int res;
     (void) path;
 
-    res = flock(fi->fh, op);
+    res = flock(fh, op);
     if (res == -1)
         return -errno;
 
