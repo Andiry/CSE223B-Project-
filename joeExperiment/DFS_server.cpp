@@ -80,16 +80,20 @@ void DFSHandler::Pong() {
     printf("Pong\n");
 }
 
-void DFSHandler::dfs_doOperation(const std::string& operation, const std::string& path, const int32_t mode, const int32_t flags) {
+void DFSHandler::dfs_doOperation(const int32_t operation, const std::string& path, const int32_t mode, const int32_t flags) {
     // Your implementation goes here
     string local_path = convert(path);
     struct fuse_file_info *fi = NULL;
 
     cout << "dfs_doOperation " << operation << " " << local_path << " " << mode_t(mode) << " " << flags << endl;
-    if (operation == "create") {
+    switch (operation) {
+    case REMOTE_CREATE:
 	fi = new(struct fuse_file_info);
 	fi->flags = flags;
 	local_create(local_path.c_str(), (mode_t)mode, fi);
+	break;
+    default:
+	break;
     }
 
     if (fi)
@@ -271,7 +275,7 @@ void PushData(const string op, const char *path, mode_t mode, struct fuse_file_i
 #endif
 
 /* Post information to other servers */
-void PropagateToOtherServers(const string op, const char *path, mode_t mode, struct fuse_file_info *fi) {
+void PropagateToOtherServers(enum FILE_OP op, const char *path, mode_t mode, struct fuse_file_info *fi) {
     std::vector<pair<string, int> >::iterator iter;
     std::string storageServer;
     int storageServerPort;

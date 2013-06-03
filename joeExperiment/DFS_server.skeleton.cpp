@@ -52,7 +52,7 @@ class DFSHandler : virtual public DFSIf {
     printf("Pong\n");
   }
 
-  void dfs_doOperation(const std::string& operation, const std::string& path, const int32_t mode, const int32_t flags) {
+  void dfs_doOperation(const int32_t operation, const std::string& path, const int32_t mode, const int32_t flags) {
     // Your implementation goes here
     printf("dfs_doOperation\n");
   }

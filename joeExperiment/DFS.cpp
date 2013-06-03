@@ -602,8 +602,8 @@ uint32_t DFS_dfs_doOperation_args::read(::apache::thrift::protocol::TProtocol* i
     switch (fid)
     {
       case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->operation);
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->operation);
           this->__isset.operation = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -649,8 +649,8 @@ uint32_t DFS_dfs_doOperation_args::write(::apache::thrift::protocol::TProtocol* 
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("DFS_dfs_doOperation_args");
 
-  xfer += oprot->writeFieldBegin("operation", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->operation);
+  xfer += oprot->writeFieldBegin("operation", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->operation);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("path", ::apache::thrift::protocol::T_STRING, 2);
@@ -674,8 +674,8 @@ uint32_t DFS_dfs_doOperation_pargs::write(::apache::thrift::protocol::TProtocol*
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("DFS_dfs_doOperation_pargs");
 
-  xfer += oprot->writeFieldBegin("operation", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString((*(this->operation)));
+  xfer += oprot->writeFieldBegin("operation", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((*(this->operation)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("path", ::apache::thrift::protocol::T_STRING, 2);
@@ -2303,12 +2303,12 @@ void DFSClient::send_Pong()
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::dfs_doOperation(const std::string& operation, const std::string& path, const int32_t mode, const int32_t flags)
+void DFSClient::dfs_doOperation(const int32_t operation, const std::string& path, const int32_t mode, const int32_t flags)
 {
   send_dfs_doOperation(operation, path, mode, flags);
 }
 
-void DFSClient::send_dfs_doOperation(const std::string& operation, const std::string& path, const int32_t mode, const int32_t flags)
+void DFSClient::send_dfs_doOperation(const int32_t operation, const std::string& path, const int32_t mode, const int32_t flags)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("dfs_doOperation", ::apache::thrift::protocol::T_CALL, cseqid);

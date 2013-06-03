@@ -82,5 +82,10 @@ struct ArgStruct {
 void * startFuse(void * arg);
 */
 
+enum FILE_OP {
+	REMOTE_CREATE = 1,
+	REMOTE_WRITE,
+};
+
 #endif
 

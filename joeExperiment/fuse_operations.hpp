@@ -87,6 +87,6 @@ struct ArgStruct {
 #endif
 
 void * startFuse(void * arg);
-void PropagateToOtherServers(const string op, const char *path, mode_t mode, struct fuse_file_info *fi);
+void PropagateToOtherServers(FILE_OP op, const char *path, mode_t mode, struct fuse_file_info *fi);
 
 #endif

@@ -41,7 +41,7 @@ class DFSHandler : virtual public DFS::DFSIf {
         void Bla();
         void Ping();
         void Pong();
-	void dfs_doOperation(const std::string& operation, const std::string& path, const int32_t mode, const int32_t flags);
+	void dfs_doOperation(const int32_t operation, const std::string& path, const int32_t mode, const int32_t flags);
         void dfs_remote_opendir(const std::string& hostname);
         void dfs_remote_readdir(const std::string& hostname);
         void dfs_remote_releasedir(const std::string& hostname);

@@ -305,10 +305,13 @@ int local_read_buf(const char *path, struct fuse_bufvec **bufp,
 int local_write(const char *path, const char *buf, size_t size,
         off_t offset, struct fuse_file_info *fi)
 {
-    int res;
+    int res, fd;
 
-    (void) path;
-    res = pwrite(fi->fh, buf, size, offset);
+    fd = open(path, fi->flags, "w");
+    if (fd == -1)
+        return -errno;
+
+    res = pwrite(fd, buf, size, offset);
     if (res == -1)
         res = -errno;
 
