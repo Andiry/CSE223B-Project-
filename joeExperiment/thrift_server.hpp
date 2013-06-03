@@ -15,6 +15,7 @@
 class DFSHandler : virtual public DFS::DFSIf {
   private:
     GlobalBucket * globals_;
+    bool checkForDead(const DFS::HostID& sender);
 
   public:
     DFSHandler(GlobalBucket* globals);
