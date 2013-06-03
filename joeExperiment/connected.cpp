@@ -103,9 +103,11 @@ int main(int argc, char *argv[])
         Host remoteHost(remoteIP, remotePort, Host::State::ALIVE, meID);
         globals.hostMap_[remoteHost.id_] = remoteHost;
 
-        cerr << "Remote IP:\t" << localIP << endl;
-        cerr << "Remote Port:\t" << port << endl;
+        cerr << "Remote IP:\t" << remoteIP << endl;
+        cerr << "Remote Port:\t" << remotePort << endl;
     }
+
+    // rsync -az -e REMOTEIP --delete backup/ backup2/
 
     cerr << endl;
 
