@@ -1,5 +1,5 @@
 
-#include "DFS_server.hpp"
+#include "thrift_server.hpp"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;

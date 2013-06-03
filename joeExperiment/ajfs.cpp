@@ -1,5 +1,5 @@
 #include "DFS.h"
-#include "DFS_server.hpp"
+#include "thrift_server.hpp"
 #include "LFS_operations.hpp"
 #include "fuse_operations.hpp"
 #include "lockmanager.hpp"

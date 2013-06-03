@@ -3,20 +3,20 @@ BOOST_DIR := /usr/local/include
 DFS_SRC := DFS.cpp rpc_constants.cpp rpc_types.cpp
 DFS_OBJ := $(patsubst %.cpp,%.o, $(DFS_SRC))
 
-BINS    := dfs_server dfs_client fusexmp_fh connected
+BINS    := dfs_server dfs_client fusexmp_fh ajfs
 
 FUSE_PKGS=`pkg-config fuse --cflags --libs`
 THRIFT_PKGS := -L/usr/local/lib -lthrift
 
 fusexmp_fh_DEPS=fusexmp_fh.cpp
-connected_DEPS=connected.o $(DFS_OBJ) DFS_server.o LFS_operations.o fuse_operations.o \
+AJFS_DEPS=ajfs.o $(DFS_OBJ) thrift_server.o LFS_operations.o fuse_operations.o \
 			   Host.o lockmanager.o Lock.o LockSet.o
 
 CXXFLAGS := -g -Wall -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H -std=c++0x -I$(THRIFT_DIR) -I$(BOOST_DIR)
 
 .PHONY: all clean
 	
-all: dfs_server dfs_client fusexmp_fh connected
+all: dfs_server dfs_client fusexmp_fh ajfs
 
 #%.o: include/%.cpp
 #	$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
@@ -39,7 +39,7 @@ clean:
 fusexmp_fh: ${fusexmp_fh_DEPS}
 	$(CXX) -Wall $^ ${FUSE_PKGS} -o $@
 
-connected: $(connected_DEPS)
+ajfs: $(AJFS_DEPS)
 	$(CXX) $(CXXFLAGS) $^ ${FUSE_PKGS} ${THRIFT_PKGS} -o $@
 
 #depend:
