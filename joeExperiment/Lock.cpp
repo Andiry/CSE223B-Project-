@@ -65,7 +65,7 @@ bool Lock::writeLock(const HostID& host) {
     if (state_ == UNLOCKED || (state_ == WRITE && hosts_[host])) {
         state_ = WRITE;
 
-        hosts_[host] = 1;
+        ++hosts_[host];
 
         pthread_mutex_unlock(&mutex_);
         return true;

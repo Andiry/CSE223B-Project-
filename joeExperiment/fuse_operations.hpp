@@ -3,6 +3,7 @@
 
 #define FUSE_USE_VERSION 26
 
+#include "DFS.h"
 #include "LFS_operations.hpp"
 #include "GlobalBucket.hpp"
 

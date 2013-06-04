@@ -6,6 +6,7 @@ using namespace LockManager;
 
 namespace LockManager {
     bool dead_ = false;
+    GlobalBucket * globals_ = NULL;
 }
 
 void nanoSleep(time_t seconds, long nanoseconds) {
@@ -21,26 +22,26 @@ void nanoSleep(time_t seconds, long nanoseconds) {
 
 void LockManager::stop() {
     dead_ = true;
+    for(auto& pair: globals_->hostMap_) {
+        pair.second.kill();
+    }
     pthread_exit(NULL);
 }
 
 void * LockManager::start(void * arg) {
-    GlobalBucket * globals = static_cast<GlobalBucket *>(arg);
+    globals_ = static_cast<GlobalBucket *>(arg);
 
     while (!dead_) {
         int numDead = 0;
         int numAlive = 0;
-        pthread_mutex_lock(&(globals->hostLock_));
-        for (HostMap_t::iterator iter = globals->hostMap_.begin();
-                iter != globals->hostMap_.end();
+        pthread_mutex_lock(&(globals_->hostLock_));
+        for (HostMap_t::iterator iter = globals_->hostMap_.begin();
+                iter != globals_->hostMap_.end();
                 ++iter) {
             //cerr << "Checking " << iter->second.identifier() << endl;
             if (iter->second.state_ == Host::State::ME) {
                 //cerr << "Ignoring myself " << iter->second.identifier() << endl;
                 ++numAlive;
-            //} else if (iter->second.state_ == Host::State::JOINING) {
-            //    cerr << "Ignoring joining host " << iter->second.identifier() << endl;
-            //    // Do nothing?
             } else if (iter->second.state_ == Host::State::DEAD) {
                 //cerr << "Ignoring dead host " << iter->second.identifier() << endl;
                 ++numDead;
@@ -56,14 +57,14 @@ void * LockManager::start(void * arg) {
                 iter->second.state_ = Host::State::DEAD;
 
                 // Kill locks for host
-                globals->locks_.unlockAll(iter->second.id_);
+                globals_->locks_.unlockAll(iter->second.id_);
             }
         }
-        pthread_mutex_unlock(&(globals->hostLock_));
+        pthread_mutex_unlock(&(globals_->hostLock_));
 
         if (numDead >= numAlive) {
             cerr << "ALERT: NO QUORUM DETECTED... EXITING." << endl;
-            globals->killall_();
+            globals_->killall_();
             break;
         }
 

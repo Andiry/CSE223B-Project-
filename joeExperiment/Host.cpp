@@ -66,10 +66,21 @@ bool Host::tryConnect() {
     return true;
 }
 
+void Host::kill() {
+    if (state_ == ME)
+        return;
+
+    try {
+        if(transport_->isOpen())
+            transport_->close();
+    } catch (apache::thrift::TException& tx) {
+    }
+}
+
 
 #define PRECHECK(ON_ME, ON_FAIL)      \
-    if (me_ == NULL)     { ON_FAIL; } \
     if (state_ == ME)    { ON_ME;   } \
+    if (me_ == NULL)     { ON_FAIL; } \
     if (state_ != ALIVE) { ON_FAIL; } \
     if (tryConnect()) {               \
         try {
@@ -97,7 +108,7 @@ void Host::unlock(const string& file) {
 
 void Host::die() {
     cerr << "Telling " << identifier() << " to die." << endl;
-    PRECHECK(return, return);
+    PRECHECK(, return);
     client_->die(*me_);
     POSTCHECK(return);
 }
@@ -114,10 +125,12 @@ void Host::releaseJoinLock() {
     POSTCHECK(return);
 }
 
-void Host::lock(const string& file, LockType::type type) {
-    PRECHECK(return, return);
-    client_->lock(*me_, file, type);
-    POSTCHECK(return);
+bool Host::lock(const string& file, LockType::type type) {
+    bool ret;
+    PRECHECK(return true, return false);
+    ret = client_->lock(*me_, file, type);
+    POSTCHECK(return false);
+    return ret;
 }
 
 void Host::join(set<DFS::HostID> & _return) {
@@ -129,6 +142,8 @@ void Host::join(set<DFS::HostID> & _return) {
 bool Host::requestJoinLock(string& _return) {
     PRECHECK(return false, return false);
     client_->requestJoinLock(_return, *me_);
+    if(_return == "")
+        return false;
     POSTCHECK(return false);
     return true;
 }

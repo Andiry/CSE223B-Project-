@@ -176,6 +176,9 @@ int main(int argc, char *argv[])
 
     // Complete the join operation, if needed.
     if (remoteHostID.hostname != "") {
+        // Wait for socket to open fully.
+        sleep(1);
+
         // Join and retrieve new hosts
         set<HostID> newHosts;
         globals.hostMap_[remoteHostID].join(newHosts);

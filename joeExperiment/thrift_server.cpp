@@ -37,7 +37,7 @@ void DFSHandler::unlock(const HostID& sender, const std::string& file) {
 }
 
 void DFSHandler::die(const HostID& sender) {
-    if (checkForDead(sender)) return;
+    //if (checkForDead(sender)) return;
     cerr << "Received die request from " << sender.hostname << ":" << sender.port << endl;
     globals_->killall_();
 }
@@ -61,17 +61,12 @@ void DFSHandler::releaseJoinLock(const HostID& sender) {
 bool DFSHandler::lock(const HostID& sender, const std::string& file, const LockType::type lockType) {
     if (checkForDead(sender)) return false;
 
-    if (lockType == LockType::type::WRITE) {// writing
-        if(!globals_->locks_.writeLockPath(file, sender))
-            return false; // we couldn't get the lock
-    }
-    else {// reading
-        if(!globals_->locks_.readLockPath(file, sender))
-            return false; // we couldn't get the lock
-    }
-    return true;
-
     printf("lock\n");
+
+    if (lockType == LockType::type::WRITE)
+        return globals_->locks_.writeLockPath(file, sender);
+    else // reading
+        return globals_->locks_.readLockPath(file, sender);
 }
 
 void DFSHandler::join(std::set<HostID> & _return, const HostID& sender) {
@@ -160,8 +155,6 @@ void DFSHandler::ffit2ffi(const FUSEFileInfoTransport& ffit, fuse_file_info& ffi
 
 void DFSHandler::releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     if (checkForDead(sender)) return;
-
-    globals_->locks_.readUnlockPath(path, sender);
 
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
@@ -307,15 +300,6 @@ bool DFSHandler::fsync(const HostID& sender, const std::string& path, const int3
 
 bool DFSHandler::open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     if (checkForDead(sender)) return false;
-
-    /*
-    if (fi.flags & (O_WRONLY | O_RDWR)) // writing
-        if(!globals_->locks_.writeLockPath(path, sender))
-            return false; // we couldn't get the lock
-    else // reading
-        if(!globals_->locks_.readLockPath(path, sender))
-            return false; // we couldn't get the lock
-            */
 
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);

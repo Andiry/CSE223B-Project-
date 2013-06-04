@@ -33,7 +33,7 @@ class Host {
     void die();
     void addServer(const DFS::HostID& newServer);
     void releaseJoinLock();
-    void lock(const std::string& file, DFS::LockType::type type);
+    bool lock(const std::string& file, DFS::LockType::type type);
     void join(std::set<DFS::HostID> & _return);
     bool requestJoinLock(std::string& path);
     bool getJoinLock();
@@ -57,6 +57,8 @@ class Host {
     bool fsync(const std::string& path, const int32_t isdatasync, const DFS::FUSEFileInfoTransport& fi);
     bool open(const std::string& path, const DFS::FUSEFileInfoTransport& fi);
     bool opendir(const std::string& path, const DFS::FUSEFileInfoTransport& fi);
+
+    void kill();
 
   private:
     void setup();
