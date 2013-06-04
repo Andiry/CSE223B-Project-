@@ -121,8 +121,6 @@ int FUSEService::fuse_readdir(const char *path, void *buf, fuse_fill_dir_t fille
 
 int FUSEService::fuse_releasedir(const char *path, struct fuse_file_info *fi)
 {
-    unlockAll(path);
-
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_releasedir(cpath.c_str(), fi, fh);
@@ -131,6 +129,8 @@ int FUSEService::fuse_releasedir(const char *path, struct fuse_file_info *fi)
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
         pair.second.releasedir(cpath, ffit);
+
+    unlockAll(path);
 
     return ret;
 }
@@ -312,8 +312,6 @@ int FUSEService::fuse_flush(const char *path, struct fuse_file_info *fi)
 
 int FUSEService::fuse_release(const char *path, struct fuse_file_info *fi)
 {
-    unlockAll(path);
-
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_release(cpath.c_str(), fi, fh);
@@ -322,6 +320,8 @@ int FUSEService::fuse_release(const char *path, struct fuse_file_info *fi)
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
         pair.second.release(cpath, ffit);
+
+    unlockAll(path);
 
     return ret;
 }
