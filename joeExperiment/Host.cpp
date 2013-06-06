@@ -79,9 +79,10 @@ void Host::kill() {
 
 
 #define PRECHECK(ON_ME, ON_FAIL)      \
-    if (state_ == ME)    { ON_ME;   } \
-    if (me_ == NULL)     { ON_FAIL; } \
-    if (state_ != ALIVE) { ON_FAIL; } \
+    if (state_ == ME)      { ON_ME;   } \
+    if (state_ == UNKNOWN) { ON_ME;   } \
+    if (me_ == NULL)       { ON_FAIL; } \
+    if (state_ != ALIVE)   { ON_FAIL; } \
     if (tryConnect()) {               \
         try {
 #define POSTCHECK(ON_FAIL)                          \
@@ -127,9 +128,10 @@ void Host::releaseJoinLock() {
 
 bool Host::lock(const string& file, LockType::type type) {
     bool ret;
-    PRECHECK(return true, return false);
+    PRECHECK(return true;, cerr << "First fail" << endl; return false);
     ret = client_->lock(*me_, file, type);
-    POSTCHECK(return false);
+    cerr << "Succeeded to request lock on " << file << " from " << identifier() << endl;
+    POSTCHECK(cerr << "Second fail" << endl; return false;);
     return ret;
 }
 

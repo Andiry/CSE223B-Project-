@@ -39,10 +39,6 @@ static void gracefulExit(int signal) {
     }
     else if (self == fThread) {
         FUSEService::stop();
-        cerr << endl
-             << "\t == "
-             << "HINT: Do an \"ls\" in the mounted directory to exit."
-             << " ==" << endl;
     }
     else if (self == lThread) {
         LockManager::stop();

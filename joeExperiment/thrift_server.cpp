@@ -15,6 +15,13 @@ DFSHandler::DFSHandler(GlobalBucket * globals) : globals_(globals) {
     // Your initialization goes here
 }
 
+inline string DFSHandler::convert(const string& path) {
+    stringstream ss;
+    ss << globals_->backupPath_ << path;
+	string newPath = ss.str();
+    return newPath;
+}
+
 bool DFSHandler::checkForDead(const HostID& sender) {
     if (globals_->hostMap_[sender].state_ == Host::State::DEAD) {
         globals_->hostMap_[sender].die();
@@ -97,7 +104,6 @@ void DFSHandler::join(std::set<HostID> & _return, const HostID& sender) {
 }
 
 void DFSHandler::requestJoinLock(string& _return, const HostID& sender) {
-    if (checkForDead(sender)) return;
     if (globals_->joinLock_)
         return;
 
@@ -109,8 +115,7 @@ void DFSHandler::requestJoinLock(string& _return, const HostID& sender) {
         bool result = pair.second.getJoinLock();
         if (!result) {
             backout = true;
-            cerr << "getJoinLock() failed on "
-                 << pair.first.hostname << ":" << pair.first.port << endl;
+            cerr << "getJoinLock() failed on " << pair.second.identifier() << endl;
             break;
         }
         backoutHosts.push_front(&pair.second);
@@ -156,64 +161,77 @@ void DFSHandler::ffit2ffi(const FUSEFileInfoTransport& ffit, fuse_file_info& ffi
 void DFSHandler::releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     if (checkForDead(sender)) return;
 
+    string cpath = convert(path);
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
-    local_releasedir(path.c_str(), &ffi, fh);
+    local_releasedir(cpath.c_str(), &ffi, fh);
     printf("releasedir\n");
 }
 
 void DFSHandler::mkdir(const HostID& sender, const std::string& path, const int32_t mode) {
     if (checkForDead(sender)) return;
-    local_mkdir(path.c_str(), mode);
+    string cpath = convert(path);
+    local_mkdir(cpath.c_str(), mode);
     printf("mkdir\n");
 }
 
 void DFSHandler::unlink(const HostID& sender, const std::string& path) {
     if (checkForDead(sender)) return;
-    local_unlink(path.c_str());
+    string cpath = convert(path);
+    local_unlink(cpath.c_str());
     printf("unlink\n");
 }
 
 void DFSHandler::rmdir(const HostID& sender, const std::string& path) {
     if (checkForDead(sender)) return;
-    local_rmdir(path.c_str());
+    string cpath = convert(path);
+    local_rmdir(cpath.c_str());
     printf("rmdir\n");
 }
 
 void DFSHandler::symlink(const HostID& sender, const std::string& from, const std::string& to) {
     if (checkForDead(sender)) return;
-    local_symlink(from.c_str(), to.c_str());
+    string cfrom = convert(from);
+    string cto = convert(to);
+    local_symlink(cfrom.c_str(), cto.c_str());
     printf("symlink\n");
 }
 
 void DFSHandler::rename(const HostID& sender, const std::string& from, const std::string& to) {
     if (checkForDead(sender)) return;
-    local_rename(from.c_str(), to.c_str());
+    string cfrom = convert(from);
+    string cto = convert(to);
+    local_rename(cfrom.c_str(), cto.c_str());
     printf("rename\n");
 }
 
 void DFSHandler::link(const HostID& sender, const std::string& from, const std::string& to) {
     if (checkForDead(sender)) return;
-    local_link(from.c_str(), to.c_str());
+    string cfrom = convert(from);
+    string cto = convert(to);
+    local_link(cfrom.c_str(), cto.c_str());
     printf("link\n");
 }
 
 void DFSHandler::chmod(const HostID& sender, const std::string& path, const int32_t mode) {
     if (checkForDead(sender)) return;
-    local_chmod(path.c_str(), mode);
+    string cpath = convert(path);
+    local_chmod(cpath.c_str(), mode);
     printf("chmod\n");
 }
 
 void DFSHandler::chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid) {
     if (checkForDead(sender)) return;
-    local_chown(path.c_str(), uid, gid);
+    string cpath = convert(path);
+    local_chown(cpath.c_str(), uid, gid);
     printf("chown\n");
 }
 
 void DFSHandler::truncate(const HostID& sender, const std::string& path, const int64_t size) {
     if (checkForDead(sender)) return;
-    local_truncate(path.c_str(), size);
+    string cpath = convert(path);
+    local_truncate(cpath.c_str(), size);
     printf("truncate\n");
 }
 
@@ -222,7 +240,8 @@ void DFSHandler::ftruncate(const HostID& sender, const std::string& path, const 
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
-    local_ftruncate(path.c_str(), size, &ffi, fh);
+    string cpath = convert(path);
+    local_ftruncate(cpath.c_str(), size, &ffi, fh);
     printf("ftruncate\n");
 }
 
@@ -232,7 +251,8 @@ void DFSHandler::create(const HostID& sender, const std::string& path, const int
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
-    local_create(path.c_str(), mode, &ffi, fh);
+    string cpath = convert(path);
+    local_create(cpath.c_str(), mode, &ffi, fh);
     printf("create\n");
 }
 
@@ -243,7 +263,8 @@ void DFSHandler::write(const HostID& sender, const std::string& path, const std:
     uint64_t& fh(globals_->fhMap_[fi.fh]);
     char * newbuf = (char *) (new char [size]);
     copy(buf.begin(), buf.end(), newbuf);
-    local_write(path.c_str(), newbuf, size, offset, &ffi, fh);
+    string cpath = convert(path);
+    local_write(cpath.c_str(), newbuf, size, offset, &ffi, fh);
     delete [] newbuf;
     printf("write\n");
 }
@@ -253,7 +274,8 @@ void DFSHandler::flush(const HostID& sender, const std::string& path, const FUSE
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
-    local_flush(path.c_str(), &ffi, fh);
+    string cpath = convert(path);
+    local_flush(cpath.c_str(), &ffi, fh);
     printf("flush\n");
 }
 
@@ -263,7 +285,8 @@ void DFSHandler::release(const HostID& sender, const std::string& path, const FU
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
-    local_release(path.c_str(), &ffi, fh);
+    string cpath = convert(path);
+    local_release(cpath.c_str(), &ffi, fh);
     printf("release\n");
 }
 
@@ -272,7 +295,8 @@ void DFSHandler::flock(const HostID& sender, const std::string& path, const FUSE
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
-    local_flock(path.c_str(), &ffi, op, fh);
+    string cpath = convert(path);
+    local_flock(cpath.c_str(), &ffi, op, fh);
     printf("flock\n");
 }
 
@@ -282,7 +306,8 @@ void DFSHandler::fallocate(const HostID& sender, const std::string& path, const 
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
-    local_fallocate(path.c_str(), mode, offset, length, &ffi, fh);
+    string cpath = convert(path);
+    local_fallocate(cpath.c_str(), mode, offset, length, &ffi, fh);
 #endif
     printf("fallocate\n");
 }
@@ -292,7 +317,8 @@ bool DFSHandler::fsync(const HostID& sender, const std::string& path, const int3
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
-    local_fsync(path.c_str(), isdatasync, &ffi, fh);
+    string cpath = convert(path);
+    local_fsync(cpath.c_str(), isdatasync, &ffi, fh);
     printf("fsync\n");
     // TODO
     return true;
@@ -304,7 +330,8 @@ bool DFSHandler::open(const HostID& sender, const std::string& path, const FUSEF
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
-    local_open(path.c_str(), &ffi, fh);
+    string cpath = convert(path);
+    local_open(cpath.c_str(), &ffi, fh);
     printf("open\n");
     return true;
 }
@@ -318,7 +345,8 @@ bool DFSHandler::opendir(const HostID& sender, const std::string& path, const FU
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
-    local_opendir(path.c_str(), &ffi, fh);
+    string cpath = convert(path);
+    local_opendir(cpath.c_str(), &ffi, fh);
     printf("opendir\n");
     return false;
 }

@@ -12,12 +12,14 @@
 #include <cstdint>
 
 #include <list>
+#include <sstream>
 
 class DFSHandler : virtual public DFS::DFSIf {
   private:
     GlobalBucket * globals_;
     bool checkForDead(const DFS::HostID& sender);
     void ffit2ffi(const DFS::FUSEFileInfoTransport& ffit, fuse_file_info& ffi);
+    std::string convert(const std::string& path);
 
   public:
     DFSHandler(GlobalBucket* globals);

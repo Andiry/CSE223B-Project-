@@ -6,22 +6,24 @@ using namespace DFS;
 
 void LockSet::splitPaths(const string& path, vector<string>& paths) {
     const string delim = "/";
+    cerr << "Splitting paths in: '" << path << "'" << endl;
 
-    size_t last = 0;
-    size_t pos = 0;
+    size_t pos = 1;
+
+    paths.push_back("/");
 
     while ((pos = path.find(delim, pos)) != string::npos) {
-        paths.push_back(path.substr(0, pos - last));
+        cerr << "Found substring of: '" << path.substr(0, pos) << "'" << endl;
+        paths.push_back(path.substr(0, pos));
 
         pos += delim.length();
-        last = pos;
     }
 
-    string lastPart = path.substr(0, path.length() - last);
+    string lastPart = path;
     if (lastPart.back() == '/')
         lastPart.erase(--lastPart.end());
-
-    paths.push_back(lastPart);
+    if (lastPart != "" && lastPart != paths.back())
+        paths.push_back(lastPart);
 }
 
 LockSet::LockSet() {
@@ -43,10 +45,12 @@ bool LockSet::lockPath(const string& path, const HostID& host, LockType type) {
     bool backout = false;
     int i = 0;
     for (; i < (int) paths.size(); ++i) {
-        bool result = (type == R ?
+        cerr << "Trying to get lock on " << paths[i] << endl;
+        bool result = (type == R || i == (paths.size() - 1) ?
                 locks_[paths[i]].readLock(host) :
                 locks_[paths[i]].writeLock(host) );
         if (!result) {
+            cerr << "...Failed" << endl;
             backout = true;
             --i;
             break;
@@ -69,19 +73,11 @@ bool LockSet::unlockPath(const string& path, const HostID& host, LockType type) 
     vector<string> paths;
     splitPaths(path, paths);
 
-    bool fullSuccess = true;
     int i = paths.size() - 1;
     for (; i >= 0; --i) {
-        bool result = (type == R ?
-                locks_[paths[i]].readUnlock(host) :
-                locks_[paths[i]].writeUnlock(host) );
-        if (!result) {
-            fullSuccess = false;
-            --i;
-            break;
-        }
+        locks_[paths[i]].unlock(host);
     }
-    return fullSuccess;
+    return true;
 }
 
 bool LockSet::writeLockPath(const string& path, const HostID& host) {

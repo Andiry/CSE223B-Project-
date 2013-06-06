@@ -56,6 +56,7 @@ static bool FUSEService::lockAll(const string& path, const DFS::LockType::type l
     for (auto& pair : globals_->hostMap_) {
         bool tryLock = pair.second.lock(path, lockType);
         if (!tryLock) {
+            cerr << "Failed to acquire lock for " << pair.second.identifier() << endl;
             backout = true;
             break;
         }
@@ -101,7 +102,7 @@ int FUSEService::fuse_opendir(const char *path, struct fuse_file_info *fi)
     FUSEFileInfoTransport ffit;
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
-        pair.second.opendir(cpath, ffit);
+        pair.second.opendir(path, ffit);
 
     return ret;
 }
@@ -128,7 +129,7 @@ int FUSEService::fuse_releasedir(const char *path, struct fuse_file_info *fi)
     FUSEFileInfoTransport ffit;
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
-        pair.second.releasedir(cpath, ffit);
+        pair.second.releasedir(path, ffit);
 
     unlockAll(path);
 
@@ -140,7 +141,7 @@ int FUSEService::fuse_mkdir(const char *path, mode_t mode)
     string cpath = convert(path);
     int ret = local_mkdir(cpath.c_str(), mode);
     for (auto& pair : globals_->hostMap_)
-        pair.second.mkdir(cpath, mode);
+        pair.second.mkdir(path, mode);
     return ret;
 }
 
@@ -149,7 +150,7 @@ int FUSEService::fuse_unlink(const char *path)
     string cpath = convert(path);
     int ret = local_unlink(cpath.c_str());
     for (auto& pair : globals_->hostMap_)
-        pair.second.unlink(cpath);
+        pair.second.unlink(path);
     return ret;
 }
 
@@ -158,7 +159,7 @@ int FUSEService::fuse_rmdir(const char *path)
     string cpath = convert(path);
     int ret = local_rmdir(cpath.c_str());
     for (auto& pair : globals_->hostMap_)
-        pair.second.rmdir(cpath);
+        pair.second.rmdir(path);
     return ret;
 }
 
@@ -174,7 +175,7 @@ int FUSEService::fuse_rename(const char *from, const char *to)
     string cto   = convert(to);
     int ret = local_rename(cfrom.c_str(), cto.c_str());
     for (auto& pair : globals_->hostMap_)
-        pair.second.rename(cfrom, cto);
+        pair.second.rename(from, cto);
     return ret;
 }
 
@@ -189,7 +190,7 @@ int FUSEService::fuse_chmod(const char *path, mode_t mode)
     string cpath = convert(path);
     int ret = local_chmod(cpath.c_str(), mode);
     for (auto& pair : globals_->hostMap_)
-        pair.second.chmod(cpath, mode);
+        pair.second.chmod(path, mode);
     return ret;
 }
 
@@ -198,7 +199,7 @@ int FUSEService::fuse_chown(const char *path, uid_t uid, gid_t gid)
     string cpath = convert(path);
     int ret = local_chown(cpath.c_str(), uid, gid);
     for (auto& pair : globals_->hostMap_)
-        pair.second.chown(cpath, uid, gid);
+        pair.second.chown(path, uid, gid);
     return ret;
 }
 
@@ -207,7 +208,7 @@ int FUSEService::fuse_truncate(const char *path, off_t size)
     string cpath = convert(path);
     int ret = local_truncate(cpath.c_str(), size);
     for (auto& pair : globals_->hostMap_)
-        pair.second.truncate(cpath, size);
+        pair.second.truncate(path, size);
     return ret;
 }
 
@@ -220,7 +221,7 @@ int FUSEService::fuse_ftruncate(const char *path, off_t size,
     FUSEFileInfoTransport ffit;
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
-        pair.second.ftruncate(cpath, size, ffit);
+        pair.second.ftruncate(path, size, ffit);
     return ret;
 }
 
@@ -228,6 +229,8 @@ int FUSEService::fuse_create(const char *path, mode_t mode, struct fuse_file_inf
 {
     if (!lockAll(path, DFS::LockType::type::WRITE))
         return -ENOLCK;
+
+    cerr << "Got lock" << endl;
 
     fi->fh = globals_->randGen_();
     uint64_t& fh(globals_->fhMap_[fi->fh]);
@@ -238,7 +241,9 @@ int FUSEService::fuse_create(const char *path, mode_t mode, struct fuse_file_inf
     FUSEFileInfoTransport ffit;
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
-        pair.second.create(cpath, mode, ffit);
+        pair.second.create(path, mode, ffit);
+
+    cerr << "Sent create commands" << endl;
 
     return ret;
 }
@@ -260,7 +265,7 @@ int FUSEService::fuse_open(const char *path, struct fuse_file_info *fi)
     FUSEFileInfoTransport ffit;
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
-        pair.second.open(cpath, ffit);
+        pair.second.open(path, ffit);
 
     return ret;
 }
@@ -294,7 +299,7 @@ int FUSEService::fuse_write(const char *path, const char *buf, size_t size,
         vbuf.push_back(buf[i]);
 
     for (auto& pair : globals_->hostMap_)
-        pair.second.write(cpath, vbuf, size, offset, ffit);
+        pair.second.write(path, vbuf, size, offset, ffit);
     return ret;
 }
 
@@ -306,7 +311,7 @@ int FUSEService::fuse_flush(const char *path, struct fuse_file_info *fi)
     FUSEFileInfoTransport ffit;
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
-        pair.second.flush(cpath, ffit);
+        pair.second.flush(path, ffit);
     return ret;
 }
 
@@ -319,7 +324,7 @@ int FUSEService::fuse_release(const char *path, struct fuse_file_info *fi)
     FUSEFileInfoTransport ffit;
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
-        pair.second.release(cpath, ffit);
+        pair.second.release(path, ffit);
 
     unlockAll(path);
 
@@ -335,7 +340,7 @@ int FUSEService::fuse_fsync(const char *path, int isdatasync,
     FUSEFileInfoTransport ffit;
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
-        pair.second.fsync(cpath, isdatasync, ffit);
+        pair.second.fsync(path, isdatasync, ffit);
     return ret;
 }
 
@@ -349,7 +354,7 @@ int FUSEService::fuse_fallocate(const char *path, int mode,
     FUSEFileInfoTransport ffit;
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
-        pair.second.fallocate(cpath, mode, offset, length, ffit);
+        pair.second.fallocate(path, mode, offset, length, ffit);
     return ret;
 }
 #endif
@@ -362,7 +367,7 @@ int FUSEService::fuse_flock(const char *path, struct fuse_file_info *fi, int op)
     FUSEFileInfoTransport ffit;
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
-        pair.second.flock(cpath, ffit, op);
+        pair.second.flock(path, ffit, op);
     return ret;
 }
 
@@ -442,6 +447,10 @@ static int FUSEService::fuseMain(int argc, char *argv[],
 
 void FUSEService::stop() {
     fuse_exit(fuse_);
+    cerr << endl
+         << "\t == "
+         << "HINT: Do an \"ls\" in the mounted directory to exit."
+         << " ==" << endl;
 }
 
 void * FUSEService::start(void * arg) {
