@@ -1,0 +1,19 @@
+The Host Manager is responsible for maintaining the connections to all other
+known hosts. Every few seconds (currently configured to 2.5 seconds), the Host
+Manager sends an asynchronous RPC 'ping' to each of the hosts believed to be
+alive.
+
+Even though these requests are "asynchronous", requests are queued on the
+receiving server. As a result, it is determined immediately whether the
+communication channel is still valid. If the request fails, that server is
+marked as dead, and any locks that the remote host holds on the local machine
+are forceably released and no further communication will be attempted with that
+remote host unless it goes back through the join procedure.
+
+By keeping track of what hosts succeed or fail, the Host Manager is also able to
+verify that it still is able to talk with the majority of hosts. If it is not,
+the Host Manager knows that either it has been partitioned into a minority
+partition, or that more than half of the hosts in the group are down. In these
+cases, the system exits, as it is not prepared to deal with requests in those
+cases.
+

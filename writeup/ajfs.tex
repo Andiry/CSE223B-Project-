@@ -20,12 +20,6 @@
 \documentclass[preprint]{sig-alternate-10pt}
 \renewcommand{\ttdefault}{lmtt}
 
-% The following \documentclass options may be useful:
-%
-% 10pt          To set in 10-point type instead of 9-point.
-% 11pt          To set in 11-point type instead of 9-point.
-% authoryear    To obtain author/year citation style instead of numeric.
-
 \usepackage{amsmath}
 \usepackage[T1]{fontenc}
 \usepackage[scaled=0.9]{helvet}
@@ -82,21 +76,18 @@
 
 \title{AJFS: A Simple Distributed File-System}
 
-\ifanonymous
-\author{[Author(s) Omitted --- Anonymized Submision]\\\
-       [Institution(s) Omitted]\\\
-       [Email address(es) Omitted]} %email
-
-\else
 \author{Joe DeBlasio, Jian Xu\\\
        University of California, San Diego \\\
-       \{jdeblasio@cs, jix024@eng\}.ucsd.edu}
-\fi
+       \{jdeblasio, jix024\}@cs.ucsd.edu}
 
 \maketitle
 
 \begin{abstract}
-    This is an abstract!
+    We present AJFS: a fully-replicated distributed file system supporting
+    multiple users, simultaneous editing of distinct files and robustness
+    against nodes failing or joining the system. Designed to similar use cases
+    as Dropbox, the system has been designed for simplicity, supporting causal,
+    eventual consistency.
 \end{abstract}
 
 \section{Introduction}
@@ -108,11 +99,26 @@ I'm motivated!
 \section{Methods}
 I'm methodical!
 
-\section{Results}
-I'm resultant!
+\section{System Design}
+    \input{designOverview.tex}
+
+\subsection{Host Manager}
+    \input{hostManager.tex}
+
+\subsection{File System Support}
+Describing the FUSE portion
+    \input{fsSupport.tex}
+
+\subsection{RPC Service}
+
+
+\section{Evaluation}
 
 \section{Conclusions}
 I'm conclusive!
+
+\section{Earlier Writeup}
+\input{checkpoint.tex}
 
 %\category{D.1.3}{Programming Techniques}{Concurrent
 %  Programming---Parallel programming}
@@ -125,35 +131,6 @@ I'm conclusive!
 %\keywords
 %
 
-%\input{intro.tex}
-
-%\input{motivation.tex}
-
-%\ifalt
-%\input{background-alt.tex}
-%\else
-%\input{background.tex}
-%\fi
-
-%\input{oursolution.tex}
-
-%\input{semantics.tex}
-
-%\input{implementation.tex}
-
-%\input{performance.tex}
-
-%\input{debugging.tex}
-
-%\input{conclusions.tex}
-
-%\ifalt
-%\input{relatedwork-alt.tex}
-%\else
-%\input{relatedwork.tex}
-%\fi
-
-%\input{grant_proposal.tex}
 
 %\appendix
 %\section{Appendix Title}
