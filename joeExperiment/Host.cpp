@@ -135,10 +135,10 @@ void Host::releaseJoinLock() {
 
 bool Host::lock(const string& file, LockType::type type) {
     bool ret;
-    PRECHECK(return true;, cerr << "First fail" << endl; return false);
+    PRECHECK(return true;, cerr << "First fail" << endl; return true);
     ret = client_->lock(*me_, file, type);
     cerr << "Succeeded to request lock on " << file << " from " << identifier() << endl;
-    POSTCHECK(cerr << "Second fail" << endl; return false;);
+    POSTCHECK(cerr << "Second lock fail" << endl; return true;);
     return ret;
 }
 
@@ -150,18 +150,18 @@ void Host::join(set<DFS::HostID> & _return) {
 
 bool Host::requestJoinLock(string& _return) {
     cerr << "Requesting JoinLock from " << identifier() << "...";
-    PRECHECK(cerr << "Failed (me)" << endl; return false, cerr << "Failed (ON_FAIL)" << endl; return false);
+    PRECHECK(cerr << "Failed (me)" << endl; return false, cerr << "Failed (ON_FAIL)" << endl; return true);
     client_->requestJoinLock(_return, *me_);
     if(_return == "")
         return false;
-    POSTCHECK(return false);
+    POSTCHECK(return true);
     return true;
 }
 
 bool Host::getJoinLock() {
-    PRECHECK(return true, return false);
+    PRECHECK(return true, return true);
     return client_->getJoinLock(*me_);
-    POSTCHECK(return false);
+    POSTCHECK(return true);
     return false;
 }
 
@@ -270,22 +270,22 @@ void Host::fallocate(const string& path, const int64_t mode, const int64_t offse
 bool Host::fsync(const string& path, const int32_t isdatasync, const DFS::FUSEFileInfoTransport& fi) {
     PRECHECK(return true, return false);
     return client_->fsync(*me_, path, isdatasync, fi);
-    POSTCHECK(return false);
+    POSTCHECK(return true);
     return false;
 }
 
 bool Host::open(const string& path, const DFS::FUSEFileInfoTransport& fi) {
     PRECHECK(return true, return false);
     return client_->open(*me_, path, fi);
-    POSTCHECK(return false);
+    POSTCHECK(return true);
     return false;
 }
 
 bool Host::opendir(const string& path, const DFS::FUSEFileInfoTransport& fi) {
     PRECHECK(return true, return false);
     return client_->opendir(*me_, path, fi);
-    POSTCHECK(return false);
-    return false;
+    POSTCHECK(return true);
+    return true;
 }
 
 void Host::utimens(const string& path, const TimeSpec& atime, const TimeSpec& mtime) {

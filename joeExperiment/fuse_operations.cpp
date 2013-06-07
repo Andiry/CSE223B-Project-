@@ -16,21 +16,32 @@ namespace FUSEService {
     GlobalBucket * globals_;
 
     inline void announceOperation(const string& oper, const char *path) {
+        if (path == NULL) {
+            globals_->debug_ << "== LOCAL ========== "
+                         << oper << " ERROR: UNKNOWN PATH" << endl;
+            return;
+        }
         globals_->debug_ << "================ "
                          << oper << " on " << path << endl;
     }
     inline void announceOperation(const string& oper, const char *from, const char* to) {
+        if (from == NULL || to == NULL) {
+            globals_->debug_ << "== LOCAL ========== "
+                         << oper << " ERROR: UNKNOWN FROM/TO" << endl;
+            return;
+        }
+
         globals_->debug_ << "== LOCAL ========== "
                          << oper << " from " << from << " to " << to << endl;
     }
 
     extern "C" {
         fuse * fuse_ = NULL;
-        string convert(const char *path);
+        string convert(const string& path);
     }
 }
 
-string FUSEService::convert(const char *path)
+string FUSEService::convert(const string& path)
 {
     stringstream ss;
     ss << globals_->backupPath_ << path;
@@ -137,17 +148,19 @@ int FUSEService::fuse_readdir(const char *path, void *buf, fuse_fill_dir_t fille
 
 int FUSEService::fuse_releasedir(const char *path, struct fuse_file_info *fi)
 {
+    string spath(path == NULL ? "" : path);
+    // TODO - called with empty path?
     announceOperation("releasedir", path);
     uint64_t& fh(globals_->fhMap_[fi->fh]);
-    string cpath = convert(path);
+    string cpath = convert(spath);
     int ret = local_releasedir(cpath.c_str(), fi, fh);
 
     FUSEFileInfoTransport ffit;
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
-        pair.second.releasedir(path, ffit);
+        pair.second.releasedir(spath, ffit);
 
-    unlockAll(path);
+    unlockAll(spath);
 
     if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
@@ -177,8 +190,11 @@ int FUSEService::fuse_unlink(const char *path)
 
 int FUSEService::fuse_rmdir(const char *path)
 {
+    // TODO - do we want locking here?
     announceOperation("rmdir", path);
+
     string cpath = convert(path);
+
     int ret = local_rmdir(cpath.c_str());
     for (auto& pair : globals_->hostMap_)
         pair.second.rmdir(path);
@@ -554,14 +570,14 @@ void * FUSEService::start(void * arg) {
     globals_ = args->globals;
 
     intptr_t ret = fuseMain(args->argc, args->argv, &oper, NULL);
-    if (ret)
-        return (void *) ret;
+
+    cerr << "FUSE done!" << endl;
+
+    globals_->killall_();
 
     delete [] args->argv;
     delete args;
 
-    cerr << "FUSE done!" << endl;
-
-    return NULL;
+    return (void *) ret;
 }
 

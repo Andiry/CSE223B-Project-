@@ -65,8 +65,8 @@ void DFSHandler::releaseJoinLock(const HostID& sender) {
 }
 
 bool DFSHandler::lock(const HostID& sender, const std::string& file, const LockType::type lockType) {
-    if (checkForDead(sender)) return false;
     announceOperation("lock", sender, file);
+    if (checkForDead(sender)) return false;
 
     if (lockType == LockType::type::WRITE)
         return globals_->locks_.writeLockPath(file, sender);
@@ -75,8 +75,6 @@ bool DFSHandler::lock(const HostID& sender, const std::string& file, const LockT
 }
 
 void DFSHandler::join(std::set<HostID> & _return, const HostID& sender) {
-    if (checkForDead(sender)) return;
-
     if (!globals_->joinMaster_) return;
     if (globals_->joining_ != sender) return;
 
@@ -173,9 +171,8 @@ void DFSHandler::ffit2ffi(const FUSEFileInfoTransport& ffit, fuse_file_info& ffi
 }
 
 void DFSHandler::releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
-    if (checkForDead(sender)) return;
-
     announceOperation("releasedir", sender, path);
+    if (checkForDead(sender)) return;
 
     string cpath = convert(path);
     fuse_file_info ffi;
@@ -185,74 +182,75 @@ void DFSHandler::releasedir(const HostID& sender, const std::string& path, const
 }
 
 void DFSHandler::mkdir(const HostID& sender, const std::string& path, const int32_t mode) {
-    if (checkForDead(sender)) return;
     announceOperation("mkdir", sender, path);
+    if (checkForDead(sender)) return;
     string cpath = convert(path);
     local_mkdir(cpath.c_str(), mode);
 }
 
 void DFSHandler::unlink(const HostID& sender, const std::string& path) {
-    if (checkForDead(sender)) return;
     announceOperation("unlink", sender, path);
+    if (checkForDead(sender)) return;
     string cpath = convert(path);
     local_unlink(cpath.c_str());
 }
 
 void DFSHandler::rmdir(const HostID& sender, const std::string& path) {
-    if (checkForDead(sender)) return;
     announceOperation("rmdir", sender, path);
+    if (checkForDead(sender)) return;
+
     string cpath = convert(path);
     local_rmdir(cpath.c_str());
 }
 
 void DFSHandler::symlink(const HostID& sender, const std::string& from, const std::string& to) {
-    if (checkForDead(sender)) return;
     announceOperation("symlink", sender, from, to);
+    if (checkForDead(sender)) return;
     string cfrom = convert(from);
     string cto = convert(to);
     local_symlink(cfrom.c_str(), cto.c_str());
 }
 
 void DFSHandler::rename(const HostID& sender, const std::string& from, const std::string& to) {
-    if (checkForDead(sender)) return;
     announceOperation("rename", sender, from, to);
+    if (checkForDead(sender)) return;
     string cfrom = convert(from);
     string cto = convert(to);
     local_rename(cfrom.c_str(), cto.c_str());
 }
 
 void DFSHandler::link(const HostID& sender, const std::string& from, const std::string& to) {
-    if (checkForDead(sender)) return;
     announceOperation("link", sender, from, to);
+    if (checkForDead(sender)) return;
     string cfrom = convert(from);
     string cto = convert(to);
     local_link(cfrom.c_str(), cto.c_str());
 }
 
 void DFSHandler::chmod(const HostID& sender, const std::string& path, const int32_t mode) {
-    if (checkForDead(sender)) return;
     announceOperation("chmod", sender, path);
+    if (checkForDead(sender)) return;
     string cpath = convert(path);
     local_chmod(cpath.c_str(), mode);
 }
 
 void DFSHandler::chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid) {
-    if (checkForDead(sender)) return;
     announceOperation("chown", sender, path);
+    if (checkForDead(sender)) return;
     string cpath = convert(path);
     local_chown(cpath.c_str(), uid, gid);
 }
 
 void DFSHandler::truncate(const HostID& sender, const std::string& path, const int64_t size) {
-    if (checkForDead(sender)) return;
     announceOperation("truncate", sender, path);
+    if (checkForDead(sender)) return;
     string cpath = convert(path);
     local_truncate(cpath.c_str(), size);
 }
 
 void DFSHandler::ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi) {
-    if (checkForDead(sender)) return;
     announceOperation("ftruncate", sender, path);
+    if (checkForDead(sender)) return;
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
@@ -261,9 +259,9 @@ void DFSHandler::ftruncate(const HostID& sender, const std::string& path, const 
 }
 
 void DFSHandler::create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi) {
-    if (checkForDead(sender)) return;
 
     announceOperation("create", sender, path);
+    if (checkForDead(sender)) return;
 
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
@@ -273,8 +271,8 @@ void DFSHandler::create(const HostID& sender, const std::string& path, const int
 }
 
 void DFSHandler::write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi) {
-    if (checkForDead(sender)) return;
     announceOperation("write", sender, path);
+    if (checkForDead(sender)) return;
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
@@ -286,8 +284,8 @@ void DFSHandler::write(const HostID& sender, const std::string& path, const std:
 }
 
 void DFSHandler::flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
-    if (checkForDead(sender)) return;
     announceOperation("flush", sender, path);
+    if (checkForDead(sender)) return;
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
@@ -296,9 +294,9 @@ void DFSHandler::flush(const HostID& sender, const std::string& path, const FUSE
 }
 
 void DFSHandler::release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+    announceOperation("release", sender, path);
     if (checkForDead(sender)) return;
 
-    announceOperation("release", sender, path);
 
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
@@ -308,8 +306,8 @@ void DFSHandler::release(const HostID& sender, const std::string& path, const FU
 }
 
 void DFSHandler::flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op) {
-    if (checkForDead(sender)) return;
     announceOperation("flock", sender, path);
+    if (checkForDead(sender)) return;
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
@@ -318,8 +316,8 @@ void DFSHandler::flock(const HostID& sender, const std::string& path, const FUSE
 }
 
 void DFSHandler::fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi) {
-    if (checkForDead(sender)) return;
     announceOperation("fallocate", sender, path);
+    if (checkForDead(sender)) return;
 #ifdef HAVE_POSIX_FALLOCATE
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
@@ -330,8 +328,8 @@ void DFSHandler::fallocate(const HostID& sender, const std::string& path, const 
 }
 
 bool DFSHandler::fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) {
-    if (checkForDead(sender)) return false;
     announceOperation("fsync", sender, path);
+    if (checkForDead(sender)) return false;
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
@@ -342,9 +340,8 @@ bool DFSHandler::fsync(const HostID& sender, const std::string& path, const int3
 }
 
 bool DFSHandler::open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
-    if (checkForDead(sender)) return false;
-
     announceOperation("open", sender, path);
+    if (checkForDead(sender)) return false;
 
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
@@ -355,9 +352,9 @@ bool DFSHandler::open(const HostID& sender, const std::string& path, const FUSEF
 }
 
 bool DFSHandler::opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
-    if (checkForDead(sender)) return false;
 
     announceOperation("opendir", sender, path);
+    if (checkForDead(sender)) return false;
 
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
@@ -368,9 +365,9 @@ bool DFSHandler::opendir(const HostID& sender, const std::string& path, const FU
 }
 
 void DFSHandler::utimens(const HostID& sender, const string& path, const TimeSpec& atime, const TimeSpec& mtime) {
+    announceOperation("utimens", sender, path);
     if (checkForDead(sender)) return;
 
-    announceOperation("utimens", sender, path);
 
     string cpath = convert(path);
 
@@ -409,6 +406,8 @@ void * DFSServer::start(void * arg) {
     server_->serve();
 
     cerr << "Thrift server done!" << endl;
+
+    globals->killall_();
 
     return NULL;
 }

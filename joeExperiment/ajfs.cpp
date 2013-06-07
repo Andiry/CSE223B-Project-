@@ -22,8 +22,12 @@ pthread_t lThread;
 
 pthread_t mainThread;
 
+bool dead_ = false;
+
 static void killall() {
-    pthread_kill(mainThread, SIGTERM);
+    if (!dead_)
+        pthread_kill(mainThread, SIGTERM);
+    dead_ = true;
 }
 
 static void gracefulExit(int signal) {
@@ -169,8 +173,8 @@ int main(int argc, char *argv[])
     tryStartThread(fThread, "FUSE",    &FUSEService::start, (void *) fuseArgs);
     tryStartThread(lThread, "LockMgr", &LockManager::start, (void *) &globals);
 
-    // Complete the join operation, if needed.
-    if (remoteHostID.hostname != "") {
+    // Complete the join() operation, if needed.
+    if (!dead_ && remoteHostID.hostname != "") {
         // Wait for socket to open fully.
         sleep(1);
 
