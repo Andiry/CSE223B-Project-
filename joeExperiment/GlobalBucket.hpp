@@ -9,6 +9,8 @@
 #include <random>
 #include <ostream>
 
+#include <sys/stat.h>
+
 typedef std::map<DFS::HostID, Host> HostMap_t;
 
 struct GlobalBucket {

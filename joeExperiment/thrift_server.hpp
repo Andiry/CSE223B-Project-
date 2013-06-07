@@ -69,6 +69,8 @@ class DFSHandler : virtual public DFS::DFSIf {
     bool fsync(const DFS::HostID& sender, const std::string& path, const int32_t isdatasync, const DFS::FUSEFileInfoTransport& fi);    
     bool open(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi);    
     bool opendir(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi);
+    void utimens(const DFS::HostID& sender, const std::string& path, const DFS::TimeSpec& atime, const DFS::TimeSpec& mtime);
+
 };
 
 namespace DFSServer {

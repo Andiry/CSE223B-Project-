@@ -41,6 +41,7 @@ class DFSIf {
   virtual void release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
   virtual void flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op) = 0;
   virtual void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi) = 0;
+  virtual void utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime) = 0;
   virtual bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) = 0;
   virtual bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
   virtual bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
@@ -151,6 +152,9 @@ class DFSNull : virtual public DFSIf {
     return;
   }
   void fallocate(const HostID& /* sender */, const std::string& /* path */, const int64_t /* mode */, const int64_t /* offset */, const int64_t /* length */, const FUSEFileInfoTransport& /* fi */) {
+    return;
+  }
+  void utimens(const HostID& /* sender */, const std::string& /* path */, const TimeSpec& /* atime */, const TimeSpec& /* mtime */) {
     return;
   }
   bool fsync(const HostID& /* sender */, const std::string& /* path */, const int32_t /* isdatasync */, const FUSEFileInfoTransport& /* fi */) {
@@ -2135,6 +2139,84 @@ class DFS_fallocate_pargs {
 
 };
 
+typedef struct _DFS_utimens_args__isset {
+  _DFS_utimens_args__isset() : sender(false), path(false), atime(false), mtime(false) {}
+  bool sender;
+  bool path;
+  bool atime;
+  bool mtime;
+} _DFS_utimens_args__isset;
+
+class DFS_utimens_args {
+ public:
+
+  DFS_utimens_args() : path() {
+  }
+
+  virtual ~DFS_utimens_args() throw() {}
+
+  HostID sender;
+  std::string path;
+  TimeSpec atime;
+  TimeSpec mtime;
+
+  _DFS_utimens_args__isset __isset;
+
+  void __set_sender(const HostID& val) {
+    sender = val;
+  }
+
+  void __set_path(const std::string& val) {
+    path = val;
+  }
+
+  void __set_atime(const TimeSpec& val) {
+    atime = val;
+  }
+
+  void __set_mtime(const TimeSpec& val) {
+    mtime = val;
+  }
+
+  bool operator == (const DFS_utimens_args & rhs) const
+  {
+    if (!(sender == rhs.sender))
+      return false;
+    if (!(path == rhs.path))
+      return false;
+    if (!(atime == rhs.atime))
+      return false;
+    if (!(mtime == rhs.mtime))
+      return false;
+    return true;
+  }
+  bool operator != (const DFS_utimens_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DFS_utimens_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class DFS_utimens_pargs {
+ public:
+
+
+  virtual ~DFS_utimens_pargs() throw() {}
+
+  const HostID* sender;
+  const std::string* path;
+  const TimeSpec* atime;
+  const TimeSpec* mtime;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
 typedef struct _DFS_fsync_args__isset {
   _DFS_fsync_args__isset() : sender(false), path(false), isdatasync(false), fi(false) {}
   bool sender;
@@ -2598,6 +2680,8 @@ class DFSClient : virtual public DFSIf {
   void send_flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op);
   void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi);
   void send_fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi);
+  void utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime);
+  void send_utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime);
   bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi);
   void send_fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi);
   bool recv_fsync();
@@ -2648,6 +2732,7 @@ class DFSProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_release(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_flock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_fallocate(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_utimens(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_fsync(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_open(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_opendir(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -2680,6 +2765,7 @@ class DFSProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["release"] = &DFSProcessor::process_release;
     processMap_["flock"] = &DFSProcessor::process_flock;
     processMap_["fallocate"] = &DFSProcessor::process_fallocate;
+    processMap_["utimens"] = &DFSProcessor::process_utimens;
     processMap_["fsync"] = &DFSProcessor::process_fsync;
     processMap_["open"] = &DFSProcessor::process_open;
     processMap_["opendir"] = &DFSProcessor::process_opendir;
@@ -2945,6 +3031,15 @@ class DFSMultiface : virtual public DFSIf {
       ifaces_[i]->fallocate(sender, path, mode, offset, length, fi);
     }
     ifaces_[i]->fallocate(sender, path, mode, offset, length, fi);
+  }
+
+  void utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->utimens(sender, path, atime, mtime);
+    }
+    ifaces_[i]->utimens(sender, path, atime, mtime);
   }
 
   bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) {

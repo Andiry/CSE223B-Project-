@@ -378,3 +378,13 @@ int local_flock(const char *path, fuse_file_info *fi, int op, uint64_t& fh)
     return 0;
 }
 
+int local_utimens(const char *path, const struct timespec times[2])
+{
+    int res = utimensat(AT_FDCWD, path, times, 0);
+
+    if (res == -1)
+        return -errno;
+
+    return 0;
+}
+

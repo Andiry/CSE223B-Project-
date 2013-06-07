@@ -72,8 +72,6 @@ void * LockManager::start(void * arg) {
             break;
         }
 
-        cerr << "Locks: " << endl << globals_->locks_ << endl;
-
         nanoSleep(SLEEP_SECONDS, SLEEP_NANOSECONDS);
     }
 

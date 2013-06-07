@@ -152,6 +152,11 @@ class DFSHandler : virtual public DFSIf {
     printf("fallocate\n");
   }
 
+  void utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime) {
+    // Your implementation goes here
+    printf("utimens\n");
+  }
+
   bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) {
     // Your implementation goes here
     printf("fsync\n");

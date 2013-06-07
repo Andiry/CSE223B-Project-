@@ -40,8 +40,6 @@ void DFSHandler::unlock(const HostID& sender, const std::string& file) {
     if (checkForDead(sender)) return;
 
     globals_->locks_.unlockPath(file, sender);
-
-    printf("unlock\n");
 }
 
 void DFSHandler::die(const HostID& sender) {
@@ -69,8 +67,6 @@ void DFSHandler::releaseJoinLock(const HostID& sender) {
 bool DFSHandler::lock(const HostID& sender, const std::string& file, const LockType::type lockType) {
     if (checkForDead(sender)) return false;
     announceOperation("lock", sender, file);
-
-    printf("lock\n");
 
     if (lockType == LockType::type::WRITE)
         return globals_->locks_.writeLockPath(file, sender);
@@ -169,7 +165,6 @@ void DFSHandler::releasedir(const HostID& sender, const std::string& path, const
     ffit2ffi(fi, ffi);
     uint64_t& fh(globals_->fhMap_[fi.fh]);
     local_releasedir(cpath.c_str(), &ffi, fh);
-    printf("releasedir\n");
 }
 
 void DFSHandler::mkdir(const HostID& sender, const std::string& path, const int32_t mode) {
@@ -177,7 +172,6 @@ void DFSHandler::mkdir(const HostID& sender, const std::string& path, const int3
     announceOperation("mkdir", sender, path);
     string cpath = convert(path);
     local_mkdir(cpath.c_str(), mode);
-    printf("mkdir\n");
 }
 
 void DFSHandler::unlink(const HostID& sender, const std::string& path) {
@@ -185,7 +179,6 @@ void DFSHandler::unlink(const HostID& sender, const std::string& path) {
     announceOperation("unlink", sender, path);
     string cpath = convert(path);
     local_unlink(cpath.c_str());
-    printf("unlink\n");
 }
 
 void DFSHandler::rmdir(const HostID& sender, const std::string& path) {
@@ -193,7 +186,6 @@ void DFSHandler::rmdir(const HostID& sender, const std::string& path) {
     announceOperation("rmdir", sender, path);
     string cpath = convert(path);
     local_rmdir(cpath.c_str());
-    printf("rmdir\n");
 }
 
 void DFSHandler::symlink(const HostID& sender, const std::string& from, const std::string& to) {
@@ -202,7 +194,6 @@ void DFSHandler::symlink(const HostID& sender, const std::string& from, const st
     string cfrom = convert(from);
     string cto = convert(to);
     local_symlink(cfrom.c_str(), cto.c_str());
-    printf("symlink\n");
 }
 
 void DFSHandler::rename(const HostID& sender, const std::string& from, const std::string& to) {
@@ -211,7 +202,6 @@ void DFSHandler::rename(const HostID& sender, const std::string& from, const std
     string cfrom = convert(from);
     string cto = convert(to);
     local_rename(cfrom.c_str(), cto.c_str());
-    printf("rename\n");
 }
 
 void DFSHandler::link(const HostID& sender, const std::string& from, const std::string& to) {
@@ -220,7 +210,6 @@ void DFSHandler::link(const HostID& sender, const std::string& from, const std::
     string cfrom = convert(from);
     string cto = convert(to);
     local_link(cfrom.c_str(), cto.c_str());
-    printf("link\n");
 }
 
 void DFSHandler::chmod(const HostID& sender, const std::string& path, const int32_t mode) {
@@ -228,7 +217,6 @@ void DFSHandler::chmod(const HostID& sender, const std::string& path, const int3
     announceOperation("chmod", sender, path);
     string cpath = convert(path);
     local_chmod(cpath.c_str(), mode);
-    printf("chmod\n");
 }
 
 void DFSHandler::chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid) {
@@ -236,7 +224,6 @@ void DFSHandler::chown(const HostID& sender, const std::string& path, const int3
     announceOperation("chown", sender, path);
     string cpath = convert(path);
     local_chown(cpath.c_str(), uid, gid);
-    printf("chown\n");
 }
 
 void DFSHandler::truncate(const HostID& sender, const std::string& path, const int64_t size) {
@@ -244,7 +231,6 @@ void DFSHandler::truncate(const HostID& sender, const std::string& path, const i
     announceOperation("truncate", sender, path);
     string cpath = convert(path);
     local_truncate(cpath.c_str(), size);
-    printf("truncate\n");
 }
 
 void DFSHandler::ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi) {
@@ -255,7 +241,6 @@ void DFSHandler::ftruncate(const HostID& sender, const std::string& path, const 
     uint64_t& fh(globals_->fhMap_[fi.fh]);
     string cpath = convert(path);
     local_ftruncate(cpath.c_str(), size, &ffi, fh);
-    printf("ftruncate\n");
 }
 
 void DFSHandler::create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi) {
@@ -268,7 +253,6 @@ void DFSHandler::create(const HostID& sender, const std::string& path, const int
     uint64_t& fh(globals_->fhMap_[fi.fh]);
     string cpath = convert(path);
     local_create(cpath.c_str(), mode, &ffi, fh);
-    printf("create\n");
 }
 
 void DFSHandler::write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi) {
@@ -282,7 +266,6 @@ void DFSHandler::write(const HostID& sender, const std::string& path, const std:
     string cpath = convert(path);
     local_write(cpath.c_str(), newbuf, size, offset, &ffi, fh);
     delete [] newbuf;
-    printf("write\n");
 }
 
 void DFSHandler::flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
@@ -293,7 +276,6 @@ void DFSHandler::flush(const HostID& sender, const std::string& path, const FUSE
     uint64_t& fh(globals_->fhMap_[fi.fh]);
     string cpath = convert(path);
     local_flush(cpath.c_str(), &ffi, fh);
-    printf("flush\n");
 }
 
 void DFSHandler::release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
@@ -306,7 +288,6 @@ void DFSHandler::release(const HostID& sender, const std::string& path, const FU
     uint64_t& fh(globals_->fhMap_[fi.fh]);
     string cpath = convert(path);
     local_release(cpath.c_str(), &ffi, fh);
-    printf("release\n");
 }
 
 void DFSHandler::flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op) {
@@ -317,7 +298,6 @@ void DFSHandler::flock(const HostID& sender, const std::string& path, const FUSE
     uint64_t& fh(globals_->fhMap_[fi.fh]);
     string cpath = convert(path);
     local_flock(cpath.c_str(), &ffi, op, fh);
-    printf("flock\n");
 }
 
 void DFSHandler::fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi) {
@@ -330,7 +310,6 @@ void DFSHandler::fallocate(const HostID& sender, const std::string& path, const 
     string cpath = convert(path);
     local_fallocate(cpath.c_str(), mode, offset, length, &ffi, fh);
 #endif
-    printf("fallocate\n");
 }
 
 bool DFSHandler::fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) {
@@ -341,7 +320,6 @@ bool DFSHandler::fsync(const HostID& sender, const std::string& path, const int3
     uint64_t& fh(globals_->fhMap_[fi.fh]);
     string cpath = convert(path);
     local_fsync(cpath.c_str(), isdatasync, &ffi, fh);
-    printf("fsync\n");
     // TODO
     return true;
 }
@@ -356,7 +334,6 @@ bool DFSHandler::open(const HostID& sender, const std::string& path, const FUSEF
     uint64_t& fh(globals_->fhMap_[fi.fh]);
     string cpath = convert(path);
     local_open(cpath.c_str(), &ffi, fh);
-    printf("open\n");
     return true;
 }
 
@@ -370,8 +347,25 @@ bool DFSHandler::opendir(const HostID& sender, const std::string& path, const FU
     uint64_t& fh(globals_->fhMap_[fi.fh]);
     string cpath = convert(path);
     local_opendir(cpath.c_str(), &ffi, fh);
-    printf("opendir\n");
     return false;
+}
+
+void DFSHandler::utimens(const HostID& sender, const string& path, const TimeSpec& atime, const TimeSpec& mtime) {
+    if (checkForDead(sender)) return;
+
+    announceOperation("utimens", sender, path);
+
+    string cpath = convert(path);
+
+    timespec * ts = new timespec[2];
+    ts[0].tv_sec  = atime.sec;
+    ts[0].tv_nsec = atime.nsec;
+    ts[1].tv_sec  = mtime.sec;
+    ts[1].tv_nsec = mtime.nsec;
+
+    local_utimens(cpath.c_str(), ts);
+
+    delete [] ts;
 }
 
 boost::shared_ptr<TSimpleServer> server_;

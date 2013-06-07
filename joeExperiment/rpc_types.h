@@ -140,6 +140,57 @@ class FUSEFileInfoTransport {
 
 void swap(FUSEFileInfoTransport &a, FUSEFileInfoTransport &b);
 
+typedef struct _TimeSpec__isset {
+  _TimeSpec__isset() : sec(false), nsec(false) {}
+  bool sec;
+  bool nsec;
+} _TimeSpec__isset;
+
+class TimeSpec {
+ public:
+
+  static const char* ascii_fingerprint; // = "F33135321253DAEB67B0E79E416CA831";
+  static const uint8_t binary_fingerprint[16]; // = {0xF3,0x31,0x35,0x32,0x12,0x53,0xDA,0xEB,0x67,0xB0,0xE7,0x9E,0x41,0x6C,0xA8,0x31};
+
+  TimeSpec() : sec(0), nsec(0) {
+  }
+
+  virtual ~TimeSpec() throw() {}
+
+  int64_t sec;
+  int64_t nsec;
+
+  _TimeSpec__isset __isset;
+
+  void __set_sec(const int64_t val) {
+    sec = val;
+  }
+
+  void __set_nsec(const int64_t val) {
+    nsec = val;
+  }
+
+  bool operator == (const TimeSpec & rhs) const
+  {
+    if (!(sec == rhs.sec))
+      return false;
+    if (!(nsec == rhs.nsec))
+      return false;
+    return true;
+  }
+  bool operator != (const TimeSpec &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const TimeSpec & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(TimeSpec &a, TimeSpec &b);
+
 typedef struct _HostID__isset {
   _HostID__isset() : hostname(false), port(false) {}
   bool hostname;

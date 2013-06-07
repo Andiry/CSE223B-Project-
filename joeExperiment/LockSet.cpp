@@ -6,13 +6,12 @@ using namespace DFS;
 
 ostream& LockSet::print(std::ostream& out) const {
     for (auto& lockPair: locks_)
-        out << lockPair.first << ": " << lockPair.second << endl;
+        out << "\t" << lockPair.first << ": " << lockPair.second << endl;
     return out;
 }
 
 void LockSet::splitPaths(const string& path, vector<string>& paths) {
     const string delim = "/";
-    cerr << "Splitting paths in: '" << path << "'" << endl;
 
     size_t pos = 1;
 
@@ -51,10 +50,20 @@ bool LockSet::lockPath(const string& path, const HostID& host, LockType type) {
     bool backout = false;
     int i = 0;
     for (; i < (int) paths.size(); ++i) {
+        bool result;
+        if (type == W && i == (paths.size() - 1)) {
+            cerr << "Trying to get write lock on " << paths[i] << endl;
+            result = locks_[paths[i]].writeLock(host);
+        } else {
+            cerr << "Trying to get read lock on " << paths[i] << endl;
+            result = locks_[paths[i]].readLock(host);
+        }
+        /*
         cerr << "Trying to get " << (type == R ? "Read" : "Write") << " lock on " << paths[i] << endl;
         bool result = (type == R || i == (paths.size() - 1) ?
                 locks_[paths[i]].readLock(host) :
                 locks_[paths[i]].writeLock(host) );
+                */
         if (!result) {
             cerr << "...Failed" << endl;
             backout = true;
@@ -71,6 +80,8 @@ bool LockSet::lockPath(const string& path, const HostID& host, LockType type) {
                 locks_[paths[i]].writeUnlock(host);
         }
     }
+
+    cerr << "Locks: " << endl << *this << endl;
 
     return !backout;
 }
@@ -117,6 +128,7 @@ bool LockSet::readUnlockPath(const string& path, const HostID& host) {
 void LockSet::unlockPath(const string& path, const HostID& host) {
     unlockPath(path, host, R);
     unlockPath(path, host, W);
+    cerr << "Locks: " << endl << *this << endl;
 }
 
 void LockSet::unlockAll(const HostID& host) {

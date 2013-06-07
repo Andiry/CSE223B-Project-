@@ -57,6 +57,7 @@ class Host {
     bool fsync(const std::string& path, const int32_t isdatasync, const DFS::FUSEFileInfoTransport& fi);
     bool open(const std::string& path, const DFS::FUSEFileInfoTransport& fi);
     bool opendir(const std::string& path, const DFS::FUSEFileInfoTransport& fi);
+    void utimens(const std::string& path, const DFS::TimeSpec& atime, const DFS::TimeSpec& mtime);
 
     void kill();
 

@@ -199,6 +199,81 @@ void swap(FUSEFileInfoTransport &a, FUSEFileInfoTransport &b) {
   swap(a.__isset, b.__isset);
 }
 
+const char* TimeSpec::ascii_fingerprint = "F33135321253DAEB67B0E79E416CA831";
+const uint8_t TimeSpec::binary_fingerprint[16] = {0xF3,0x31,0x35,0x32,0x12,0x53,0xDA,0xEB,0x67,0xB0,0xE7,0x9E,0x41,0x6C,0xA8,0x31};
+
+uint32_t TimeSpec::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->sec);
+          this->__isset.sec = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->nsec);
+          this->__isset.nsec = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t TimeSpec::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("TimeSpec");
+
+  xfer += oprot->writeFieldBegin("sec", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64(this->sec);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("nsec", ::apache::thrift::protocol::T_I64, 2);
+  xfer += oprot->writeI64(this->nsec);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(TimeSpec &a, TimeSpec &b) {
+  using ::std::swap;
+  swap(a.sec, b.sec);
+  swap(a.nsec, b.nsec);
+  swap(a.__isset, b.__isset);
+}
+
 const char* HostID::ascii_fingerprint = "3628A1EB414F66736E1B2A082E79475F";
 const uint8_t HostID::binary_fingerprint[16] = {0x36,0x28,0xA1,0xEB,0x41,0x4F,0x66,0x73,0x6E,0x1B,0x2A,0x08,0x2E,0x79,0x47,0x5F};
 
@@ -267,16 +342,17 @@ uint32_t HostID::write(::apache::thrift::protocol::TProtocol* oprot) const {
   return xfer;
 }
 
-bool HostID::operator<(DFS::HostID const& rhs) const {
-    return (hostname == rhs.hostname) ?
-        port < rhs.port : hostname < rhs.hostname;
-}
-
 void swap(HostID &a, HostID &b) {
   using ::std::swap;
   swap(a.hostname, b.hostname);
   swap(a.port, b.port);
   swap(a.__isset, b.__isset);
+}
+
+
+bool HostID::operator<(DFS::HostID const& rhs) const {
+    return (hostname == rhs.hostname) ?
+        port < rhs.port : hostname < rhs.hostname;
 }
 
 } // namespace

@@ -101,8 +101,10 @@ void FUSEService::ffi2ffit(const fuse_file_info& ffi, FUSEFileInfoTransport& ffi
 int FUSEService::fuse_opendir(const char *path, struct fuse_file_info *fi)
 {
     announceOperation("opendir", path);
-    if (!lockAll(path, DFS::LockType::type::READ))
+    if (!lockAll(path, DFS::LockType::type::READ)) {
+        globals_->debug_ << "Unable to lock directory...?" << endl;
         return -ENOLCK;
+    }
 
     fi->fh = globals_->randGen_();
     uint64_t& fh(globals_->fhMap_[fi->fh]);
@@ -115,6 +117,7 @@ int FUSEService::fuse_opendir(const char *path, struct fuse_file_info *fi)
     for (auto& pair : globals_->hostMap_)
         pair.second.opendir(path, ffit);
 
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -146,6 +149,7 @@ int FUSEService::fuse_releasedir(const char *path, struct fuse_file_info *fi)
 
     unlockAll(path);
 
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -156,6 +160,7 @@ int FUSEService::fuse_mkdir(const char *path, mode_t mode)
     int ret = local_mkdir(cpath.c_str(), mode);
     for (auto& pair : globals_->hostMap_)
         pair.second.mkdir(path, mode);
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -166,6 +171,7 @@ int FUSEService::fuse_unlink(const char *path)
     int ret = local_unlink(cpath.c_str());
     for (auto& pair : globals_->hostMap_)
         pair.second.unlink(path);
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -176,6 +182,7 @@ int FUSEService::fuse_rmdir(const char *path)
     int ret = local_rmdir(cpath.c_str());
     for (auto& pair : globals_->hostMap_)
         pair.second.rmdir(path);
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -189,11 +196,21 @@ int FUSEService::fuse_symlink(const char *from, const char *to)
 int FUSEService::fuse_rename(const char *from, const char *to)
 {
     announceOperation("rename", from, to);
+
+    if (!lockAll(from, DFS::LockType::type::WRITE)) {
+        globals_->debug_ << "Unable to lock for rename" << endl;
+        return -ENOLCK;
+    }
+
     string cfrom = convert(from);
     string cto   = convert(to);
     int ret = local_rename(cfrom.c_str(), cto.c_str());
     for (auto& pair : globals_->hostMap_)
         pair.second.rename(from, cto);
+
+    unlockAll(from);
+
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -207,10 +224,13 @@ int FUSEService::fuse_link(const char *from, const char *to)
 int FUSEService::fuse_chmod(const char *path, mode_t mode)
 {
     announceOperation("chmod", path);
+
     string cpath = convert(path);
     int ret = local_chmod(cpath.c_str(), mode);
     for (auto& pair : globals_->hostMap_)
         pair.second.chmod(path, mode);
+
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -221,6 +241,7 @@ int FUSEService::fuse_chown(const char *path, uid_t uid, gid_t gid)
     int ret = local_chown(cpath.c_str(), uid, gid);
     for (auto& pair : globals_->hostMap_)
         pair.second.chown(path, uid, gid);
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -231,6 +252,7 @@ int FUSEService::fuse_truncate(const char *path, off_t size)
     int ret = local_truncate(cpath.c_str(), size);
     for (auto& pair : globals_->hostMap_)
         pair.second.truncate(path, size);
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -245,6 +267,7 @@ int FUSEService::fuse_ftruncate(const char *path, off_t size,
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
         pair.second.ftruncate(path, size, ffit);
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -269,6 +292,7 @@ int FUSEService::fuse_create(const char *path, mode_t mode, struct fuse_file_inf
 
     cerr << "Sent create commands" << endl;
 
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -292,6 +316,7 @@ int FUSEService::fuse_open(const char *path, struct fuse_file_info *fi)
     for (auto& pair : globals_->hostMap_)
         pair.second.open(path, ffit);
 
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -328,6 +353,8 @@ int FUSEService::fuse_write(const char *path, const char *buf, size_t size,
 
     for (auto& pair : globals_->hostMap_)
         pair.second.write(path, vbuf, size, offset, ffit);
+
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -341,6 +368,8 @@ int FUSEService::fuse_flush(const char *path, struct fuse_file_info *fi)
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
         pair.second.flush(path, ffit);
+
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -358,6 +387,7 @@ int FUSEService::fuse_release(const char *path, struct fuse_file_info *fi)
 
     unlockAll(path);
 
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -372,6 +402,8 @@ int FUSEService::fuse_fsync(const char *path, int isdatasync,
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
         pair.second.fsync(path, isdatasync, ffit);
+
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -387,6 +419,7 @@ int FUSEService::fuse_fallocate(const char *path, int mode,
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
         pair.second.fallocate(path, mode, offset, length, ffit);
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 #endif
@@ -401,10 +434,36 @@ int FUSEService::fuse_flock(const char *path, struct fuse_file_info *fi, int op)
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
         pair.second.flock(path, ffit, op);
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
+int FUSEService::fuse_utimens(const char * path, const struct timespec ts[2])
+{
+    announceOperation("utimens", path);
+
+    string cpath = convert(path);
+
+    int ret = local_utimens(cpath.c_str(), ts);
+
+    TimeSpec atime;
+    TimeSpec mtime;
+    atime.sec  = ts[0].tv_sec;
+    atime.nsec = ts[0].tv_nsec;
+    mtime.sec  = ts[1].tv_sec;
+    mtime.nsec = ts[1].tv_nsec;
+
+    for (auto& pair : globals_->hostMap_)
+        pair.second.utimens(path, atime, mtime);
+
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
+    return ret;
+
+    //utimensat
+}
+
 void FUSEService::initOpers(fuse_operations& oper) {
+    oper.utimens    = FUSEService::fuse_utimens;
     oper.getattr    = FUSEService::fuse_getattr;
     oper.fgetattr   = FUSEService::fuse_fgetattr;
     oper.access     = FUSEService::fuse_access;

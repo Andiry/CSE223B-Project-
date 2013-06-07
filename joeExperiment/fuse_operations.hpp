@@ -80,6 +80,7 @@ namespace FUSEService {
         int fuse_fallocate(const char *path, int mode,
                 off_t offset, off_t length, fuse_file_info *fi);
         #endif
+        int fuse_utimens(const char * path, const struct timespec ts[2]);
     }
     
     void * start(void * arg);

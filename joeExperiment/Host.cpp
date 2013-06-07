@@ -281,4 +281,10 @@ bool Host::opendir(const string& path, const DFS::FUSEFileInfoTransport& fi) {
     return false;
 }
 
+void Host::utimens(const string& path, const TimeSpec& atime, const TimeSpec& mtime) {
+    PRECHECK(return, return);
+    client_->utimens(*me_, path, atime, mtime);
+    POSTCHECK(return);
+}
+
 

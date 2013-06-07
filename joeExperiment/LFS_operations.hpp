@@ -71,6 +71,7 @@ int local_flock(const char *path, fuse_file_info *fi, int op, uint64_t& fh);
 int local_fallocate(const char *path, int mode,
         off_t offset, off_t length, fuse_file_info *fi, uint64_t& fh);
 #endif
+int local_utimens(const char *path, const struct timespec times[2]);
 
 #endif
 
