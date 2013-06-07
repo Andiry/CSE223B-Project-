@@ -4,6 +4,8 @@
 using namespace std;
 using namespace DFS;
 
+static const bool DEBUG = false;
+
 ostream& LockSet::print(std::ostream& out) const {
     for (auto& lockPair: locks_)
         out << "\t" << lockPair.first << ": " << lockPair.second << endl;
@@ -18,7 +20,7 @@ void LockSet::splitPaths(const string& path, vector<string>& paths) {
     paths.push_back("/");
 
     while ((pos = path.find(delim, pos)) != string::npos) {
-        cerr << "Found substring of: '" << path.substr(0, pos) << "'" << endl;
+        if (DEBUG) cerr << "Found substring of: '" << path.substr(0, pos) << "'" << endl;
         paths.push_back(path.substr(0, pos));
 
         pos += delim.length();
@@ -53,20 +55,14 @@ bool LockSet::lockPath(const string& path, const HostID& host, LockType type) {
     for (; i < (int) paths.size(); ++i) {
         bool result;
         if (type == W && i == (paths.size() - 1)) {
-            cerr << "Trying to get write lock on " << paths[i] << endl;
+            if (DEBUG) cerr << "Trying to get write lock on " << paths[i] << endl;
             result = locks_[paths[i]].writeLock(host);
         } else {
-            cerr << "Trying to get read lock on " << paths[i] << endl;
+            if (DEBUG) cerr << "Trying to get read lock on " << paths[i] << endl;
             result = locks_[paths[i]].readLock(host);
         }
-        /*
-        cerr << "Trying to get " << (type == R ? "Read" : "Write") << " lock on " << paths[i] << endl;
-        bool result = (type == R || i == (paths.size() - 1) ?
-                locks_[paths[i]].readLock(host) :
-                locks_[paths[i]].writeLock(host) );
-                */
         if (!result) {
-            cerr << "...Failed" << endl;
+            if (DEBUG) cerr << "...Failed" << endl;
             backout = true;
             --i;
             break;
@@ -82,7 +78,7 @@ bool LockSet::lockPath(const string& path, const HostID& host, LockType type) {
         }
     }
 
-    cerr << "Locks: " << endl << *this << endl;
+    if (DEBUG) cerr << "Locks: " << endl << *this << endl;
 
     pthread_mutex_unlock(&mutex_);
     return !backout;
@@ -99,7 +95,7 @@ void LockSet::unlockPath(const string& path, const HostID& host) {
         if (!locks_[paths[i]].locked())
             locks_.erase(paths[i]);
     }
-    cerr << "Locks: " << endl << *this << endl;
+    if (DEBUG) cerr << "Locks: " << endl << *this << endl;
     pthread_mutex_unlock(&mutex_);
 }
 

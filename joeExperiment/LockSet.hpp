@@ -12,6 +12,7 @@ extern "C" {
 
 class LockSet {
     public:
+
         LockSet();
         LockSet(const LockSet& rhs);
 
@@ -25,6 +26,7 @@ class LockSet {
         // member function that allows easy printing for operator<<
         std::ostream& print(std::ostream& out) const;
     private:
+
         enum LockType { R, W };
         bool lockPath(const std::string& path, const DFS::HostID& host, LockType type);
 

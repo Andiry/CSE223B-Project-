@@ -137,7 +137,7 @@ bool Host::lock(const string& file, LockType::type type) {
     bool ret;
     PRECHECK(return true;, cerr << "First fail" << endl; return true);
     ret = client_->lock(*me_, file, type);
-    cerr << "Succeeded to request lock on " << file << " from " << identifier() << endl;
+    //cerr << "Succeeded to request lock on " << file << " from " << identifier() << endl;
     POSTCHECK(cerr << "Second lock fail" << endl; return true;);
     return ret;
 }

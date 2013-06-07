@@ -21,7 +21,7 @@ namespace FUSEService {
                          << oper << " ERROR: UNKNOWN PATH" << endl;
             return;
         }
-        globals_->debug_ << "================ "
+        globals_->debug_ << "== LOCAL ========== "
                          << oper << " on " << path << endl;
     }
     inline void announceOperation(const string& oper, const char *from, const char* to) {
@@ -77,7 +77,7 @@ static bool FUSEService::lockAll(const string& path, const DFS::LockType::type l
     for (auto& pair : globals_->hostMap_) {
         bool tryLock = pair.second.lock(path, lockType);
         if (!tryLock) {
-            cerr << "Failed to acquire lock for " << pair.second.identifier() << endl;
+            globals_->debug_ << "Failed to acquire lock for " << pair.second.identifier() << endl;
             backout = true;
             break;
         }
@@ -293,7 +293,7 @@ int FUSEService::fuse_create(const char *path, mode_t mode, struct fuse_file_inf
     if (!lockAll(path, DFS::LockType::type::WRITE))
         return -ENOLCK;
 
-    cerr << "Got lock" << endl;
+    globals_->debug_ << "Got lock" << endl;
 
     fi->fh = globals_->randGen_();
     uint64_t& fh(globals_->fhMap_[fi->fh]);
@@ -306,7 +306,7 @@ int FUSEService::fuse_create(const char *path, mode_t mode, struct fuse_file_inf
     for (auto& pair : globals_->hostMap_)
         pair.second.create(path, mode, ffit);
 
-    cerr << "Sent create commands" << endl;
+    globals_->debug_ << "Sent create commands" << endl;
 
     if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;

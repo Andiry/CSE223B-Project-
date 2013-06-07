@@ -13,6 +13,10 @@
 
 typedef std::map<DFS::HostID, Host> HostMap_t;
 
+struct DummyStream : std::ostream {
+    //operator<<
+};
+
 struct GlobalBucket {
     LockSet locks_;
     DFS::HostID me_;
@@ -28,7 +32,8 @@ struct GlobalBucket {
 
     std::map<uint64_t, uint64_t> fhMap_;
 
-    std::ostream& debug_;
+    DummyStream debug_;
+    //std::ostream& debug_;
     
 
     // fi->fh stores the randomized key
@@ -42,7 +47,8 @@ struct GlobalBucket {
     //call
    
     GlobalBucket(const std::string& hostname, int16_t port, void (*killall)(void))
-        : killall_(killall), joinLock_(false), joinMaster_(false), debug_(std::cerr) {
+        : killall_(killall), joinLock_(false), joinMaster_(false) {
+        //: killall_(killall), joinLock_(false), joinMaster_(false), debug_(std::cerr) {
         me_.hostname = hostname;
         me_.port     = port;
         randGen_.seed(std::chrono::system_clock::now().time_since_epoch().count());
