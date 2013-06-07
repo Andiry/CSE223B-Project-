@@ -21,6 +21,9 @@ class LockSet {
         bool readUnlockPath(const std::string& path, const DFS::HostID& host);
         void unlockAll(const DFS::HostID& host);
         void unlockPath(const std::string& path, const DFS::HostID& host);
+
+        // member function that allows easy printing for operator<<
+        std::ostream& print(std::ostream& out) const;
     private:
         enum LockType { R, W };
         bool lockPath(const std::string& path, const DFS::HostID& host, LockType type);
@@ -32,5 +35,9 @@ class LockSet {
 
         void splitPaths(const std::string& path, std::vector<std::string>& paths);
 };
+
+inline std::ostream& operator<<(std::ostream& stream, const LockSet& locks) {
+    return locks.print(stream);
+}
 
 #endif

@@ -4,6 +4,25 @@
 using namespace std;
 using namespace DFS;
 
+ostream& Lock::print(std::ostream& out) const {
+
+    switch (state_) {
+        case UNLOCKED:
+            out << "U";
+            break;
+        case READ:
+            out << "R";
+            break;
+        case WRITE:
+            out << "W";
+            break;
+    }
+    out << " (" << readCount_ << ") ";
+    for (auto& hostPair : hosts_)
+        out << hostPair.first.hostname << ":" << hostPair.first.port << " (" << hostPair.second << "), ";
+    return out;
+}
+
 Lock::Lock() : state_(UNLOCKED), readCount_(0) {
     int rc = pthread_mutex_init(&mutex_, NULL);
     if (rc) cerr << "ERROR: Unable to init mutex!" << endl;
@@ -40,6 +59,8 @@ bool Lock::readUnlock(const HostID& host) {
 
     if (state_ == READ && hosts_[host]) {
         --hosts_[host];
+        if (!hosts_[host])
+            hosts_.erase(host);
 
         if (--readCount_ == 0)
             state_ = UNLOCKED;

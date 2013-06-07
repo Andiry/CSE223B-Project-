@@ -13,11 +13,21 @@ namespace FUSEService {
     void unlockAll(const string& path);
     static bool lockAll(const string& path, const DFS::LockType::type lockType);
 
+    GlobalBucket * globals_;
+
+    inline void announceOperation(const string& oper, const char *path) {
+        globals_->debug_ << "================ "
+                         << oper << " on " << path << endl;
+    }
+    inline void announceOperation(const string& oper, const char *from, const char* to) {
+        globals_->debug_ << "================ "
+                         << oper << " from " << from << " to " << to << endl;
+    }
+
     extern "C" {
         fuse * fuse_ = NULL;
         string convert(const char *path);
     }
-    GlobalBucket * globals_;
 }
 
 string FUSEService::convert(const char *path)
@@ -90,6 +100,7 @@ void FUSEService::ffi2ffit(const fuse_file_info& ffi, FUSEFileInfoTransport& ffi
 
 int FUSEService::fuse_opendir(const char *path, struct fuse_file_info *fi)
 {
+    announceOperation("opendir", path);
     if (!lockAll(path, DFS::LockType::type::READ))
         return -ENOLCK;
 
@@ -116,12 +127,14 @@ inline dirp * FUSEService::fuse_get_dirp(struct fuse_file_info *fi)
 int FUSEService::fuse_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
         off_t offset, struct fuse_file_info *fi)
 {
+    announceOperation("readdir", path);
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     return local_readdir(convert(path).c_str(), buf, filler, offset, fi, fh);
 }
 
 int FUSEService::fuse_releasedir(const char *path, struct fuse_file_info *fi)
 {
+    announceOperation("releasedir", path);
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_releasedir(cpath.c_str(), fi, fh);
@@ -138,6 +151,7 @@ int FUSEService::fuse_releasedir(const char *path, struct fuse_file_info *fi)
 
 int FUSEService::fuse_mkdir(const char *path, mode_t mode)
 {
+    announceOperation("mkdir", path);
     string cpath = convert(path);
     int ret = local_mkdir(cpath.c_str(), mode);
     for (auto& pair : globals_->hostMap_)
@@ -147,6 +161,7 @@ int FUSEService::fuse_mkdir(const char *path, mode_t mode)
 
 int FUSEService::fuse_unlink(const char *path)
 {
+    announceOperation("unlink", path);
     string cpath = convert(path);
     int ret = local_unlink(cpath.c_str());
     for (auto& pair : globals_->hostMap_)
@@ -156,6 +171,7 @@ int FUSEService::fuse_unlink(const char *path)
 
 int FUSEService::fuse_rmdir(const char *path)
 {
+    announceOperation("rmdir", path);
     string cpath = convert(path);
     int ret = local_rmdir(cpath.c_str());
     for (auto& pair : globals_->hostMap_)
@@ -165,12 +181,14 @@ int FUSEService::fuse_rmdir(const char *path)
 
 int FUSEService::fuse_symlink(const char *from, const char *to)
 {
+    announceOperation("symlink", from, to);
     return -1;
     //return local_symlink(from, to);
 }
 
 int FUSEService::fuse_rename(const char *from, const char *to)
 {
+    announceOperation("rename", from, to);
     string cfrom = convert(from);
     string cto   = convert(to);
     int ret = local_rename(cfrom.c_str(), cto.c_str());
@@ -181,12 +199,14 @@ int FUSEService::fuse_rename(const char *from, const char *to)
 
 int FUSEService::fuse_link(const char *from, const char *to)
 {
+    announceOperation("link", from, to);
     //return local_link(from, to);
     return -1;
 }
 
 int FUSEService::fuse_chmod(const char *path, mode_t mode)
 {
+    announceOperation("chmod", path);
     string cpath = convert(path);
     int ret = local_chmod(cpath.c_str(), mode);
     for (auto& pair : globals_->hostMap_)
@@ -196,6 +216,7 @@ int FUSEService::fuse_chmod(const char *path, mode_t mode)
 
 int FUSEService::fuse_chown(const char *path, uid_t uid, gid_t gid)
 {
+    announceOperation("chown", path);
     string cpath = convert(path);
     int ret = local_chown(cpath.c_str(), uid, gid);
     for (auto& pair : globals_->hostMap_)
@@ -205,6 +226,7 @@ int FUSEService::fuse_chown(const char *path, uid_t uid, gid_t gid)
 
 int FUSEService::fuse_truncate(const char *path, off_t size)
 {
+    announceOperation("truncate", path);
     string cpath = convert(path);
     int ret = local_truncate(cpath.c_str(), size);
     for (auto& pair : globals_->hostMap_)
@@ -215,6 +237,7 @@ int FUSEService::fuse_truncate(const char *path, off_t size)
 int FUSEService::fuse_ftruncate(const char *path, off_t size,
         struct fuse_file_info *fi)
 {
+    announceOperation("ftruncate", path);
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_ftruncate(cpath.c_str(), size, fi, fh);
@@ -227,6 +250,7 @@ int FUSEService::fuse_ftruncate(const char *path, off_t size,
 
 int FUSEService::fuse_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
+    announceOperation("create", path);
     if (!lockAll(path, DFS::LockType::type::WRITE))
         return -ENOLCK;
 
@@ -250,6 +274,7 @@ int FUSEService::fuse_create(const char *path, mode_t mode, struct fuse_file_inf
 
 int FUSEService::fuse_open(const char *path, struct fuse_file_info *fi)
 {
+    announceOperation("open", path);
     if (!lockAll(path,
                 ((fi->flags & (O_WRONLY | O_RDWR)) ?
                     DFS::LockType::type::WRITE :
@@ -273,6 +298,7 @@ int FUSEService::fuse_open(const char *path, struct fuse_file_info *fi)
 int FUSEService::fuse_read(const char *path, char *buf, size_t size, off_t offset,
         struct fuse_file_info *fi)
 {
+    announceOperation("read", path);
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     return local_read(convert(path).c_str(), buf, size, offset, fi, fh);
 }
@@ -280,6 +306,7 @@ int FUSEService::fuse_read(const char *path, char *buf, size_t size, off_t offse
 int FUSEService::fuse_read_buf(const char *path, struct fuse_bufvec **bufp,
         size_t size, off_t offset, struct fuse_file_info *fi)
 {
+    announceOperation("read_buf", path);
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     return local_read_buf(convert(path).c_str(), bufp, size, offset, fi, fh);
 }
@@ -287,6 +314,7 @@ int FUSEService::fuse_read_buf(const char *path, struct fuse_bufvec **bufp,
 int FUSEService::fuse_write(const char *path, const char *buf, size_t size,
         off_t offset, struct fuse_file_info *fi)
 {
+    announceOperation("write", path);
 
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
@@ -305,6 +333,7 @@ int FUSEService::fuse_write(const char *path, const char *buf, size_t size,
 
 int FUSEService::fuse_flush(const char *path, struct fuse_file_info *fi)
 {
+    announceOperation("flush", path);
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_flush(cpath.c_str(), fi, fh);
@@ -317,6 +346,7 @@ int FUSEService::fuse_flush(const char *path, struct fuse_file_info *fi)
 
 int FUSEService::fuse_release(const char *path, struct fuse_file_info *fi)
 {
+    announceOperation("release", path);
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_release(cpath.c_str(), fi, fh);
@@ -334,6 +364,7 @@ int FUSEService::fuse_release(const char *path, struct fuse_file_info *fi)
 int FUSEService::fuse_fsync(const char *path, int isdatasync,
         struct fuse_file_info *fi)
 {
+    announceOperation("fsync", path);
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_fsync(cpath.c_str(), isdatasync, fi, fh);
@@ -348,6 +379,7 @@ int FUSEService::fuse_fsync(const char *path, int isdatasync,
 int FUSEService::fuse_fallocate(const char *path, int mode,
         off_t offset, off_t length, struct fuse_file_info *fi)
 {
+    announceOperation("fallocate", path);
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_fallocate(cpath.c_str(), mode, offset, length, fi, fh);
@@ -361,6 +393,7 @@ int FUSEService::fuse_fallocate(const char *path, int mode,
 
 int FUSEService::fuse_flock(const char *path, struct fuse_file_info *fi, int op)
 {
+    announceOperation("flock", path);
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_flock(cpath.c_str(), fi, op, fh);

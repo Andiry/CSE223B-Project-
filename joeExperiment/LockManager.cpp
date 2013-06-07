@@ -28,10 +28,14 @@ void LockManager::stop() {
     pthread_exit(NULL);
 }
 
+#define clearScreen() printf("%c[2J", 27);
 void * LockManager::start(void * arg) {
     globals_ = static_cast<GlobalBucket *>(arg);
 
     while (!dead_) {
+
+        //clearScreen();
+
         int numDead = 0;
         int numAlive = 0;
         pthread_mutex_lock(&(globals_->hostLock_));
@@ -67,6 +71,8 @@ void * LockManager::start(void * arg) {
             globals_->killall_();
             break;
         }
+
+        cerr << "Locks: " << endl << globals_->locks_ << endl;
 
         nanoSleep(SLEEP_SECONDS, SLEEP_NANOSECONDS);
     }

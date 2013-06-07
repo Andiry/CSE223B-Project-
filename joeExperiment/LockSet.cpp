@@ -4,6 +4,12 @@
 using namespace std;
 using namespace DFS;
 
+ostream& LockSet::print(std::ostream& out) const {
+    for (auto& lockPair: locks_)
+        out << lockPair.first << ": " << lockPair.second << endl;
+    return out;
+}
+
 void LockSet::splitPaths(const string& path, vector<string>& paths) {
     const string delim = "/";
     cerr << "Splitting paths in: '" << path << "'" << endl;
@@ -45,7 +51,7 @@ bool LockSet::lockPath(const string& path, const HostID& host, LockType type) {
     bool backout = false;
     int i = 0;
     for (; i < (int) paths.size(); ++i) {
-        cerr << "Trying to get lock on " << paths[i] << endl;
+        cerr << "Trying to get " << (type == R ? "Read" : "Write") << " lock on " << paths[i] << endl;
         bool result = (type == R || i == (paths.size() - 1) ?
                 locks_[paths[i]].readLock(host) :
                 locks_[paths[i]].writeLock(host) );

@@ -71,9 +71,10 @@ void Host::kill() {
         return;
 
     try {
-        if(transport_->isOpen())
+        if(transport_ && transport_->isOpen())
             transport_->close();
     } catch (apache::thrift::TException& tx) {
+        cerr << "Unable to close connection for " << identifier() << endl;
     }
 }
 

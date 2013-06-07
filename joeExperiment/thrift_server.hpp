@@ -21,6 +21,23 @@ class DFSHandler : virtual public DFS::DFSIf {
     void ffit2ffi(const DFS::FUSEFileInfoTransport& ffit, fuse_file_info& ffi);
     std::string convert(const std::string& path);
 
+    inline void announceOperation(const std::string& oper, 
+                                  const DFS::HostID& sender,
+                                  const std::string& path) {
+        globals_->debug_ << ">>>>>>>>>>>>>>>> "
+                         << sender.hostname << ":" << sender.port
+                         << ": " << oper << " on " << path << std::endl;
+    }
+    inline void announceOperation(const std::string& oper, 
+                                  const DFS::HostID& sender,
+                                  const std::string& from,
+                                  const std::string& to) {
+        globals_->debug_ << ">>>>>>>>>>>>>>>> "
+                         << sender.hostname << ":" << sender.port
+                         << ": " << oper
+                         << " from " << from << " to " << to << std::endl;
+    }
+
   public:
     DFSHandler(GlobalBucket* globals);
     void ping(const DFS::HostID& sender);    

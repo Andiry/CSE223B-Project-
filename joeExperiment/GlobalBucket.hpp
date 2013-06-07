@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <random>
+#include <ostream>
 
 typedef std::map<DFS::HostID, Host> HostMap_t;
 
@@ -23,6 +24,8 @@ struct GlobalBucket {
 
     std::map<uint64_t, uint64_t> fhMap_;
 
+    std::ostream& debug_;
+
     // fi->fh stores the randomized key
     //
     // In open, create and opendir
@@ -34,7 +37,7 @@ struct GlobalBucket {
     //call
    
     GlobalBucket(const std::string& hostname, int16_t port, void (*killall)(void))
-        : killall_(killall), joinLock_(false) {
+        : killall_(killall), joinLock_(false), debug_(std::cerr) {
         me_.hostname = hostname;
         me_.port     = port;
         randGen_.seed(std::chrono::system_clock::now().time_since_epoch().count());

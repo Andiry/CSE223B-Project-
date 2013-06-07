@@ -16,6 +16,8 @@ class Lock {
         Lock(const Lock& rhs);
         ~Lock();
 
+        std::ostream& print(std::ostream& out) const;
+
         bool readLock(const DFS::HostID& host);
         bool readUnlock(const DFS::HostID& host);
         bool writeLock(const DFS::HostID& host);
@@ -31,5 +33,9 @@ class Lock {
         pthread_mutex_t mutex_;
         std::map<DFS::HostID, unsigned> hosts_;
 };
+
+inline std::ostream& operator<<(std::ostream& stream, const Lock& lock) {
+    return lock.print(stream);
+}
 
 #endif
