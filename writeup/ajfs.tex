@@ -83,7 +83,14 @@
 \maketitle
 
 \begin{abstract}
-    We present AJFS: a fully-replicated distributed file system supporting
+    Today, files are required to be accessable at multiple locations,
+    and they need to be synchronized. It is common for people to
+    store their files in a cloud storage, so they can continue work when they
+    get home. Various cloud storage services are available today: Dropbox,
+    Google Drive, SkyDrive, Apple iCloud, etc. For cloud storage, the most
+    important thing is the consistency of the files.
+
+    In this paper, We present AJFS: a fully-replicated distributed file system supporting
     multiple users, simultaneous editing of distinct files and robustness
     against nodes failing or joining the system. Designed to similar use cases
     as Dropbox, the system has been designed for simplicity, supporting causal,
@@ -91,13 +98,13 @@
 \end{abstract}
 
 \section{Introduction}
-I'm introduced!
+    \input{introduction.tex}
 
 \section{Motivation}
-I'm motivated!
+    \input{motivation.tex}
 
 \section{Methods}
-I'm methodical!
+    \input{methodology.tex}
 
 \section{System Design}
     \input{designOverview.tex}
@@ -110,12 +117,15 @@ Describing the FUSE portion
     \input{fsSupport.tex}
 
 \subsection{RPC Service}
+    \input{rpc_service.tex}
 
 
 \section{Evaluation}
+    \input{evaluation.tex}
 
 \section{Conclusions}
 I'm conclusive!
+    \input{conclusions.tex}
 
 \section{Earlier Writeup}
 \input{checkpoint.tex}
