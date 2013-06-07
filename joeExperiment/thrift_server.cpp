@@ -385,7 +385,7 @@ void DFSHandler::utimens(const HostID& sender, const string& path, const TimeSpe
     delete [] ts;
 }
 
-boost::shared_ptr<TSimpleServer> server_;
+boost::shared_ptr<TServer> server_;
 
 void DFSServer::stop() {
     server_->stop();
@@ -399,11 +399,13 @@ void * DFSServer::start(void * arg) {
 
     boost::shared_ptr<DFSHandler> handler(new DFSHandler(globals));
     boost::shared_ptr<TProcessor> processor(new DFSProcessor(handler));
-    boost::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
-    boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
     boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+    /*
+    boost::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
+    boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());*/
 
-    server_.reset(new TSimpleServer(processor, serverTransport, transportFactory, protocolFactory));
+    //server_.reset(new TSimpleServer(processor, serverTransport, transportFactory, protocolFactory));
+    server_.reset(new TNonblockingServer(processor, protocolFactory, port));
     server_->serve();
 
     cerr << "Thrift server done!" << endl;

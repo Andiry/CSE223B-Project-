@@ -31,7 +31,8 @@ void Host::setup() {
         return;
 
     socket_.reset(new apache::thrift::transport::TSocket(id_.hostname, id_.port));
-    transport_.reset(new apache::thrift::transport::TBufferedTransport(socket_));
+    transport_.reset(new apache::thrift::transport::TFramedTransport(socket_));
+    //transport_.reset(new apache::thrift::transport::TBufferedTransport(socket_));
     protocol_.reset(new apache::thrift::protocol::TBinaryProtocol(transport_));
     client_.reset(new DFSClient(protocol_));
 

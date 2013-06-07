@@ -6,7 +6,8 @@ DFS_OBJ := $(patsubst %.cpp,%.o, $(DFS_SRC))
 BINS    := dfs_server dfs_client fusexmp_fh ajfs
 
 FUSE_PKGS=`pkg-config fuse --cflags --libs`
-THRIFT_PKGS := -L/usr/local/lib -lthrift
+THRIFT_PKGS=`pkg-config thrift-nb libevent --cflags --libs`
+#THRIFT_PKGS := -L/usr/local/lib -lthriftnb -lthrift
 
 fusexmp_fh_DEPS=fusexmp_fh.cpp
 AJFS_DEPS=ajfs.o $(DFS_OBJ) thrift_server.o LFS_operations.o fuse_operations.o \

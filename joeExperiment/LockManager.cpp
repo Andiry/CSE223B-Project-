@@ -74,6 +74,11 @@ void * LockManager::start(void * arg) {
             break;
         }
 
+        if(globals_->joinLock_)
+            ++joinLockCount_;
+        else
+            joinLockCount_ = 0;
+
         if (joinLockCount_ >= JOIN_LOCK_COUNT_THRESH) {
             cerr << "ERROR: JoinLockCount timed out... New host died?" << endl;
             pthread_mutex_lock(&globals_->hostLock_);
@@ -87,10 +92,6 @@ void * LockManager::start(void * arg) {
             pthread_mutex_unlock(&globals_->hostLock_);
             joinLockCount_ = 0;
         }
-        else if(globals_->joinLock_)
-            ++joinLockCount_;
-        else
-            joinLockCount_ = 0;
 
 
         nanoSleep(SLEEP_SECONDS, SLEEP_NANOSECONDS);
