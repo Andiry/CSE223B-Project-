@@ -20,7 +20,7 @@ namespace FUSEService {
                          << oper << " on " << path << endl;
     }
     inline void announceOperation(const string& oper, const char *from, const char* to) {
-        globals_->debug_ << "================ "
+        globals_->debug_ << "== LOCAL ========== "
                          << oper << " from " << from << " to " << to << endl;
     }
 
@@ -354,7 +354,6 @@ int FUSEService::fuse_write(const char *path, const char *buf, size_t size,
     for (auto& pair : globals_->hostMap_)
         pair.second.write(path, vbuf, size, offset, ffit);
 
-    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 

@@ -25,8 +25,8 @@ struct HostID {
 }
 
 enum LockType {
-  READ = 1,
-  WRITE = 2,
+    READ    = 1,
+    WRITE   = 2,
 }
 
 service DFS {

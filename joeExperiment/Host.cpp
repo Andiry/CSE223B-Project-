@@ -44,24 +44,30 @@ bool Host::operator<(const Host& rhs) const {
 }
 
 bool Host::tryConnect() {
-    if (state_ == ME)
+    if (state_ == ME) {
+        cerr << "Tried to open connection to myself. Skipping..." << endl;
         return true;
-    if (state_ == UNKNOWN)
+    }
+    if (state_ == UNKNOWN) {
+        cerr << "Tried to open connection to unknown host..." << endl;
         return false;
+    }
 
     if(transport_->isOpen()) {
         state_ = ALIVE;
         return true;
     }
 
-    cerr << "Trying to open connection to " << identifier() << endl;
+    cerr << "Trying to open connection to " << identifier();
     try {
         transport_->open();
     } catch (apache::thrift::TException& tx) {
         state_ = DEAD;
+        cerr << "...failed" << endl;
         return false;
     }
 
+    cerr << "...succeded" << endl;
     state_ = ALIVE;
     return true;
 }
@@ -100,7 +106,6 @@ bool Host::ping() {
     POSTCHECK(return false);
     return true;
 }
-
 
 void Host::unlock(const string& file) {
     PRECHECK(return, return);
@@ -143,7 +148,8 @@ void Host::join(set<DFS::HostID> & _return) {
 }
 
 bool Host::requestJoinLock(string& _return) {
-    PRECHECK(return false, return false);
+    cerr << "Requesting JoinLock from " << identifier() << "...";
+    PRECHECK(cerr << "Failed (me)" << endl; return false, cerr << "Failed (ON_FAIL)" << endl; return false);
     client_->requestJoinLock(_return, *me_);
     if(_return == "")
         return false;

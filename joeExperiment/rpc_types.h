@@ -235,6 +235,12 @@ class HostID {
 
   bool operator < (const HostID & ) const;
 
+  void operator = (const HostID & rhs)
+  {
+    hostname = rhs.hostname;
+    port = rhs.port;
+  }
+
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 

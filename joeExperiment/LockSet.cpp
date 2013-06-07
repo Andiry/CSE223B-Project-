@@ -44,6 +44,7 @@ LockSet::LockSet(const LockSet& rhs)
 }
 
 bool LockSet::lockPath(const string& path, const HostID& host, LockType type) {
+    pthread_mutex_lock(&mutex_);
     vector<string> paths;
     splitPaths(path, paths);
 
@@ -83,52 +84,39 @@ bool LockSet::lockPath(const string& path, const HostID& host, LockType type) {
 
     cerr << "Locks: " << endl << *this << endl;
 
+    pthread_mutex_unlock(&mutex_);
     return !backout;
 }
 
-bool LockSet::unlockPath(const string& path, const HostID& host, LockType type) {
+void LockSet::unlockPath(const string& path, const HostID& host) {
+    pthread_mutex_lock(&mutex_);
     vector<string> paths;
     splitPaths(path, paths);
 
     int i = paths.size() - 1;
     for (; i >= 0; --i) {
         locks_[paths[i]].unlock(host);
+        if (!locks_[paths[i]].locked())
+            locks_.erase(paths[i]);
     }
-    return true;
+    cerr << "Locks: " << endl << *this << endl;
+    pthread_mutex_unlock(&mutex_);
 }
 
 bool LockSet::writeLockPath(const string& path, const HostID& host) {
-    pthread_mutex_lock(&mutex_);
-    bool result = lockPath(path, host, W); 
-    pthread_mutex_unlock(&mutex_);
-    return result;
+    return lockPath(path, host, W); 
 }
 
-bool LockSet::writeUnlockPath(const string& path, const HostID& host) {
-    pthread_mutex_lock(&mutex_);
-    bool result = unlockPath(path, host, W); 
-    pthread_mutex_unlock(&mutex_);
-    return result;
+void LockSet::writeUnlockPath(const string& path, const HostID& host) {
+    unlockPath(path, host); 
 }
 
 bool LockSet::readLockPath(const string& path, const HostID& host) {
-    pthread_mutex_lock(&mutex_);
-    bool result = lockPath(path, host, R); 
-    pthread_mutex_unlock(&mutex_);
-    return result;
+    return lockPath(path, host, R); 
 }
 
-bool LockSet::readUnlockPath(const string& path, const HostID& host) {
-    pthread_mutex_lock(&mutex_);
-    bool result = unlockPath(path, host, R); 
-    pthread_mutex_unlock(&mutex_);
-    return result;
-}
-
-void LockSet::unlockPath(const string& path, const HostID& host) {
-    unlockPath(path, host, R);
-    unlockPath(path, host, W);
-    cerr << "Locks: " << endl << *this << endl;
+void LockSet::readUnlockPath(const string& path, const HostID& host) {
+    unlockPath(path, host); 
 }
 
 void LockSet::unlockAll(const HostID& host) {
@@ -136,8 +124,9 @@ void LockSet::unlockAll(const HostID& host) {
     set<string>& paths = hostPaths_[host];
     for (set<string>::iterator iter = paths.begin(); iter != paths.end(); ++iter) {
         // ONE of these should work!
-        locks_[*iter].readUnlock(host);
-        locks_[*iter].writeUnlock(host);
+        locks_[*iter].unlock(host);
+        if (!locks_[*iter].locked())
+            locks_.erase(*iter);
     }
 
     hostPaths_.erase(host);

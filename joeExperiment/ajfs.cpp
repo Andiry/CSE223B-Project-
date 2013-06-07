@@ -73,12 +73,12 @@ void syncPaths(const string& rHost, const string& lPath, const string& rPath) {
     cerr << "Trying to rsync paths" << endl;
     string command =
         "rsync -az -e ssh --delete " + rHost + ":" + rPath + "/ " + lPath + "/";
-    //int ret = system(command.c_str());
+    int ret = system(command.c_str());
     
-    cerr << "I WOULD run: " << endl;
-    cerr << command << endl;
-    int ret = 0;
-    sleep(2);
+    //cerr << "I WOULD run: " << endl;
+    //cerr << command << endl;
+    //int ret = 0;
+    //sleep(2);
 
     if (ret) {
         cerr << "ERROR: Unable to rsync. Returned " << ret << endl;
@@ -124,12 +124,11 @@ int main(int argc, char *argv[])
         string remoteIP(argv[5]);
         int16_t remotePort = atoi(argv[6]);
 
+        cerr << "Remote IP/Port:\t" << remoteIP << ":" << remotePort << endl;
+
         Host remoteHost(remoteIP, remotePort, Host::State::ALIVE, meID);
         globals.hostMap_[remoteHost.id_] = remoteHost;
         remoteHostID = remoteHost.id_;
-
-        cerr << "Remote IP:\t" << remoteIP << endl;
-        cerr << "Remote Port:\t" << remotePort << endl;
 
         string remotePath;
         if (!remoteHost.requestJoinLock(remotePath)) {

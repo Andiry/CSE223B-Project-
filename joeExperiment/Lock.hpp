@@ -26,6 +26,7 @@ class Lock {
 
         bool readLocked() const;
         bool writeLocked() const;
+        bool locked() const;
 
     private:
         State state_;

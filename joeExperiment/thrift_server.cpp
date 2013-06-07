@@ -77,6 +77,9 @@ bool DFSHandler::lock(const HostID& sender, const std::string& file, const LockT
 void DFSHandler::join(std::set<HostID> & _return, const HostID& sender) {
     if (checkForDead(sender)) return;
 
+    if (!globals_->joinMaster_) return;
+    if (globals_->joining_ != sender) return;
+
     // Call addServer on all of the hosts.
     pthread_mutex_lock(&globals_->hostLock_);
     for (auto& pair : globals_->hostMap_)
@@ -97,14 +100,27 @@ void DFSHandler::join(std::set<HostID> & _return, const HostID& sender) {
         _return.insert(pair.second.id_);
     pthread_mutex_unlock(&globals_->hostLock_);
 
-    cerr << "Finished joined of " << sender.hostname << ":" << sender.port << endl;
+    globals_->joinMaster_ = false;
+
+    cerr << "Finished join of " << sender.hostname << ":" << sender.port << endl;
 }
 
 void DFSHandler::requestJoinLock(string& _return, const HostID& sender) {
-    if (globals_->joinLock_)
+    cerr << "Received JoinLock Request from " << sender.hostname << ":" << sender.port << endl;
+    if (globals_->joinLock_) {
+        if (globals_->joining_ == sender) {
+            _return = globals_->backupPath_;
+            cerr << "Reinitialized requestJoinLock of "
+                 << sender.hostname << ":" << sender.port
+                 << " successfully" << endl;
+            return;
+        }
         return;
+    }
 
-    globals_->joinLock_ = true;
+    globals_->joinLock_     = true;
+    globals_->joinMaster_   = true;
+    globals_->joining_      = sender;
 
     bool backout = false;
     list<Host *> backoutHosts;
@@ -143,6 +159,7 @@ bool DFSHandler::getJoinLock(const HostID& sender) {
 }
 
 void DFSHandler::ffit2ffi(const FUSEFileInfoTransport& ffit, fuse_file_info& ffi) {
+    // I hate myself a little bit for having to do this.
     ffi.flags       = ffit.flags;
     ffi.fh_old      = ffit.fh_old;
     ffi.writepage   = ffit.writepage;

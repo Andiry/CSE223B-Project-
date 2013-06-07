@@ -12,8 +12,9 @@ extern "C" {
 #include "Host.hpp"
 
 namespace LockManager {
-    const time_t    SLEEP_SECONDS       = 2;
-    const long      SLEEP_NANOSECONDS   = 500000000L;
+    const time_t    SLEEP_SECONDS           = 2;
+    const long      SLEEP_NANOSECONDS       = 500000000L;
+    const unsigned  JOIN_LOCK_COUNT_THRESH  = 4; // 10 seconds
 
     void * start(void * globals);
     void stop();

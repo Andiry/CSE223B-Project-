@@ -16,9 +16,9 @@ class LockSet {
         LockSet(const LockSet& rhs);
 
         bool writeLockPath(const std::string& path, const DFS::HostID& host);
-        bool writeUnlockPath(const std::string& path, const DFS::HostID& host);
+        void writeUnlockPath(const std::string& path, const DFS::HostID& host);
         bool readLockPath(const std::string& path, const DFS::HostID& host);
-        bool readUnlockPath(const std::string& path, const DFS::HostID& host);
+        void readUnlockPath(const std::string& path, const DFS::HostID& host);
         void unlockAll(const DFS::HostID& host);
         void unlockPath(const std::string& path, const DFS::HostID& host);
 
@@ -27,7 +27,6 @@ class LockSet {
     private:
         enum LockType { R, W };
         bool lockPath(const std::string& path, const DFS::HostID& host, LockType type);
-        bool unlockPath(const std::string& path, const DFS::HostID& host, LockType type);
 
         std::map<std::string, Lock> locks_;
         std::map<DFS::HostID, std::set<std::string>> hostPaths_;

@@ -110,6 +110,10 @@ bool Lock::writeUnlock(const HostID& host) {
     return false;
 }
 
+bool Lock::locked() const {
+    return state_ != UNLOCKED;
+}
+
 bool Lock::readLocked() const {
     return state_ == READ;
 }

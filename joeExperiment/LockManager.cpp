@@ -32,6 +32,8 @@ void LockManager::stop() {
 void * LockManager::start(void * arg) {
     globals_ = static_cast<GlobalBucket *>(arg);
 
+    unsigned joinLockCount_ = 0;
+
     while (!dead_) {
 
         //clearScreen();
@@ -71,6 +73,25 @@ void * LockManager::start(void * arg) {
             globals_->killall_();
             break;
         }
+
+        if (joinLockCount_ >= JOIN_LOCK_COUNT_THRESH) {
+            cerr << "ERROR: JoinLockCount timed out... New host died?" << endl;
+            pthread_mutex_lock(&globals_->hostLock_);
+            if (globals_->joinMaster_) {
+                for (auto& pair : globals_->hostMap_)
+                    pair.second.releaseJoinLock();
+                globals_->hostMap_.erase(globals_->joining_);
+            }
+            globals_->joinMaster_ = false;
+            globals_->joinLock_   = false;
+            pthread_mutex_unlock(&globals_->hostLock_);
+            joinLockCount_ = 0;
+        }
+        else if(globals_->joinLock_)
+            ++joinLockCount_;
+        else
+            joinLockCount_ = 0;
+
 
         nanoSleep(SLEEP_SECONDS, SLEEP_NANOSECONDS);
     }
