@@ -12,6 +12,14 @@ ostream& LockSet::print(std::ostream& out) const {
     return out;
 }
 
+bool LockSet::anyWriteLocked() const {
+    for (auto& pair : locks_) {
+        if (pair.second.writeLocked())
+            return true;
+    }
+    return false;
+}
+
 void LockSet::splitPaths(const string& path, vector<string>& paths) {
     const string delim = "/";
 

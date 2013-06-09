@@ -93,7 +93,6 @@ void * LockManager::start(void * arg) {
             joinLockCount_ = 0;
         }
 
-
         nanoSleep(SLEEP_SECONDS, SLEEP_NANOSECONDS);
     }
 

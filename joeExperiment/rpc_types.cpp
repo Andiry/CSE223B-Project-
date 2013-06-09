@@ -349,10 +349,10 @@ void swap(HostID &a, HostID &b) {
   swap(a.__isset, b.__isset);
 }
 
-
 bool HostID::operator<(DFS::HostID const& rhs) const {
     return (hostname == rhs.hostname) ?
         port < rhs.port : hostname < rhs.hostname;
 }
+
 
 } // namespace

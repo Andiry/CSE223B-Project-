@@ -49,7 +49,7 @@ class DFSHandler : virtual public DFS::DFSIf {
     bool lock(const DFS::HostID& sender, const std::string& file, const DFS::LockType::type lockType);
     void join(std::set<DFS::HostID> & _return, const DFS::HostID& sender);    
     void requestJoinLock(std::string & _return, const DFS::HostID& sender);    
-    bool getJoinLock(const DFS::HostID& sender);    
+    bool getJoinLock(const DFS::HostID& sender, const DFS::HostID& newServer);
     void releasedir(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi);    
     void mkdir(const DFS::HostID& sender, const std::string& path, const int32_t mode);    
     void unlink(const DFS::HostID& sender, const std::string& path);    

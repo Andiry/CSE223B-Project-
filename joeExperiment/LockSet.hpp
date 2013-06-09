@@ -23,6 +23,8 @@ class LockSet {
         void unlockAll(const DFS::HostID& host);
         void unlockPath(const std::string& path, const DFS::HostID& host);
 
+        bool anyWriteLocked() const;
+
         // member function that allows easy printing for operator<<
         std::ostream& print(std::ostream& out) const;
     private:

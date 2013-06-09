@@ -23,7 +23,7 @@ class DFSIf {
   virtual bool lock(const HostID& sender, const std::string& file, const LockType::type lockType) = 0;
   virtual void join(std::set<HostID> & _return, const HostID& sender) = 0;
   virtual void requestJoinLock(std::string& _return, const HostID& sender) = 0;
-  virtual bool getJoinLock(const HostID& sender) = 0;
+  virtual bool getJoinLock(const HostID& sender, const HostID& newServer) = 0;
   virtual void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
   virtual void mkdir(const HostID& sender, const std::string& path, const int32_t mode) = 0;
   virtual void unlink(const HostID& sender, const std::string& path) = 0;
@@ -99,7 +99,7 @@ class DFSNull : virtual public DFSIf {
   void requestJoinLock(std::string& /* _return */, const HostID& /* sender */) {
     return;
   }
-  bool getJoinLock(const HostID& /* sender */) {
+  bool getJoinLock(const HostID& /* sender */, const HostID& /* newServer */) {
     bool _return = false;
     return _return;
   }
@@ -787,8 +787,9 @@ class DFS_requestJoinLock_presult {
 };
 
 typedef struct _DFS_getJoinLock_args__isset {
-  _DFS_getJoinLock_args__isset() : sender(false) {}
+  _DFS_getJoinLock_args__isset() : sender(false), newServer(false) {}
   bool sender;
+  bool newServer;
 } _DFS_getJoinLock_args__isset;
 
 class DFS_getJoinLock_args {
@@ -800,6 +801,7 @@ class DFS_getJoinLock_args {
   virtual ~DFS_getJoinLock_args() throw() {}
 
   HostID sender;
+  HostID newServer;
 
   _DFS_getJoinLock_args__isset __isset;
 
@@ -807,9 +809,15 @@ class DFS_getJoinLock_args {
     sender = val;
   }
 
+  void __set_newServer(const HostID& val) {
+    newServer = val;
+  }
+
   bool operator == (const DFS_getJoinLock_args & rhs) const
   {
     if (!(sender == rhs.sender))
+      return false;
+    if (!(newServer == rhs.newServer))
       return false;
     return true;
   }
@@ -832,6 +840,7 @@ class DFS_getJoinLock_pargs {
   virtual ~DFS_getJoinLock_pargs() throw() {}
 
   const HostID* sender;
+  const HostID* newServer;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2643,8 +2652,8 @@ class DFSClient : virtual public DFSIf {
   void requestJoinLock(std::string& _return, const HostID& sender);
   void send_requestJoinLock(const HostID& sender);
   void recv_requestJoinLock(std::string& _return);
-  bool getJoinLock(const HostID& sender);
-  void send_getJoinLock(const HostID& sender);
+  bool getJoinLock(const HostID& sender, const HostID& newServer);
+  void send_getJoinLock(const HostID& sender, const HostID& newServer);
   bool recv_getJoinLock();
   void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
   void send_releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
@@ -2871,13 +2880,13 @@ class DFSMultiface : virtual public DFSIf {
     return;
   }
 
-  bool getJoinLock(const HostID& sender) {
+  bool getJoinLock(const HostID& sender, const HostID& newServer) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getJoinLock(sender);
+      ifaces_[i]->getJoinLock(sender, newServer);
     }
-    return ifaces_[i]->getJoinLock(sender);
+    return ifaces_[i]->getJoinLock(sender, newServer);
   }
 
   void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {

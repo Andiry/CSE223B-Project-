@@ -62,7 +62,7 @@ class DFSHandler : virtual public DFSIf {
     printf("requestJoinLock\n");
   }
 
-  bool getJoinLock(const HostID& sender) {
+  bool getJoinLock(const HostID& sender, const HostID& newServer) {
     // Your implementation goes here
     printf("getJoinLock\n");
   }

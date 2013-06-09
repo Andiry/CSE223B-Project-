@@ -112,6 +112,7 @@ void FUSEService::ffi2ffit(const fuse_file_info& ffi, FUSEFileInfoTransport& ffi
 int FUSEService::fuse_opendir(const char *path, struct fuse_file_info *fi)
 {
     announceOperation("opendir", path);
+
     if (!lockAll(path, DFS::LockType::type::READ)) {
         globals_->debug_ << "Unable to lock directory...?" << endl;
         return -ENOLCK;
@@ -151,6 +152,7 @@ int FUSEService::fuse_releasedir(const char *path, struct fuse_file_info *fi)
     string spath(path == NULL ? "" : path);
     // TODO - called with empty path?
     announceOperation("releasedir", path);
+
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(spath);
     int ret = local_releasedir(cpath.c_str(), fi, fh);
@@ -169,6 +171,10 @@ int FUSEService::fuse_releasedir(const char *path, struct fuse_file_info *fi)
 int FUSEService::fuse_mkdir(const char *path, mode_t mode)
 {
     announceOperation("mkdir", path);
+
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
+
     string cpath = convert(path);
     int ret = local_mkdir(cpath.c_str(), mode);
     for (auto& pair : globals_->hostMap_)
@@ -180,6 +186,10 @@ int FUSEService::fuse_mkdir(const char *path, mode_t mode)
 int FUSEService::fuse_unlink(const char *path)
 {
     announceOperation("unlink", path);
+
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
+
     string cpath = convert(path);
     int ret = local_unlink(cpath.c_str());
     for (auto& pair : globals_->hostMap_)
@@ -192,6 +202,9 @@ int FUSEService::fuse_rmdir(const char *path)
 {
     // TODO - do we want locking here?
     announceOperation("rmdir", path);
+
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
 
     string cpath = convert(path);
 
@@ -212,6 +225,9 @@ int FUSEService::fuse_symlink(const char *from, const char *to)
 int FUSEService::fuse_rename(const char *from, const char *to)
 {
     announceOperation("rename", from, to);
+
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
 
     if (!lockAll(from, DFS::LockType::type::WRITE)) {
         globals_->debug_ << "Unable to lock for rename" << endl;
@@ -241,6 +257,9 @@ int FUSEService::fuse_chmod(const char *path, mode_t mode)
 {
     announceOperation("chmod", path);
 
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
+
     string cpath = convert(path);
     int ret = local_chmod(cpath.c_str(), mode);
     for (auto& pair : globals_->hostMap_)
@@ -253,6 +272,10 @@ int FUSEService::fuse_chmod(const char *path, mode_t mode)
 int FUSEService::fuse_chown(const char *path, uid_t uid, gid_t gid)
 {
     announceOperation("chown", path);
+
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
+
     string cpath = convert(path);
     int ret = local_chown(cpath.c_str(), uid, gid);
     for (auto& pair : globals_->hostMap_)
@@ -264,6 +287,10 @@ int FUSEService::fuse_chown(const char *path, uid_t uid, gid_t gid)
 int FUSEService::fuse_truncate(const char *path, off_t size)
 {
     announceOperation("truncate", path);
+
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
+
     string cpath = convert(path);
     int ret = local_truncate(cpath.c_str(), size);
     for (auto& pair : globals_->hostMap_)
@@ -276,6 +303,10 @@ int FUSEService::fuse_ftruncate(const char *path, off_t size,
         struct fuse_file_info *fi)
 {
     announceOperation("ftruncate", path);
+
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
+
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_ftruncate(cpath.c_str(), size, fi, fh);
@@ -290,6 +321,10 @@ int FUSEService::fuse_ftruncate(const char *path, off_t size,
 int FUSEService::fuse_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
     announceOperation("create", path);
+
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
+
     if (!lockAll(path, DFS::LockType::type::WRITE))
         return -ENOLCK;
 
@@ -315,6 +350,11 @@ int FUSEService::fuse_create(const char *path, mode_t mode, struct fuse_file_inf
 int FUSEService::fuse_open(const char *path, struct fuse_file_info *fi)
 {
     announceOperation("open", path);
+
+    // TODO - make this block instead
+    if (fi->flags & (O_WRONLY | O_RDWR) && globals_->joinLock_)
+        return -EAGAIN;
+
     if (!lockAll(path,
                 ((fi->flags & (O_WRONLY | O_RDWR)) ?
                     DFS::LockType::type::WRITE :
@@ -327,12 +367,17 @@ int FUSEService::fuse_open(const char *path, struct fuse_file_info *fi)
     string cpath = convert(path);
     int ret = local_open(cpath.c_str(), fi, fh);
 
+    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
+
+    // We only have to forward on writing opens.
+    if (!(fi->flags & (O_WRONLY | O_RDWR)))
+        return ret;
+
     FUSEFileInfoTransport ffit;
     ffi2ffit(*fi, ffit);
     for (auto& pair : globals_->hostMap_)
         pair.second.open(path, ffit);
 
-    if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
 
@@ -357,6 +402,9 @@ int FUSEService::fuse_write(const char *path, const char *buf, size_t size,
 {
     announceOperation("write", path);
 
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
+
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_write(cpath.c_str(), buf, size, offset, fi, fh);
@@ -376,6 +424,10 @@ int FUSEService::fuse_write(const char *path, const char *buf, size_t size,
 int FUSEService::fuse_flush(const char *path, struct fuse_file_info *fi)
 {
     announceOperation("flush", path);
+
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
+
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_flush(cpath.c_str(), fi, fh);
@@ -391,6 +443,10 @@ int FUSEService::fuse_flush(const char *path, struct fuse_file_info *fi)
 int FUSEService::fuse_release(const char *path, struct fuse_file_info *fi)
 {
     announceOperation("release", path);
+
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
+
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_release(cpath.c_str(), fi, fh);
@@ -410,6 +466,10 @@ int FUSEService::fuse_fsync(const char *path, int isdatasync,
         struct fuse_file_info *fi)
 {
     announceOperation("fsync", path);
+
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
+
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_fsync(cpath.c_str(), isdatasync, fi, fh);
@@ -427,6 +487,10 @@ int FUSEService::fuse_fallocate(const char *path, int mode,
         off_t offset, off_t length, struct fuse_file_info *fi)
 {
     announceOperation("fallocate", path);
+
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
+
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_fallocate(cpath.c_str(), mode, offset, length, fi, fh);
@@ -442,6 +506,10 @@ int FUSEService::fuse_fallocate(const char *path, int mode,
 int FUSEService::fuse_flock(const char *path, struct fuse_file_info *fi, int op)
 {
     announceOperation("flock", path);
+    
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
+
     uint64_t& fh(globals_->fhMap_[fi->fh]);
     string cpath = convert(path);
     int ret = local_flock(cpath.c_str(), fi, op, fh);
@@ -456,6 +524,9 @@ int FUSEService::fuse_flock(const char *path, struct fuse_file_info *fi, int op)
 int FUSEService::fuse_utimens(const char * path, const struct timespec ts[2])
 {
     announceOperation("utimens", path);
+
+    if (globals_->joinLock_) // TODO - make this block instead
+        return -EAGAIN;
 
     string cpath = convert(path);
 
