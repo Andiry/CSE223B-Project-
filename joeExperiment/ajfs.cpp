@@ -2,7 +2,7 @@
 #include "thrift_server.hpp"
 #include "LFS_operations.hpp"
 #include "fuse_operations.hpp"
-#include "LockManager.hpp"
+#include "HostManager.hpp"
 
 #include "Host.hpp"
 
@@ -45,7 +45,7 @@ static void gracefulExit(int signal) {
         FUSEService::stop();
     }
     else if (self == lThread) {
-        LockManager::stop();
+        HostManager::stop();
     }
     else {
         cerr << "ERROR: Caught signal in an unknown thread...?" << endl;
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
     // Start threads
     tryStartThread(sThread, "Thrift",  &DFSServer::start,   (void *) &globals);
     tryStartThread(fThread, "FUSE",    &FUSEService::start, (void *) fuseArgs);
-    tryStartThread(lThread, "LockMgr", &LockManager::start, (void *) &globals);
+    tryStartThread(lThread, "LockMgr", &HostManager::start, (void *) &globals);
 
     // Complete the join() operation, if needed.
     if (!dead_ && remoteHostID.hostname != "") {

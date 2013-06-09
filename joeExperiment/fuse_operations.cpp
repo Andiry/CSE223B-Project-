@@ -150,7 +150,7 @@ int FUSEService::fuse_readdir(const char *path, void *buf, fuse_fill_dir_t fille
 int FUSEService::fuse_releasedir(const char *path, struct fuse_file_info *fi)
 {
     string spath(path == NULL ? "" : path);
-    // TODO - called with empty path?
+
     announceOperation("releasedir", path);
 
     uint64_t& fh(globals_->fhMap_[fi->fh]);

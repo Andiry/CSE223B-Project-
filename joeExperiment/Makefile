@@ -11,7 +11,7 @@ THRIFT_PKGS=`pkg-config thrift-nb libevent --cflags --libs`
 
 fusexmp_fh_DEPS=fusexmp_fh.cpp
 AJFS_DEPS=ajfs.o $(DFS_OBJ) thrift_server.o LFS_operations.o fuse_operations.o \
-			   Host.o LockManager.o Lock.o LockSet.o
+			   Host.o HostManager.o Lock.o LockSet.o
 
 CXXFLAGS := -g -Wall -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H -std=c++0x -I$(THRIFT_DIR) -I$(BOOST_DIR)
 
