@@ -68,8 +68,8 @@ class DFSHandler : virtual public DFS::DFSIf {
     void flock(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t op);    
     void fallocate(const DFS::HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const DFS::FUSEFileInfoTransport& fi);    
     bool fsync(const DFS::HostID& sender, const std::string& path, const int32_t isdatasync, const DFS::FUSEFileInfoTransport& fi);    
-    void open(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi);    
-    void opendir(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi);
+    bool open(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi);    
+    bool opendir(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi);
     void utimens(const DFS::HostID& sender, const std::string& path, const DFS::TimeSpec& atime, const DFS::TimeSpec& mtime);
 
 };

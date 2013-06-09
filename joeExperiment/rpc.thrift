@@ -63,8 +63,8 @@ service DFS {
     #utimensat
     
     bool fsync(1:HostID sender, 2:string path, 3:i32 isdatasync, 4:FUSEFileInfoTransport fi),
-    oneway void open(1:HostID sender, 2:string path, 3:FUSEFileInfoTransport fi),
-    oneway void opendir(1:HostID sender, 2:string path, 3:FUSEFileInfoTransport fi),
+    bool open(1:HostID sender, 2:string path, 3:FUSEFileInfoTransport fi),
+    bool opendir(1:HostID sender, 2:string path, 3:FUSEFileInfoTransport fi),
 }
 
 #bool HostID::operator<(DFS::HostID const& rhs) const {
