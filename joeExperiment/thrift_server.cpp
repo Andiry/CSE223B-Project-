@@ -339,7 +339,7 @@ bool DFSHandler::fsync(const HostID& sender, const std::string& path, const int3
     return true;
 }
 
-bool DFSHandler::open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+void DFSHandler::open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
     announceOperation("open", sender, path);
     if (checkForDead(sender)) return false;
 
@@ -351,7 +351,7 @@ bool DFSHandler::open(const HostID& sender, const std::string& path, const FUSEF
     return true;
 }
 
-bool DFSHandler::opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+void DFSHandler::opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
 
     announceOperation("opendir", sender, path);
     if (checkForDead(sender)) return false;
