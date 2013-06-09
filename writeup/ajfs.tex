@@ -1,88 +1,47 @@
-%-----------------------------------------------------------------------------
-%
-%               Template for sigplanconf LaTeX Class
-%
-% Name:         sigplanconf-template.tex
-%
-% Purpose:      A template for sigplanconf.cls, which is a LaTeX 2e class
-%               file for SIGPLAN conference proceedings.
-%
-% Author:       Paul C. Anagnostopoulos
-%               Windfall Software
-%               978 371-2316
-%               paul@windfall.com
-%
-% Created:      15 February 2005
-%
-%-----------------------------------------------------------------------------
+% TEMPLATE for Usenix papers, specifically to meet requirements of
+%  USENIX '05
+% originally a template for producing IEEE-format articles using LaTeX.
+%   written by Matthew Ward, CS Department, Worcester Polytechnic Institute.
+% adapted by David Beazley for his excellent SWIG paper in Proceedings,
+%   Tcl 96
+% turned into a smartass generic template by De Clarke, with thanks to
+%   both the above pioneers
+% use at your own risk.  Complaints to /dev/null.
+% make it two column with no page numbering, default is 10 point
 
-%\documentclass{sigplanconf}
-\documentclass[preprint]{sig-alternate-10pt}
-\renewcommand{\ttdefault}{lmtt}
+% Munged by Fred Douglis <douglis@research.att.com> 10/97 to separate
+% the .sty file from the LaTeX source template, so that people can
+% more easily include the .sty file into an existing document.  Also
+% changed to more closely follow the style guidelines as represented
+% by the Word sample file. 
 
-\usepackage{amsmath}
-\usepackage[T1]{fontenc}
-\usepackage[scaled=0.9]{helvet}
-\usepackage{textcomp}
-\makeatletter % *sigh* plus/minus isn't in textcomp, so we need it from LY1.
-\input{ly1enc.def}
-\makeatother
-\DeclareTextSymbolDefault{\textplusminus}{LY1}
-\usepackage{xspace}
-\usepackage{multicol}
-\usepackage{fancyvrb}
-\usepackage{url}
-\usepackage{graphicx}
-\usepackage{color}
-%\usepackage{setspace}
-%\usepackage{flafter}
-\usepackage{alltt}
-\usepackage{floatflt}
-\usepackage{subfigure}
-\usepackage{microtype}\addtolength{\textwidth}{1.4pt}\addtolength{\oddsidemargin}{-1.4pt}\addtolength{\evensidemargin}{-1.4pt}
-\usepackage{natbib}
+% Note that since 2010, USENIX does not require endnotes. If you want
+% foot of page notes, don't include the endnotes package in the 
+% usepackage command, below.
 
-\newbox\subfigbox	% Create a box to hold the subfigure.
-\makeatletter
-\newenvironment{subfigenv}
-{\def\caption##1{\gdef\subcapsave{\relax##1}}%
-\let\reallabel\label
-\def\label##1{\gdef\sublabsave{##1}}%
-\let\subcapsave\@empty
-\begin{lrbox}{\subfigbox}}
-{\end{lrbox}
-\subfigure[\subcapsave]{\usebox{\subfigbox}\reallabel{\sublabsave}}}
-\makeatother
-
-% \usepackage{setspace}
-% \setstretch{0.96}
-%\doublespacing
-
-\raggedbottom
-
-\input{macros.tex}
-
+\documentclass[letterpaper,twocolumn,10pt]{article}
+\usepackage{usenix,epsfig,endnotes}
 \begin{document}
 
+%don't want date printed
+\date{}
 
-%%% 3)  You must start your paper with the \maketitle command.  Prior to the
-%%%     \maketitle you must have \title and \author commands.  If you have a
-%%%     \date command it will be ignored; no date appears on the paper, since
-%%%     the proceedings will have a date on the front cover.
+%make title bold and 14 pt font (Latex default is non-bold, 16 pt)
+%\title{\Large \bf Wonderful : A Terrific Application and Fascinating Paper}
+\title{\Large \bf AJFS: A Simple Distributed File-System}
 
-
-% \titlebanner{banner above paper title}        % These are ignored unless
-% \preprintfooter{short description of paper}   % 'preprint' option specified.
-
-\title{AJFS: A Simple Distributed File-System}
-
-\author{Joe DeBlasio, Jian Xu\\\
-       University of California, San Diego \\\
-       \{jdeblasio, jix024\}@cs.ucsd.edu}
+\author{
+    {\rm Joe DeBlasio, Jian Xu}\\\
+    University of California, San Diego\\\
+    \{jdeblasio, jix024\}@cs.ucsd.edu}
 
 \maketitle
 
-\begin{abstract}
+% Use the following at camera-ready time to suppress page numbers.
+% Comment it out when you first submit the paper for review.
+\thispagestyle{empty}
+
+\subsection*{Abstract}
     Modern computer users use a variety of devices from a variety of locations,
 and want their files to be accessible wherever they are. "Cloud storage"
 services like Dropbox, Google Drive, SkyDrive, Apple iCloud and others offer
@@ -95,7 +54,6 @@ Dropbox, the system has been designed for simplicity, supporting safe
 partially-causal consistency. We believe that AJFS offers a service that can
 often be used in place of services like Dropbox, allowing users to keep their
 own data synchronized without needing to use a third party.
-\end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
@@ -143,17 +101,12 @@ own data synchronized without needing to use a third party.
 \section{Conclusions}
 \input{conclusions.tex}
 
-%\section{Earlier Writeup}
-%\input{checkpoint.tex}
+{\footnotesize \bibliographystyle{acm}
+\bibliography{ajfs}}
 
-% We recommend abbrvnat bibliography style.
-%\bibliographystyle{abbrvnat}
-% TODO FIX BIBLIOGRAPHY
 
-%\bibliographystyle{abbrev}
-
-% The bibliography should be embedded for final submission.
-
-\thebibliography{ajfs}
+\theendnotes
 
 \end{document}
+
+
