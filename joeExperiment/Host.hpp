@@ -36,7 +36,7 @@ class Host {
     bool lock(const std::string& file, DFS::LockType::type type);
     void join(std::set<DFS::HostID> & _return);
     bool requestJoinLock(std::string& path);
-    bool getJoinLock();
+    bool getJoinLock(const DFS::HostID& newServer);
     void releasedir(const std::string& path, const DFS::FUSEFileInfoTransport& fi);
     void mkdir(const std::string& path, const int32_t mode);
     void unlink(const std::string& path);

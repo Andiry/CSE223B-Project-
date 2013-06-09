@@ -115,6 +115,10 @@ void DFSHandler::requestJoinLock(string& _return, const HostID& sender) {
         }
         return;
     }
+    // If folks have files open for writing, this isn't safe to do right now...
+    // TODO - improve this behavior
+    else if (globals_->locks_.anyWriteLocked())
+        return;
 
     globals_->joinLock_     = true;
     globals_->joinMaster_   = true;
@@ -123,7 +127,7 @@ void DFSHandler::requestJoinLock(string& _return, const HostID& sender) {
     bool backout = false;
     list<Host *> backoutHosts;
     for (auto& pair : globals_->hostMap_) {
-        bool result = pair.second.getJoinLock();
+        bool result = pair.second.getJoinLock(sender);
         if (!result) {
             backout = true;
             cerr << "getJoinLock() failed on " << pair.second.identifier() << endl;
@@ -147,12 +151,13 @@ void DFSHandler::requestJoinLock(string& _return, const HostID& sender) {
          << " successfully" << endl;
 }
 
-bool DFSHandler::getJoinLock(const HostID& sender) {
+bool DFSHandler::getJoinLock(const HostID& sender, const HostID& newServer) {
     if (checkForDead(sender)) return false;
     cerr << "JoinLock requested from " << sender.hostname << ":" << sender.port << endl;
     if (globals_->joinLock_)
         return false;
     globals_->joinLock_ = true;
+    globals_->joining_ = newServer;
     return true;
 }
 
@@ -297,9 +302,13 @@ void DFSHandler::release(const HostID& sender, const std::string& path, const FU
     announceOperation("release", sender, path);
     if (checkForDead(sender)) return;
 
-
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
+
+    // This way we can close invalid filehandles without bad things happening.
+    if (!globals_->fhMap_.count(fi.fh))
+        return;
+
     uint64_t& fh(globals_->fhMap_[fi.fh]);
     string cpath = convert(path);
     local_release(cpath.c_str(), &ffi, fh);

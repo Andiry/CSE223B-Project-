@@ -9,12 +9,15 @@
 #include <random>
 #include <ostream>
 
-#include <sys/stat.h>
+extern "C" {
+    #include <sys/stat.h>
+    #include <semaphore.h>
+}
 
 typedef std::map<DFS::HostID, Host> HostMap_t;
 
-struct DummyStream : std::ostream {
-    //operator<<
+class DebugStream : public std::ostream {
+
 };
 
 struct GlobalBucket {
@@ -32,20 +35,14 @@ struct GlobalBucket {
 
     std::map<uint64_t, uint64_t> fhMap_;
 
-    DummyStream debug_;
+    DebugStream debug_;
     //std::ostream& debug_;
-    
+    pthread_cond_t joinCond_;
+    pthread_mutex_t joinMutex_;
+    // TODO - use these for blocking writes on joinLock
+    // TODO - make sure that if requestJoinLock() is not called, but addServer
+    //        IS, that the server will be killed off!
 
-    // fi->fh stores the randomized key
-    //
-    // In open, create and opendir
-    //fi->fh = randVal;
-    //uint64_t& fh(globals_->fhMap_[fi->fh]);
-
-    // All other calls
-    //uint64_t& fh(globals_->fhMap_[fi->fh]);
-    //call
-   
     GlobalBucket(const std::string& hostname, int16_t port, void (*killall)(void))
         : killall_(killall), joinLock_(false), joinMaster_(false) {
         //: killall_(killall), joinLock_(false), joinMaster_(false), debug_(std::cerr) {
@@ -53,6 +50,7 @@ struct GlobalBucket {
         me_.port     = port;
         randGen_.seed(std::chrono::system_clock::now().time_since_epoch().count());
         pthread_mutex_init(&hostLock_, NULL);
+        //pthread_cond_init(&joinCond_, pthread_condattr_t *cond_attr); 
     }
 };
 

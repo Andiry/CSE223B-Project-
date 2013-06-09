@@ -1,10 +1,10 @@
 
-#include "LockManager.hpp"
+#include "HostManager.hpp"
 
 using namespace std;
-using namespace LockManager;
+using namespace HostManager;
 
-namespace LockManager {
+namespace HostManager {
     bool dead_ = false;
     GlobalBucket * globals_ = NULL;
 }
@@ -20,7 +20,7 @@ void nanoSleep(time_t seconds, long nanoseconds) {
     }
 }
 
-void LockManager::stop() {
+void HostManager::stop() {
     dead_ = true;
     for(auto& pair: globals_->hostMap_) {
         pair.second.kill();
@@ -29,7 +29,7 @@ void LockManager::stop() {
 }
 
 #define clearScreen() printf("%c[2J", 27);
-void * LockManager::start(void * arg) {
+void * HostManager::start(void * arg) {
     globals_ = static_cast<GlobalBucket *>(arg);
 
     unsigned joinLockCount_ = 0;
@@ -92,7 +92,6 @@ void * LockManager::start(void * arg) {
             pthread_mutex_unlock(&globals_->hostLock_);
             joinLockCount_ = 0;
         }
-
 
         nanoSleep(SLEEP_SECONDS, SLEEP_NANOSECONDS);
     }

@@ -1,5 +1,5 @@
-#ifndef LOCKMANAGER_HPP_INC
-#define LOCKMANAGER_HPP_INC 1
+#ifndef HOSTMANAGER_HPP_INC
+#define HOSTMANAGER_HPP_INC 1
 
 #include <map>
 
@@ -11,7 +11,7 @@ extern "C" {
 #include "GlobalBucket.hpp"
 #include "Host.hpp"
 
-namespace LockManager {
+namespace HostManager {
     const time_t    SLEEP_SECONDS           = 2;
     const long      SLEEP_NANOSECONDS       = 500000000L;
     const unsigned  JOIN_LOCK_COUNT_THRESH  = 4; // 10 seconds

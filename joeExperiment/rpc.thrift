@@ -40,7 +40,7 @@ service DFS {
     bool        lock(1:HostID sender, 2:string file, 3:LockType lockType),
     set<HostID> join(1:HostID sender),
     string      requestJoinLock(1:HostID sender),
-    bool        getJoinLock(1:HostID sender),
+    bool        getJoinLock(1:HostID sender, 2:HostID newServer),
 
     oneway void releasedir(1:HostID sender, 2:string path, 3:FUSEFileInfoTransport fi),
     oneway void mkdir(1:HostID sender, 2:string path, 3:i32 mode),

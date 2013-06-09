@@ -952,6 +952,14 @@ uint32_t DFS_getJoinLock_args::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->newServer.read(iprot);
+          this->__isset.newServer = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -972,6 +980,10 @@ uint32_t DFS_getJoinLock_args::write(::apache::thrift::protocol::TProtocol* opro
   xfer += this->sender.write(oprot);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("newServer", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += this->newServer.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -983,6 +995,10 @@ uint32_t DFS_getJoinLock_pargs::write(::apache::thrift::protocol::TProtocol* opr
 
   xfer += oprot->writeFieldBegin("sender", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += (*(this->sender)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("newServer", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += (*(this->newServer)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -3893,19 +3909,20 @@ void DFSClient::recv_requestJoinLock(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "requestJoinLock failed: unknown result");
 }
 
-bool DFSClient::getJoinLock(const HostID& sender)
+bool DFSClient::getJoinLock(const HostID& sender, const HostID& newServer)
 {
-  send_getJoinLock(sender);
+  send_getJoinLock(sender, newServer);
   return recv_getJoinLock();
 }
 
-void DFSClient::send_getJoinLock(const HostID& sender)
+void DFSClient::send_getJoinLock(const HostID& sender, const HostID& newServer)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getJoinLock", ::apache::thrift::protocol::T_CALL, cseqid);
 
   DFS_getJoinLock_pargs args;
   args.sender = &sender;
+  args.newServer = &newServer;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4908,7 +4925,7 @@ void DFSProcessor::process_getJoinLock(int32_t seqid, ::apache::thrift::protocol
 
   DFS_getJoinLock_result result;
   try {
-    result.success = iface_->getJoinLock(args.sender);
+    result.success = iface_->getJoinLock(args.sender, args.newServer);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {

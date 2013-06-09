@@ -158,9 +158,9 @@ bool Host::requestJoinLock(string& _return) {
     return true;
 }
 
-bool Host::getJoinLock() {
+bool Host::getJoinLock(const DFS::HostID& newServer) {
     PRECHECK(return true, return true);
-    return client_->getJoinLock(*me_);
+    return client_->getJoinLock(*me_, newServer);
     POSTCHECK(return true);
     return false;
 }
