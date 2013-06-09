@@ -1,4 +1,6 @@
 
 ajfsPaper:
-	pdflatex ajfs.tex
-	pdflatex ajfs.tex
+	pdflatex ajfs
+	bibtex ajfs
+	pdflatex ajfs
+	pdflatex ajfs

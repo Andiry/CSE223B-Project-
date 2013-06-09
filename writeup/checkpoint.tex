@@ -11,7 +11,7 @@ operations from each individual host to the others. However, since we expect
 that there will either only be a single user on a single host at a time, or that
 multiple hosts will be editing disjoint sets of files, the system will not
 support a total ordering of file system changes between hosts. This use case
-also allows us to support a lazier ‘eventual’ consistency model in which all
+also allows us to support a lazier 'eventual' consistency model in which all
 hosts they will eventually see all of the changes to the file system.
 
 To help ensure that hosts edit disjoint sets of files, file trees will be
@@ -20,21 +20,21 @@ opened for editing. This will permit users on other hosts to see changes as they
 happen, but not interfere with those changes (as doing so would require
 acquiring an exclusive lock).
 
-Operations originating on host “A” will be queued locally and also broadcast to
-be queued on each of the other hosts in a queue specifically for A’s requests.
-The system will handle the requests in order. Requests will ‘succeed’ once a
+Operations originating on host "A" will be queued locally and also broadcast to
+be queued on each of the other hosts in a queue specifically for A's requests.
+The system will handle the requests in order. Requests will 'succeed' once a
 majority of hosts have acknowledged that the instruction was queued (for
 asynchronous requests) or the majority of hosts have processed the queue up
 until the new operation (for synchronous requests)..
 
-The system is designed to be fairly simple, and as a result, we’ve chosen to
-handle view changes in a very simple way: nodes are ‘lost’ when they can’t
+The system is designed to be fairly simple, and as a result, we've chosen to
+handle view changes in a very simple way: nodes are 'lost' when they can't
 contact the majority of hosts. We assume that packet transmission is fairly
-reliable, and that the network won’t have partial or frequent outages. If nodes
-detect that they’re unable to connect to the majority of hosts, it is up to them
+reliable, and that the network won't have partial or frequent outages. If nodes
+detect that they're unable to connect to the majority of hosts, it is up to them
 to ensure that they stop accepting new file system modifications, and attempt to
 reconnect (or simply restart). Other nodes can also inform a node that that node
-‘died’ (because it previously wasn’t responding) at which point, it will have to
+'died' (because it previously wasn't responding) at which point, it will have to
 restart.
 
 When nodes rejoin the system, they request a global lock on the file system. At
@@ -58,7 +58,7 @@ non-essential file mode permissions as well. Given the tools used and our
 intended testing plan, we will only guarantee that our software artifact works
 on installations of Ubuntu  12.04 with FUSE and Thrift installed.
 
-Currently, the system is at a fairly young stage. We have working ‘local’ file
+Currently, the system is at a fairly young stage. We have working 'local' file
 systems using FUSE. We can also communicate between instances of FUSE via
 Thrift, but operations are not executed remotely. We encountered more trouble
 than we care to admit getting FUSE and Thrift to coexist, and so that
@@ -72,5 +72,5 @@ accuracy of those files (likely with hashes).
 
 Given our host needs, we plan on just using the nodes that have already been set
 up for class use (i.e. the systems used for labs 1-3). Given that these nodes
-already have Thrift and FUSE installed, we don’t need anything additional.
+already have Thrift and FUSE installed, we don't need anything additional.
 

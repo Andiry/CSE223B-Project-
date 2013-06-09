@@ -1,2 +1,47 @@
 
-% Not really asynchronous.
+The system suffers from a number of limitations that could be improved on in the
+future. The greatest issue in AJFS at present is that operations are queued for
+execution on the receiving server, rather than on the sending one. This was
+chosen for simplicity, as AJFS is able to leverage the buffered socket
+connection to queue requests. This approach requires, however, that every
+request be immediately forwarded on to other hosts.
+
+Operations that need to be fast (for instance, \texttt{write()}) thus suffer, as
+they need to be fully transferred to other hosts before the operation is able to
+return to the user. Even though the actual operation execution is asynchronous,
+the data transmission often dominates the time it takes to perform the
+operation, and that is fully synchronous.
+
+This results in bandwidth that is inversely proportional to the number of nodes
+that are active in the system. If AJFS queued outgoing requests and handled
+transmitting of the data asynchronously, bandwidth would be constant with
+respect to number of nodes. This change would require the introduction of a
+worker thread whose job would be to send data to other nodes. This change is
+the single largest opportunity for easy performance improvement.
+
+While a node is joining, no changes can be made to the system as the joining
+node is syncing with the others. A current limitation of the system is that it
+does not block on modifying requests submitted during this time. Instead, it
+returns the error EAGAIN ("Resource temporarily unavailable"). While this
+behavior is safe, it may confuse applications that aren't prepared for that
+possibility, and this approach does not guarantee that they will repeatedly try
+their operation (causing unnecessary load on the system in the process).
+
+While the system does support view changes (of nodes joining, dying and total
+network partitions), the node joining algorithm relies heavily on \texttt{rsync}
+to do all of the heavy lifting. This has many downsides, not the least of which
+is that the two machines must be able to communicate with each other via a
+seperate side channel that supports rsync (such as ssh in the current
+implementation). To support efficient syncing on its own, the system could
+employ the common method of logging so that the log could be replayed on a
+remote server.
+
+The system also does not support "partial" partitions at all (meaning when
+the connection graph is connected, but not fully connected). To support this
+possibility, AJFS would need to support a gossip-like communication mechanism.
+It would also need to support sender-side operation queuing as described above.
+
+Finally, the system does not provide protection against adversarial or malicious
+systems. A future avenue of work would be to provide some level of protection
+against malicious abuse of the RPC system or some form of byzantine fault
+tolerance.

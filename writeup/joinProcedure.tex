@@ -5,10 +5,11 @@ denote the new node wishing to join the group the "joiner", and the active node
 that the joiner knows about is the "facilitator".
 
 The joiner starts off by sending a \texttt{requestJoinLock()} RPC request to the
-facilitator. The facilitator then attempts to lock all of the hosts in the AJFS
-system using the \texttt{getJoinLock()} RPC. If the facilitator is not able to
-get the "join lock" from all other hosts, it will return to the joiner that it
-failed, and the joiner must try again at a later time.
+facilitator. The facilitator then ensures that no files are open for writing,
+and then attempts to lock all of the hosts in the AJFS system using the
+\texttt{getJoinLock()} RPC. If the facilitator is not able to get the "join
+lock" from all other hosts, or if files are open for writing, it will return to
+the joiner that it failed, and the joiner must try again at a later time.
 
 If the facilitator is able to get a join lock from every other node in the
 system, it returns back to the joiner that the request succeeded as well as the

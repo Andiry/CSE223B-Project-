@@ -1,0 +1,31 @@
+
+AJFS takes great inspiration from other distributed systems. Originally designed
+to be very similar to Harp \cite{LGG91}, most of the logging characteristics
+were eventually entirely stripped out as being unnecessary.
+
+AJFS uses a similar manager process to that as described in Fragipani from
+\cite{TML97}. Their lock manager is tasked with periodically checking for
+liveness on the locks and hosts, and when it detected the death of a server,
+their lock manager would pass the lockset and log from the dead server onto a
+live server.
+
+In Fragipani, the lock manager was a single service running on a single
+machine. The lock manager was responsible for maintaining the lock set as well
+as checking for liveness as described previously.
+
+In AJFS, our host manager is similarly responsible for checking for liveness of
+other servers. However, when a dead server is detected, its locks are simply
+released. Moreover, the lock manager is a process that runs on every node in the
+system (as no node is special), and is uniquely responsible for managing the
+local copy of the lockset.
+
+AJFS uses a conceptually similar operation queuing mechanism to that of Coda
+\cite{KS92}. In Coda, client reads are serviced by the local preferred server,
+but client's writes are stamped with a local server ID, and then forwarded on to
+other servers.
+
+AJFS is a much simpler system than Coda is, and AJFS doesn't ever use timestamps
+of any variety. Moreover, AJFS is a fully-distributed networked file system,
+while Coda is a true network-based, distributed file system. Coda's able to
+ensure full causal ordering, even amid nodes leaving and rejoining. AJFS uses
+none of the complexity that Coda does.

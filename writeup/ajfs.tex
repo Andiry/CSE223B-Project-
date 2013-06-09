@@ -40,7 +40,7 @@
 \usepackage{floatflt}
 \usepackage{subfigure}
 \usepackage{microtype}\addtolength{\textwidth}{1.4pt}\addtolength{\oddsidemargin}{-1.4pt}\addtolength{\evensidemargin}{-1.4pt}
-
+\usepackage{natbib}
 
 \newbox\subfigbox	% Create a box to hold the subfigure.
 \makeatletter
@@ -83,31 +83,23 @@
 \maketitle
 
 \begin{abstract}
-    Today, files are required to be accessable at multiple locations,
-    and they need to be synchronized. It is common for people to
-    store their files in a cloud storage, so they can continue work when they
-    get home. Various cloud storage services are available today: Dropbox,
-    Google Drive, SkyDrive, Apple iCloud, etc. For cloud storage, the most
-    important thing is the consistency of the files.
+    Modern computer users use a variety of devices from a variety of locations,
+and want their files to be accessible wherever they are. "Cloud storage"
+services like Dropbox, Google Drive, SkyDrive, Apple iCloud and others offer
+synchronized storage by storing your data on their servers.
 
-    In this paper, We present AJFS: a fully-replicated distributed file system supporting
-    multiple users, simultaneous editing of distinct files and robustness
-    against nodes failing or joining the system. Designed to similar use cases
-    as Dropbox, the system has been designed for simplicity, supporting causal,
-    eventual consistency.
+    In this paper, we present AJFS: a fully-replicated networked file system
+supporting multiple users, simultaneous editing of distinct files and robustness
+against nodes failing or joining the system. Designed to similar use cases as
+Dropbox, the system has been designed for simplicity, supporting safe
+partially-causal consistency. We believe that AJFS offers a service that can
+often be used in place of services like Dropbox, allowing users to keep their
+own data synchronized without needing to use a third party.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
 \input{introduction.tex}
-
-%TODO
-We assume that other nodes are non-adversarial, and accept up to $n$ failures in $2n+1$ nodes.
-%TODO
-
-\section{Motivation}
-\label{sec:motivation}
-\input{motivation.tex}
 
 \section{System Design}
 \label{sec:designOverview}
@@ -140,7 +132,7 @@ We assume that other nodes are non-adversarial, and accept up to $n$ failures in
 \label{sec:evaluation}
 \input{evaluation.tex}
 
-\section{Limitations}
+\section{Limitations and Future Work}
 \label{sec:limitations}
 \input{limitations.tex}
 
@@ -151,35 +143,17 @@ We assume that other nodes are non-adversarial, and accept up to $n$ failures in
 \section{Conclusions}
 \input{conclusions.tex}
 
-\section{Earlier Writeup}
-\input{checkpoint.tex}
-
-%\category{D.1.3}{Programming Techniques}{Concurrent
-%  Programming---Parallel programming}
-%\category{D.3.2}{Programming Languages}{Language
-%  Classifications---Concurrent, distributed, and parallel languages}
-
-%\terms
-%Languages, Performance
-
-%\keywords
-%
-
-
-%\appendix
-%\section{Appendix Title}
-%
-%This is the text of the appendix, if you need one.
-
+%\section{Earlier Writeup}
+%\input{checkpoint.tex}
 
 % We recommend abbrvnat bibliography style.
+%\bibliographystyle{abbrvnat}
+% TODO FIX BIBLIOGRAPHY
 
-\bibliographystyle{abbrvnat}
+%\bibliographystyle{abbrev}
 
 % The bibliography should be embedded for final submission.
 
-%\softraggedright
-
-\bibliography{ajfs}
+\thebibliography{ajfs}
 
 \end{document}
