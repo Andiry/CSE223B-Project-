@@ -98,36 +98,58 @@
 \end{abstract}
 
 \section{Introduction}
-    \input{introduction.tex}
+\label{sec:introduction}
+\input{introduction.tex}
+
+%TODO
+We assume that other nodes are non-adversarial, and accept up to $n$ failures in $2n+1$ nodes.
+%TODO
 
 \section{Motivation}
-    \input{motivation.tex}
+\label{sec:motivation}
+\input{motivation.tex}
 
 \section{System Design}
-    \input{designOverview.tex}
+\label{sec:designOverview}
+\input{designOverview.tex}
+
+%\section{Command Queuing}
+%    \input{command.tex}
+
+\subsection{Join Procedure}
+\label{sec:joinProcedure}
+\input{joinProcedure.tex}
+
+\subsection{File Locking}
+\label{sec:fileLocking}
+\input{fileLocking.tex}
 
 \subsection{Host Manager}
-    \input{hostManager.tex}
+\label{sec:hostManager}
+\input{hostManager.tex}
 
 \subsection{File System Support}
-Describing the FUSE portion
-    \input{fsSupport.tex}
+\label{sec:fsSupport}
+\input{fsSupport.tex}
 
 \subsection{RPC Service}
-    \input{rpc_service.tex}
+\label{sec:rpcService}
+\input{rpcService.tex}
 
 \section{Evaluation}
-    \input{evaluation.tex}
+\label{sec:evaluation}
+\input{evaluation.tex}
 
 \section{Limitations}
-    \input{limitations.tex}
+\label{sec:limitations}
+\input{limitations.tex}
 
 \section{Related Work}
-    \input{relatedWork.tex}
+\label{sec:relatedWork}
+\input{relatedWork.tex}
 
 \section{Conclusions}
-I'm conclusive!
-    \input{conclusions.tex}
+\input{conclusions.tex}
 
 \section{Earlier Writeup}
 \input{checkpoint.tex}

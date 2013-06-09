@@ -1,19 +1,50 @@
-The Host Manager is responsible for maintaining the connections to all other
-known hosts. Every few seconds (currently configured to 2.5 seconds), the Host
-Manager sends an asynchronous RPC 'ping' to each of the hosts believed to be
-alive.
+The Host Manager is a dedicated thread and is responsible for maintaining the
+connections to all other known hosts. Every few seconds (currently configured to
+2.5 seconds), the Host Manager sends an asynchronous RPC \texttt{ping()} to each
+of the hosts believed to be alive. This \texttt{ping()} is designed to be
+minimally intrusive, doing nothing more than returning immediately.
 
-Even though these requests are "asynchronous", requests are queued on the
-receiving server. As a result, it is determined immediately whether the
-communication channel is still valid. If the request fails, that server is
-marked as dead, and any locks that the remote host holds on the local machine
-are forceably released and no further communication will be attempted with that
-remote host unless it goes back through the join procedure.
+Even though these requests are "asynchronous" (Thrift's "oneway"), requests are
+actually queued on the receiving server when they're initially sent. In this
+way they're synchronously transmitted, but asynchronously executed. As a
+result, we still must be able to successfully communicate with the remote
+system immediately. If the request fails, that server is marked as dead, and
+any file locks that the remote host holds on the local machine are forceably
+released and no further communication will be attempted with that remote host
+unless it goes back through the join procedure.
 
-By keeping track of what hosts succeed or fail, the Host Manager is also able to
-verify that it still is able to talk with the majority of hosts. If it is not,
-the Host Manager knows that either it has been partitioned into a minority
-partition, or that more than half of the hosts in the group are down. In these
-cases, the system exits, as it is not prepared to deal with requests in those
-cases.
+By keeping track of what hosts succeed or fail, the Host Manager also verifies 
+that it is still in the majority of hosts. If it is not, the Host Manager knows
+that either it has been partitioned into a minority partition, or that more
+than half of the hosts in the group are down. In either of these cases, the
+system exits.
+
+The Host Manager is also responsible for timeouts on the "join lock". The
+system maintains a configurable maximum allowed time period (currently 10
+seconds) that a joining server can hold a "join lock" on the file system. This
+corresponds to roughly the time between calls by a new server to
+\texttt{requestJoinLock()} and \texttt{join()} on an already-joined server. If
+the timeout expires before the "join lock" is released, we mark the new server
+as dead (and refuse to respond to any subsequent RPC calls without
+starting the join procedure over) and unlock the system.
+
+Each server is responsible for resetting their own "join lock" (in case the
+system that failed was the server facilitating the join). However, the
+facilitating server has a "join lock" timeout slightly earlier than the others
+to help prevent the possibility of a timeout occurring on one server, but having
+\texttt{join()} start on the facilitator before the "join lock" times out there.
+This case is safe, as \texttt{join()} will fail, but is undesirable as an
+join procedure that would otherwise proceed must start again.
+
+This period corresponds to the time given for the call to \texttt{rsync} to
+complete. It is entirely possible that \texttt{rsync} may need more time to
+sync the two systems, but we leave a better solution to future work.
+It could be fixed by having a 'heartbeat' from the joining server sent
+periodically to reset the timer. Our solution is still safe, and subsequently
+likely to succeed, as eventually \texttt{rsync} will return. At this point, the
+joining server will attempt to \texttt{join()} with the facilitating server.
+This call will fail, but as \texttt{rsync} has just recently completed,
+subsequent attempts to join will likely result in rsync completely more
+quickly.
+
 

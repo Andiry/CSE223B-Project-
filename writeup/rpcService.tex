@@ -1,0 +1,31 @@
+RPC support is handled by a dedicated thread running an Apache Thrift Non-blocking
+server. Thrift was chosen for convenience and ease of getting started (due to
+our familiarity with it).
+
+We use a new RPC for each \textit{modifying} file system call (i.e.
+\texttt{write()}), as well as for opening/closing, locking/unlocking, pinging,
+the join procedure. All procedures use Thrift's "oneway" designation, except
+where synchronous behavior is required (such as in \texttt{lock()},
+\texttt{fsync()} and join procedure RPCs).
+
+Thrift's "oneway" modifier simply means that the client doesn't wait for the
+server to finish the operation before returning (and thus the RPC must be
+\texttt{void}). Normally, Thrift does not guarantee that multiple "oneway" RPCs
+are executed serially or in the proper order. This is because in a
+multi-threaded Thrift server, the server may schedule RPCs to different worker
+threads.
+
+Since we must provide a causal ordering for operations from the same host, we
+use a single-threaded version of Thrift's Non-blocking server. Since it can only
+service a single request at a time, and since it does not (usually) interrupt an
+execution of an RPC to service a new one, this server maintains the ordering
+requirements that we need.
+
+We use Thrift's Non-blocking server instead of Thrift's "SimpleServer". This is
+because "SimpleServer" is only able to service a single connection at a time,
+and will not go onto a new server until that connection is closed. As an
+optimization, we chose to keep connections between the servers open between RPC
+calls. This avoids the added overhead of initializing and closing a new TCP
+connection for every RPC, but necessitated a new server in order to support
+more than two nodes.
+
