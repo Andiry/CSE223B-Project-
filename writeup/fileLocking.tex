@@ -1,0 +1,29 @@
+As our file system does not support a total causal ordering between hosts on
+operations, some additional work is required to prevent breaking the minimal
+causal ordering required by many file operations.
+
+The system does permit multiple users to operate simultaneously, but they must
+be working on a disjoint set of files/directories in order to maintain safety.
+To enforce this, when a file or folder is opened, it is first synchronously
+locked across all hosts. If a lock can not be acquired for any host, the
+operation will fail (and all nodes will be notified of such). When a file/folder
+is closed, it is unlocked.
+
+AJFS uses a synchronized set of multiple-reader-exclusive-writer locks for both
+files and directories across the hosts of the system. Since files do not exist
+in a vacuum but instead exists within its parent directory, in order to get a
+lock on a file, AJFS must also acquire a read lock on all directories above the
+file in the hierarchy.
+
+For example, if we wanted to open a file \texttt{/a/b/c} for writing, we would
+have to acquire an exclusive write lock on the file \texttt{/a/b/c}, as well as
+read locks on \texttt{/a/b/}, \texttt{/a/} and \texttt{/}. This allows us to
+safely modify \texttt{a} without worrying that another host will edit the file
+or a parent directory and risk giving inconsistent ordering guarantees across
+hosts.
+
+Because local file system semantics don't enforce a locking constraint like
+this, and because ordering is deterministic and causal when it originates from
+a single host, AJFS allow multiple writers, or simultaneous readers and writers,
+so long as they're all on the same system. This may yield bizarre results, but
+they will be consistent results across the nodes in the system.

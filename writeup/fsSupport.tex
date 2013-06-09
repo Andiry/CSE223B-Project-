@@ -1,0 +1,29 @@
+
+Our file system support is built on top of FUSE. FUSE allows us to implement
+a full-fledged filesystem that can be mounted by a host OS just like any other
+file system. Moreover, it allows all code to be written in userspace.
+
+Our file system is based on a provided example that's included with FUSE:
+"fusexmp\_fh". This example simply mirrors the root of the host's file system
+into the FUSE filesystem (i.e. such that \texttt{~/mountPt/tmp/} is equivalent to
+\texttt{/tmp/}).
+
+We modified this base filesystem to support mirroring a non-root directory. In
+this way, our file system mirrors a local directory that ideally would be hidden
+from the end user. We additionally seperated operations to the local
+(non-mounted) file system and the operations initiated by operations on the
+mounted filesystem (the FUSE operations) such that we could add our own remote
+code without interfering with the local operations. Finally, we added in support
+for a few operations that the example omitted (for instance, support for
+updating access and modification times).
+
+AJFS uses the local mirroring system as a black-box database for AJFS.
+Operations on the mounted filesystem are completed on the local file system, and
+when necessary, remote calls to other servers at the same time. Thus,
+operations on the local file system can be initiated from either of two
+locations: from a local call (initiated by a FUSE callback) or by remote call
+(initiated by a Thrift RPC call).
+
+We dedicate one worker thread to handle FUSE-initiated operations on the local
+mounted filesystem.
+
