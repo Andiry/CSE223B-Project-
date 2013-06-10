@@ -115,7 +115,7 @@ void Host::kill() {
         }                                           \
         ++tryCount;                                 \
     }                                               \
-    if (trySuccess) { ON_FAIL; } else {ON_SUCCESS;} \
+    if (trySuccess) { ON_SUCCESS; } else {ON_FAIL;} \
 
 
 bool Host::ping() {
