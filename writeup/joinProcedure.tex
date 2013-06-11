@@ -4,7 +4,7 @@ active node in the system. Joining is a two-phase process. For convenience, we
 denote the new node wishing to join the group the "joiner", and the active node
 that the joiner knows about is the "facilitator".
 
-The joiner starts off by sending a \texttt{requestJoinLock()} RPC request to the
+Figure \ref{fig:algorithm} describes the join procedure of AJFS server. The joiner starts off by sending a \texttt{requestJoinLock()} RPC request to the
 facilitator. The facilitator then ensures that no files are open for writing,
 and then attempts to lock all of the hosts in the AJFS system using the
 \texttt{getJoinLock()} RPC. If the facilitator is not able to get the "join
@@ -42,3 +42,39 @@ Section~\ref{sec:hostManager}. A node is fully "alive" only once
 If any call fails, the joining server will eventually been told that it must
 rejoin by the node whose \texttt{releaseJoinLock()} was not called.
 
+\begin{figure}[Ht]
+\includegraphics[width=\linewidth]{algorithm.pdf}
+\caption{Pseudo-code for AJFS server join}
+\label{fig:algorithm}
+\vspace{-5mm}
+\end{figure}
+
+%\begin{algorithm}
+%\caption{\figtitle{Pseudo-code for AJFS join procedure}}
+%\label{algo:joinProcedure} 
+
+%\begin{algorithmic}
+
+%\Function{A.ServerStart with B as remote host}{\null}
+%\State A calls B.requestJoinLock()
+%	\For{Server X in B's server list}
+%		\State B calls X.getJoinLock()
+%		\If{$fail\ to\ get\ join\ lock$}
+%			\For{Server Y in B's lock grabbed list}
+%				\State B calls Y.releaseJoinLock()
+%				\State return failure
+%		\EndIf
+%	\EndFor
+%\State A rsync with B
+%\State A calls B.join()
+%	\For{Server X in B's server list}
+%		\State B calls X.addServer(A)
+%	\EndFor
+%	\For{Server X in B's server list}
+%		\State B calls X.releaseJoinLock()
+%	\EndFor
+%	\State B returns server list to A
+%\State A update server list
+%\EndFunction
+%\end{algorithmic}
+%\end{algorithm} 
