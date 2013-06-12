@@ -75,13 +75,16 @@ static bool FUSEService::lockAll(const string& path, const DFS::LockType::type l
     vector<Host*> backoutHosts;
     bool backout = false;
     for (auto& pair : globals_->hostMap_) {
-        bool tryLock = pair.second.lock(path, lockType);
-        if (!tryLock) {
-            globals_->debug_ << "Failed to acquire lock for " << pair.second.identifier() << endl;
-            backout = true;
-            break;
-        }
-        backoutHosts.push_back(&pair.second);
+	if (pair.second.state_ != Host::State::DEAD) {
+            bool tryLock = pair.second.lock(path, lockType);
+            if (!tryLock) {
+                globals_->debug_ << "Failed to acquire lock for " << pair.second.identifier() << endl;
+                cerr << "Failed to acquire lock for " << pair.second.identifier() << endl;
+                backout = true;
+                break;
+            }
+            backoutHosts.push_back(&pair.second);
+	}
     }
 
     if (backout)
