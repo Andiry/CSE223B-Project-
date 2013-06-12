@@ -30,6 +30,27 @@ On AJFS, all the test cases work as expected; For test case 1, client b can open
 \subsection{Performance}
 
 Performance is not the key motivation of AJFS. We do not use AJFS to sync up big files; If people want to do that, he/she should use a network transfer protocol instead. Due to that, we do not evaluate the AJFS bandwidth of network transfer.
-However, we compare the AJFS system with a local filesystem. Table 1 shows the AJFS bandwidth performance. 
+However, we compare the AJFS system with a local filesystem. Table \ref{table:performance} shows the AJFS bandwidth performance. 
 
-As we can see, the performance of AJFS is close to the fusexmp\_fh. Since FUSE is a user space file system, it adds additional overhead to the file operations and hence the performance is worse than the local file system. Since AJFS does not really care the performance and it's limited by FUSE, we regard the performance of AJFS acceptable. 
+As we can see, since FUSE is a user space file system, it adds additional overhead to the file operations and hence the performance is worse than the local file system.
+Also, the write performance of AJFS is lower than FUSE, as it needs to handle thrift RPCs as well. AJFS handles read operation locally, and the performance is almost the same as base Ext3 performance.
+Since AJFS does not really care the performance and it's limited by FUSE, we regard the performance of AJFS acceptable. 
+
+
+\begin{table}[Ht]
+\caption{AJFS read/write performance (KB/s)}
+\centering
+\begin{tabular}{|p{0.9cm}|p{0.9cm}|p{0.9cm}|p{0.9cm}|p{0.9cm}|p{0.9cm}|}
+\hline\hline
+System & Byte Write & Block Write & Rewrite & Byte Read & Block Read \\
+%heading
+\hline
+Ext3	& 49090	& 55403	& 17766	& 45094	& 66464	\\
+\hline
+FUSE	& 33792	& 47490	& 15417	& 39853	& 78666	\\
+\hline
+AJFS	& 13972	& 19651	& 11383	& 41987	& 74125	\\
+\hline
+\end{tabular}
+\label{table:performance}
+\end{table}
