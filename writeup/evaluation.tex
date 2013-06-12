@@ -6,17 +6,26 @@ The main design purpose of AJFS is the file consistency when accessed by multipl
 
 \subsubsection{Server crash and rejoin}
 
-In distributed system, it's common that server crashes. We need to guarantee that when a server is down, the data is not corrupted and when the server is back online, the data is synchronized.
+In distributed system, it's common that server crashes. We need to guarantee that when a server is down, the data is not corrupted and when the server is back online, the data will be synchronized.
 
 The design of AJFS supports server rejoin. Since it's running based on the local backup, client can access the file locally without issue, just like Coda~\cite{KS92} does.
 The only problem is when the server is down, client cannot access the mount point, because fuse server is also down. Instead, client should access the local backup. When the server rejoins, it will automatiaclly rsync with remote repositories and sync up the local files with remote replicas.
 
+We tested following test cases on AJFS:
+
+1. Start three AJFS servers A, B and C; kill server C; client a on server A creates file x; restart server C.
+
+\emph{Result}: client c on Server C can get file x automatically.
+
+The test proves AJFS's robustness: server can join and crash randomly, but file consistency is kept among replicas.
+
 \subsubsection{Write protection}
 
-Many distributed systems support mulitple simultaneous writes. TreadMarks~\cite{treadmarks} support multiple writers; Bayou~\cite{bayou} askes each writer to provide dependency check and merge procedures. AJFS does not support multiple simultaneous writers though, this is mainly for simplicity reasons. 
+Many distributed systems support mulitple simultaneous writes. TreadMarks~\cite{treadmarks} supports multiple writers; Bayou~\cite{bayou} askes each writer to provide dependency check and merge procedures.
+AJFS does not support multiple simultaneous writers though, this is mainly for simplicity reason. 
 
 A possible solution to support multiple simultaneous writers in AJFS is copy on write. The write operation only writes to the local copy, and when the file is closed, the modifications is propagated to the replicas. We do not use this mechanism because the merge procedure on server the side may be complicated. Another solution to this issue is to keep different conflict versions of a single file. 
-However, we choose locks and only allow one writer to a file at the same time. This solution is simple and the correctness is guaranteed.
+However, we choose locks and only allow one writer to a file at one time, which is simple and the correctness is guaranteed.
 
 We tested following test cases on AJFS:
 
