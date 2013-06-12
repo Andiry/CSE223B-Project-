@@ -160,7 +160,7 @@ void Host::releaseJoinLock() {
 
 bool Host::lock(const string& file, LockType::type type) {
     bool ret;
-    TRY(return true, return false, return ret, ret = client_->lock(*me_, file, type));
+    TRY(return true, return true, return ret, ret = client_->lock(*me_, file, type));
     //PRECHECK(return true;, cerr << "First fail" << endl; return true);
     //ret = client_->lock(*me_, file, type);
     //cerr << "Succeeded to request lock on " << file << " from " << identifier() << endl;
