@@ -72,6 +72,14 @@ int FUSEService::fuse_readlink(const char *path, char *buf, size_t size)
 }
 
 static bool FUSEService::lockAll(const string& path, const DFS::LockType::type lockType) {
+
+    if (    lockType == LockType::type::WRITE &&
+            !globals_->locks_.writeLockPath(path, globals_->me_))
+        return false;
+    else if (lockType == LockType::type::READ &&
+            !globals_->locks_.readLockPath(path, globals_->me_))
+        return false;
+
     vector<Host*> backoutHosts;
     bool backout = false;
     for (auto& pair : globals_->hostMap_) {
@@ -93,6 +101,8 @@ static bool FUSEService::lockAll(const string& path, const DFS::LockType::type l
 }
 
 inline void FUSEService::unlockAll(const string& path) {
+    globals_->locks_.unlockPath(path, globals_->me_);
+
     for (auto& pair : globals_->hostMap_)
         pair.second.unlock(path);
 }
@@ -176,11 +186,17 @@ int FUSEService::fuse_mkdir(const char *path, mode_t mode)
     if (globals_->joinLock_) // TODO - make this block instead
         return -EAGAIN;
 
+    if (!lockAll(path, DFS::LockType::type::WRITE))
+        return -ENOLCK;
+
     string cpath = convert(path);
     int ret = local_mkdir(cpath.c_str(), mode);
     for (auto& pair : globals_->hostMap_)
         pair.second.mkdir(path, mode);
     if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
+
+    unlockAll(path);
+
     return ret;
 }
 
@@ -191,11 +207,17 @@ int FUSEService::fuse_unlink(const char *path)
     if (globals_->joinLock_) // TODO - make this block instead
         return -EAGAIN;
 
+    if (!lockAll(path, DFS::LockType::type::WRITE))
+        return -ENOLCK;
+
     string cpath = convert(path);
     int ret = local_unlink(cpath.c_str());
     for (auto& pair : globals_->hostMap_)
         pair.second.unlink(path);
     if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
+
+    unlockAll(path);
+
     return ret;
 }
 
@@ -207,12 +229,18 @@ int FUSEService::fuse_rmdir(const char *path)
     if (globals_->joinLock_) // TODO - make this block instead
         return -EAGAIN;
 
+    if (!lockAll(path, DFS::LockType::type::WRITE))
+        return -ENOLCK;
+
     string cpath = convert(path);
 
     int ret = local_rmdir(cpath.c_str());
     for (auto& pair : globals_->hostMap_)
         pair.second.rmdir(path);
     if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
+
+    unlockAll(path);
+
     return ret;
 }
 
@@ -234,6 +262,11 @@ int FUSEService::fuse_rename(const char *from, const char *to)
         globals_->debug_ << "Unable to lock for rename" << endl;
         return -ENOLCK;
     }
+    if (!lockAll(to, DFS::LockType::type::WRITE)) {
+        unlockAll(from);
+        return -ENOLCK;
+    }
+
 
     string cfrom = convert(from);
     string cto   = convert(to);
@@ -242,6 +275,7 @@ int FUSEService::fuse_rename(const char *from, const char *to)
         pair.second.rename(from, cto);
 
     unlockAll(from);
+    unlockAll(to);
 
     if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
@@ -267,6 +301,7 @@ int FUSEService::fuse_chmod(const char *path, mode_t mode)
         pair.second.chmod(path, mode);
 
     if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
+
     return ret;
 }
 
@@ -277,10 +312,16 @@ int FUSEService::fuse_chown(const char *path, uid_t uid, gid_t gid)
     if (globals_->joinLock_) // TODO - make this block instead
         return -EAGAIN;
 
+    if (!lockAll(path, DFS::LockType::type::WRITE))
+        return -ENOLCK;
+
     string cpath = convert(path);
     int ret = local_chown(cpath.c_str(), uid, gid);
     for (auto& pair : globals_->hostMap_)
         pair.second.chown(path, uid, gid);
+
+    unlockAll(path);
+
     if (ret) globals_->debug_ << "Error'd out: " << strerror(ret) << endl;
     return ret;
 }
