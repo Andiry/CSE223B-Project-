@@ -1146,6 +1146,14 @@ uint32_t DFS_releasedir_args::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1174,6 +1182,10 @@ uint32_t DFS_releasedir_args::write(::apache::thrift::protocol::TProtocol* oprot
   xfer += this->fi.write(oprot);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1193,6 +1205,10 @@ uint32_t DFS_releasedir_pargs::write(::apache::thrift::protocol::TProtocol* opro
 
   xfer += oprot->writeFieldBegin("fi", ::apache::thrift::protocol::T_STRUCT, 3);
   xfer += (*(this->fi)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -1244,6 +1260,14 @@ uint32_t DFS_mkdir_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1272,6 +1296,10 @@ uint32_t DFS_mkdir_args::write(::apache::thrift::protocol::TProtocol* oprot) con
   xfer += oprot->writeI32(this->mode);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1291,6 +1319,10 @@ uint32_t DFS_mkdir_pargs::write(::apache::thrift::protocol::TProtocol* oprot) co
 
   xfer += oprot->writeFieldBegin("mode", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32((*(this->mode)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -1334,6 +1366,14 @@ uint32_t DFS_unlink_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1358,6 +1398,10 @@ uint32_t DFS_unlink_args::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += oprot->writeString(this->path);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 3);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1373,6 +1417,10 @@ uint32_t DFS_unlink_pargs::write(::apache::thrift::protocol::TProtocol* oprot) c
 
   xfer += oprot->writeFieldBegin("path", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->path)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 3);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -1416,6 +1464,14 @@ uint32_t DFS_rmdir_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1440,6 +1496,10 @@ uint32_t DFS_rmdir_args::write(::apache::thrift::protocol::TProtocol* oprot) con
   xfer += oprot->writeString(this->path);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 3);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1455,6 +1515,10 @@ uint32_t DFS_rmdir_pargs::write(::apache::thrift::protocol::TProtocol* oprot) co
 
   xfer += oprot->writeFieldBegin("path", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->path)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 3);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -1506,6 +1570,14 @@ uint32_t DFS_symlink_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1534,6 +1606,10 @@ uint32_t DFS_symlink_args::write(::apache::thrift::protocol::TProtocol* oprot) c
   xfer += oprot->writeString(this->to);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1553,6 +1629,10 @@ uint32_t DFS_symlink_pargs::write(::apache::thrift::protocol::TProtocol* oprot) 
 
   xfer += oprot->writeFieldBegin("to", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString((*(this->to)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -1604,6 +1684,14 @@ uint32_t DFS_rename_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1632,6 +1720,10 @@ uint32_t DFS_rename_args::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += oprot->writeString(this->to);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1651,6 +1743,10 @@ uint32_t DFS_rename_pargs::write(::apache::thrift::protocol::TProtocol* oprot) c
 
   xfer += oprot->writeFieldBegin("to", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString((*(this->to)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -1702,6 +1798,14 @@ uint32_t DFS_link_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1730,6 +1834,10 @@ uint32_t DFS_link_args::write(::apache::thrift::protocol::TProtocol* oprot) cons
   xfer += oprot->writeString(this->to);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1749,6 +1857,10 @@ uint32_t DFS_link_pargs::write(::apache::thrift::protocol::TProtocol* oprot) con
 
   xfer += oprot->writeFieldBegin("to", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString((*(this->to)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -1800,6 +1912,14 @@ uint32_t DFS_chmod_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1828,6 +1948,10 @@ uint32_t DFS_chmod_args::write(::apache::thrift::protocol::TProtocol* oprot) con
   xfer += oprot->writeI32(this->mode);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1847,6 +1971,10 @@ uint32_t DFS_chmod_pargs::write(::apache::thrift::protocol::TProtocol* oprot) co
 
   xfer += oprot->writeFieldBegin("mode", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32((*(this->mode)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -1906,6 +2034,14 @@ uint32_t DFS_chown_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1938,6 +2074,10 @@ uint32_t DFS_chown_args::write(::apache::thrift::protocol::TProtocol* oprot) con
   xfer += oprot->writeI32(this->gid);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 5);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1961,6 +2101,10 @@ uint32_t DFS_chown_pargs::write(::apache::thrift::protocol::TProtocol* oprot) co
 
   xfer += oprot->writeFieldBegin("gid", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32((*(this->gid)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 5);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -2012,6 +2156,14 @@ uint32_t DFS_truncate_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2040,6 +2192,10 @@ uint32_t DFS_truncate_args::write(::apache::thrift::protocol::TProtocol* oprot) 
   xfer += oprot->writeI64(this->size);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -2059,6 +2215,10 @@ uint32_t DFS_truncate_pargs::write(::apache::thrift::protocol::TProtocol* oprot)
 
   xfer += oprot->writeFieldBegin("size", ::apache::thrift::protocol::T_I64, 3);
   xfer += oprot->writeI64((*(this->size)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -2118,6 +2278,14 @@ uint32_t DFS_ftruncate_args::read(::apache::thrift::protocol::TProtocol* iprot) 
           xfer += iprot->skip(ftype);
         }
         break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2150,6 +2318,10 @@ uint32_t DFS_ftruncate_args::write(::apache::thrift::protocol::TProtocol* oprot)
   xfer += this->fi.write(oprot);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 5);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -2173,6 +2345,10 @@ uint32_t DFS_ftruncate_pargs::write(::apache::thrift::protocol::TProtocol* oprot
 
   xfer += oprot->writeFieldBegin("fi", ::apache::thrift::protocol::T_STRUCT, 4);
   xfer += (*(this->fi)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 5);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -2232,6 +2408,14 @@ uint32_t DFS_create_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2264,6 +2448,10 @@ uint32_t DFS_create_args::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += this->fi.write(oprot);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 5);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -2287,6 +2475,10 @@ uint32_t DFS_create_pargs::write(::apache::thrift::protocol::TProtocol* oprot) c
 
   xfer += oprot->writeFieldBegin("fi", ::apache::thrift::protocol::T_STRUCT, 4);
   xfer += (*(this->fi)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 5);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -2374,6 +2566,14 @@ uint32_t DFS_write_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2422,6 +2622,10 @@ uint32_t DFS_write_args::write(::apache::thrift::protocol::TProtocol* oprot) con
   xfer += this->fi.write(oprot);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 7);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -2461,6 +2665,10 @@ uint32_t DFS_write_pargs::write(::apache::thrift::protocol::TProtocol* oprot) co
 
   xfer += oprot->writeFieldBegin("fi", ::apache::thrift::protocol::T_STRUCT, 6);
   xfer += (*(this->fi)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 7);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -2512,6 +2720,14 @@ uint32_t DFS_flush_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2540,6 +2756,10 @@ uint32_t DFS_flush_args::write(::apache::thrift::protocol::TProtocol* oprot) con
   xfer += this->fi.write(oprot);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -2559,6 +2779,10 @@ uint32_t DFS_flush_pargs::write(::apache::thrift::protocol::TProtocol* oprot) co
 
   xfer += oprot->writeFieldBegin("fi", ::apache::thrift::protocol::T_STRUCT, 3);
   xfer += (*(this->fi)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -2610,6 +2834,14 @@ uint32_t DFS_release_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2638,6 +2870,10 @@ uint32_t DFS_release_args::write(::apache::thrift::protocol::TProtocol* oprot) c
   xfer += this->fi.write(oprot);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -2657,6 +2893,10 @@ uint32_t DFS_release_pargs::write(::apache::thrift::protocol::TProtocol* oprot) 
 
   xfer += oprot->writeFieldBegin("fi", ::apache::thrift::protocol::T_STRUCT, 3);
   xfer += (*(this->fi)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -2716,6 +2956,14 @@ uint32_t DFS_flock_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2748,6 +2996,10 @@ uint32_t DFS_flock_args::write(::apache::thrift::protocol::TProtocol* oprot) con
   xfer += oprot->writeI64(this->op);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 5);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -2771,6 +3023,10 @@ uint32_t DFS_flock_pargs::write(::apache::thrift::protocol::TProtocol* oprot) co
 
   xfer += oprot->writeFieldBegin("op", ::apache::thrift::protocol::T_I64, 4);
   xfer += oprot->writeI64((*(this->op)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 5);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -2846,6 +3102,14 @@ uint32_t DFS_fallocate_args::read(::apache::thrift::protocol::TProtocol* iprot) 
           xfer += iprot->skip(ftype);
         }
         break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2886,6 +3150,10 @@ uint32_t DFS_fallocate_args::write(::apache::thrift::protocol::TProtocol* oprot)
   xfer += this->fi.write(oprot);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 7);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -2917,6 +3185,10 @@ uint32_t DFS_fallocate_pargs::write(::apache::thrift::protocol::TProtocol* oprot
 
   xfer += oprot->writeFieldBegin("fi", ::apache::thrift::protocol::T_STRUCT, 6);
   xfer += (*(this->fi)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 7);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -2976,6 +3248,14 @@ uint32_t DFS_utimens_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -3008,6 +3288,10 @@ uint32_t DFS_utimens_args::write(::apache::thrift::protocol::TProtocol* oprot) c
   xfer += this->mtime.write(oprot);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 5);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -3031,6 +3315,10 @@ uint32_t DFS_utimens_pargs::write(::apache::thrift::protocol::TProtocol* oprot) 
 
   xfer += oprot->writeFieldBegin("mtime", ::apache::thrift::protocol::T_STRUCT, 4);
   xfer += (*(this->mtime)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 5);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -3090,6 +3378,14 @@ uint32_t DFS_fsync_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -3122,6 +3418,10 @@ uint32_t DFS_fsync_args::write(::apache::thrift::protocol::TProtocol* oprot) con
   xfer += this->fi.write(oprot);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 5);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -3145,6 +3445,10 @@ uint32_t DFS_fsync_pargs::write(::apache::thrift::protocol::TProtocol* oprot) co
 
   xfer += oprot->writeFieldBegin("fi", ::apache::thrift::protocol::T_STRUCT, 4);
   xfer += (*(this->fi)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 5);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -3292,6 +3596,14 @@ uint32_t DFS_open_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -3320,6 +3632,10 @@ uint32_t DFS_open_args::write(::apache::thrift::protocol::TProtocol* oprot) cons
   xfer += this->fi.write(oprot);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -3339,6 +3655,10 @@ uint32_t DFS_open_pargs::write(::apache::thrift::protocol::TProtocol* oprot) con
 
   xfer += oprot->writeFieldBegin("fi", ::apache::thrift::protocol::T_STRUCT, 3);
   xfer += (*(this->fi)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -3486,6 +3806,14 @@ uint32_t DFS_opendir_args::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->rand);
+          this->__isset.rand = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -3514,6 +3842,10 @@ uint32_t DFS_opendir_args::write(::apache::thrift::protocol::TProtocol* oprot) c
   xfer += this->fi.write(oprot);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->rand);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -3533,6 +3865,10 @@ uint32_t DFS_opendir_pargs::write(::apache::thrift::protocol::TProtocol* oprot) 
 
   xfer += oprot->writeFieldBegin("fi", ::apache::thrift::protocol::T_STRUCT, 3);
   xfer += (*(this->fi)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("rand", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64((*(this->rand)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -3968,12 +4304,12 @@ bool DFSClient::recv_getJoinLock()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getJoinLock failed: unknown result");
 }
 
-void DFSClient::releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi)
+void DFSClient::releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
-  send_releasedir(sender, path, fi);
+  send_releasedir(sender, path, fi, rand);
 }
 
-void DFSClient::send_releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi)
+void DFSClient::send_releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("releasedir", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -3982,6 +4318,7 @@ void DFSClient::send_releasedir(const HostID& sender, const std::string& path, c
   args.sender = &sender;
   args.path = &path;
   args.fi = &fi;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -3989,12 +4326,12 @@ void DFSClient::send_releasedir(const HostID& sender, const std::string& path, c
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::mkdir(const HostID& sender, const std::string& path, const int32_t mode)
+void DFSClient::mkdir(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand)
 {
-  send_mkdir(sender, path, mode);
+  send_mkdir(sender, path, mode, rand);
 }
 
-void DFSClient::send_mkdir(const HostID& sender, const std::string& path, const int32_t mode)
+void DFSClient::send_mkdir(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("mkdir", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4003,6 +4340,7 @@ void DFSClient::send_mkdir(const HostID& sender, const std::string& path, const 
   args.sender = &sender;
   args.path = &path;
   args.mode = &mode;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4010,12 +4348,12 @@ void DFSClient::send_mkdir(const HostID& sender, const std::string& path, const 
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::unlink(const HostID& sender, const std::string& path)
+void DFSClient::unlink(const HostID& sender, const std::string& path, const int64_t rand)
 {
-  send_unlink(sender, path);
+  send_unlink(sender, path, rand);
 }
 
-void DFSClient::send_unlink(const HostID& sender, const std::string& path)
+void DFSClient::send_unlink(const HostID& sender, const std::string& path, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("unlink", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4023,6 +4361,7 @@ void DFSClient::send_unlink(const HostID& sender, const std::string& path)
   DFS_unlink_pargs args;
   args.sender = &sender;
   args.path = &path;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4030,12 +4369,12 @@ void DFSClient::send_unlink(const HostID& sender, const std::string& path)
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::rmdir(const HostID& sender, const std::string& path)
+void DFSClient::rmdir(const HostID& sender, const std::string& path, const int64_t rand)
 {
-  send_rmdir(sender, path);
+  send_rmdir(sender, path, rand);
 }
 
-void DFSClient::send_rmdir(const HostID& sender, const std::string& path)
+void DFSClient::send_rmdir(const HostID& sender, const std::string& path, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("rmdir", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4043,6 +4382,7 @@ void DFSClient::send_rmdir(const HostID& sender, const std::string& path)
   DFS_rmdir_pargs args;
   args.sender = &sender;
   args.path = &path;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4050,12 +4390,12 @@ void DFSClient::send_rmdir(const HostID& sender, const std::string& path)
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::symlink(const HostID& sender, const std::string& from, const std::string& to)
+void DFSClient::symlink(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand)
 {
-  send_symlink(sender, from, to);
+  send_symlink(sender, from, to, rand);
 }
 
-void DFSClient::send_symlink(const HostID& sender, const std::string& from, const std::string& to)
+void DFSClient::send_symlink(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("symlink", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4064,6 +4404,7 @@ void DFSClient::send_symlink(const HostID& sender, const std::string& from, cons
   args.sender = &sender;
   args.from = &from;
   args.to = &to;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4071,12 +4412,12 @@ void DFSClient::send_symlink(const HostID& sender, const std::string& from, cons
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::rename(const HostID& sender, const std::string& from, const std::string& to)
+void DFSClient::rename(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand)
 {
-  send_rename(sender, from, to);
+  send_rename(sender, from, to, rand);
 }
 
-void DFSClient::send_rename(const HostID& sender, const std::string& from, const std::string& to)
+void DFSClient::send_rename(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("rename", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4085,6 +4426,7 @@ void DFSClient::send_rename(const HostID& sender, const std::string& from, const
   args.sender = &sender;
   args.from = &from;
   args.to = &to;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4092,12 +4434,12 @@ void DFSClient::send_rename(const HostID& sender, const std::string& from, const
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::link(const HostID& sender, const std::string& from, const std::string& to)
+void DFSClient::link(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand)
 {
-  send_link(sender, from, to);
+  send_link(sender, from, to, rand);
 }
 
-void DFSClient::send_link(const HostID& sender, const std::string& from, const std::string& to)
+void DFSClient::send_link(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("link", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4106,6 +4448,7 @@ void DFSClient::send_link(const HostID& sender, const std::string& from, const s
   args.sender = &sender;
   args.from = &from;
   args.to = &to;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4113,12 +4456,12 @@ void DFSClient::send_link(const HostID& sender, const std::string& from, const s
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::chmod(const HostID& sender, const std::string& path, const int32_t mode)
+void DFSClient::chmod(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand)
 {
-  send_chmod(sender, path, mode);
+  send_chmod(sender, path, mode, rand);
 }
 
-void DFSClient::send_chmod(const HostID& sender, const std::string& path, const int32_t mode)
+void DFSClient::send_chmod(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("chmod", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4127,6 +4470,7 @@ void DFSClient::send_chmod(const HostID& sender, const std::string& path, const 
   args.sender = &sender;
   args.path = &path;
   args.mode = &mode;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4134,12 +4478,12 @@ void DFSClient::send_chmod(const HostID& sender, const std::string& path, const 
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid)
+void DFSClient::chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid, const int64_t rand)
 {
-  send_chown(sender, path, uid, gid);
+  send_chown(sender, path, uid, gid, rand);
 }
 
-void DFSClient::send_chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid)
+void DFSClient::send_chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("chown", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4149,6 +4493,7 @@ void DFSClient::send_chown(const HostID& sender, const std::string& path, const 
   args.path = &path;
   args.uid = &uid;
   args.gid = &gid;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4156,12 +4501,12 @@ void DFSClient::send_chown(const HostID& sender, const std::string& path, const 
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::truncate(const HostID& sender, const std::string& path, const int64_t size)
+void DFSClient::truncate(const HostID& sender, const std::string& path, const int64_t size, const int64_t rand)
 {
-  send_truncate(sender, path, size);
+  send_truncate(sender, path, size, rand);
 }
 
-void DFSClient::send_truncate(const HostID& sender, const std::string& path, const int64_t size)
+void DFSClient::send_truncate(const HostID& sender, const std::string& path, const int64_t size, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("truncate", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4170,6 +4515,7 @@ void DFSClient::send_truncate(const HostID& sender, const std::string& path, con
   args.sender = &sender;
   args.path = &path;
   args.size = &size;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4177,12 +4523,12 @@ void DFSClient::send_truncate(const HostID& sender, const std::string& path, con
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi)
+void DFSClient::ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
-  send_ftruncate(sender, path, size, fi);
+  send_ftruncate(sender, path, size, fi, rand);
 }
 
-void DFSClient::send_ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi)
+void DFSClient::send_ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("ftruncate", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4192,6 +4538,7 @@ void DFSClient::send_ftruncate(const HostID& sender, const std::string& path, co
   args.path = &path;
   args.size = &size;
   args.fi = &fi;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4199,12 +4546,12 @@ void DFSClient::send_ftruncate(const HostID& sender, const std::string& path, co
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi)
+void DFSClient::create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
-  send_create(sender, path, mode, fi);
+  send_create(sender, path, mode, fi, rand);
 }
 
-void DFSClient::send_create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi)
+void DFSClient::send_create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("create", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4214,6 +4561,7 @@ void DFSClient::send_create(const HostID& sender, const std::string& path, const
   args.path = &path;
   args.mode = &mode;
   args.fi = &fi;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4221,12 +4569,12 @@ void DFSClient::send_create(const HostID& sender, const std::string& path, const
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi)
+void DFSClient::write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
-  send_write(sender, path, buf, size, offset, fi);
+  send_write(sender, path, buf, size, offset, fi, rand);
 }
 
-void DFSClient::send_write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi)
+void DFSClient::send_write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("write", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4238,6 +4586,7 @@ void DFSClient::send_write(const HostID& sender, const std::string& path, const 
   args.size = &size;
   args.offset = &offset;
   args.fi = &fi;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4245,12 +4594,12 @@ void DFSClient::send_write(const HostID& sender, const std::string& path, const 
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi)
+void DFSClient::flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
-  send_flush(sender, path, fi);
+  send_flush(sender, path, fi, rand);
 }
 
-void DFSClient::send_flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi)
+void DFSClient::send_flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("flush", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4259,6 +4608,7 @@ void DFSClient::send_flush(const HostID& sender, const std::string& path, const 
   args.sender = &sender;
   args.path = &path;
   args.fi = &fi;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4266,12 +4616,12 @@ void DFSClient::send_flush(const HostID& sender, const std::string& path, const 
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi)
+void DFSClient::release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
-  send_release(sender, path, fi);
+  send_release(sender, path, fi, rand);
 }
 
-void DFSClient::send_release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi)
+void DFSClient::send_release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("release", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4280,6 +4630,7 @@ void DFSClient::send_release(const HostID& sender, const std::string& path, cons
   args.sender = &sender;
   args.path = &path;
   args.fi = &fi;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4287,12 +4638,12 @@ void DFSClient::send_release(const HostID& sender, const std::string& path, cons
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op)
+void DFSClient::flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op, const int64_t rand)
 {
-  send_flock(sender, path, fi, op);
+  send_flock(sender, path, fi, op, rand);
 }
 
-void DFSClient::send_flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op)
+void DFSClient::send_flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("flock", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4302,6 +4653,7 @@ void DFSClient::send_flock(const HostID& sender, const std::string& path, const 
   args.path = &path;
   args.fi = &fi;
   args.op = &op;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4309,12 +4661,12 @@ void DFSClient::send_flock(const HostID& sender, const std::string& path, const 
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi)
+void DFSClient::fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
-  send_fallocate(sender, path, mode, offset, length, fi);
+  send_fallocate(sender, path, mode, offset, length, fi, rand);
 }
 
-void DFSClient::send_fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi)
+void DFSClient::send_fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("fallocate", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4326,6 +4678,7 @@ void DFSClient::send_fallocate(const HostID& sender, const std::string& path, co
   args.offset = &offset;
   args.length = &length;
   args.fi = &fi;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4333,12 +4686,12 @@ void DFSClient::send_fallocate(const HostID& sender, const std::string& path, co
   oprot_->getTransport()->flush();
 }
 
-void DFSClient::utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime)
+void DFSClient::utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime, const int64_t rand)
 {
-  send_utimens(sender, path, atime, mtime);
+  send_utimens(sender, path, atime, mtime, rand);
 }
 
-void DFSClient::send_utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime)
+void DFSClient::send_utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("utimens", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4348,6 +4701,7 @@ void DFSClient::send_utimens(const HostID& sender, const std::string& path, cons
   args.path = &path;
   args.atime = &atime;
   args.mtime = &mtime;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4355,13 +4709,13 @@ void DFSClient::send_utimens(const HostID& sender, const std::string& path, cons
   oprot_->getTransport()->flush();
 }
 
-bool DFSClient::fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi)
+bool DFSClient::fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
-  send_fsync(sender, path, isdatasync, fi);
+  send_fsync(sender, path, isdatasync, fi, rand);
   return recv_fsync();
 }
 
-void DFSClient::send_fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi)
+void DFSClient::send_fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("fsync", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4371,6 +4725,7 @@ void DFSClient::send_fsync(const HostID& sender, const std::string& path, const 
   args.path = &path;
   args.isdatasync = &isdatasync;
   args.fi = &fi;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4416,13 +4771,13 @@ bool DFSClient::recv_fsync()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "fsync failed: unknown result");
 }
 
-bool DFSClient::open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi)
+bool DFSClient::open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
-  send_open(sender, path, fi);
+  send_open(sender, path, fi, rand);
   return recv_open();
 }
 
-void DFSClient::send_open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi)
+void DFSClient::send_open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("open", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4431,6 +4786,7 @@ void DFSClient::send_open(const HostID& sender, const std::string& path, const F
   args.sender = &sender;
   args.path = &path;
   args.fi = &fi;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4476,13 +4832,13 @@ bool DFSClient::recv_open()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "open failed: unknown result");
 }
 
-bool DFSClient::opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi)
+bool DFSClient::opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
-  send_opendir(sender, path, fi);
+  send_opendir(sender, path, fi, rand);
   return recv_opendir();
 }
 
-void DFSClient::send_opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi)
+void DFSClient::send_opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("opendir", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4491,6 +4847,7 @@ void DFSClient::send_opendir(const HostID& sender, const std::string& path, cons
   args.sender = &sender;
   args.path = &path;
   args.fi = &fi;
+  args.rand = &rand;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4978,7 +5335,7 @@ void DFSProcessor::process_releasedir(int32_t, ::apache::thrift::protocol::TProt
   }
 
   try {
-    iface_->releasedir(args.sender, args.path, args.fi);
+    iface_->releasedir(args.sender, args.path, args.fi, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.releasedir");
@@ -5015,7 +5372,7 @@ void DFSProcessor::process_mkdir(int32_t, ::apache::thrift::protocol::TProtocol*
   }
 
   try {
-    iface_->mkdir(args.sender, args.path, args.mode);
+    iface_->mkdir(args.sender, args.path, args.mode, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.mkdir");
@@ -5052,7 +5409,7 @@ void DFSProcessor::process_unlink(int32_t, ::apache::thrift::protocol::TProtocol
   }
 
   try {
-    iface_->unlink(args.sender, args.path);
+    iface_->unlink(args.sender, args.path, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.unlink");
@@ -5089,7 +5446,7 @@ void DFSProcessor::process_rmdir(int32_t, ::apache::thrift::protocol::TProtocol*
   }
 
   try {
-    iface_->rmdir(args.sender, args.path);
+    iface_->rmdir(args.sender, args.path, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.rmdir");
@@ -5126,7 +5483,7 @@ void DFSProcessor::process_symlink(int32_t, ::apache::thrift::protocol::TProtoco
   }
 
   try {
-    iface_->symlink(args.sender, args.from, args.to);
+    iface_->symlink(args.sender, args.from, args.to, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.symlink");
@@ -5163,7 +5520,7 @@ void DFSProcessor::process_rename(int32_t, ::apache::thrift::protocol::TProtocol
   }
 
   try {
-    iface_->rename(args.sender, args.from, args.to);
+    iface_->rename(args.sender, args.from, args.to, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.rename");
@@ -5200,7 +5557,7 @@ void DFSProcessor::process_link(int32_t, ::apache::thrift::protocol::TProtocol* 
   }
 
   try {
-    iface_->link(args.sender, args.from, args.to);
+    iface_->link(args.sender, args.from, args.to, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.link");
@@ -5237,7 +5594,7 @@ void DFSProcessor::process_chmod(int32_t, ::apache::thrift::protocol::TProtocol*
   }
 
   try {
-    iface_->chmod(args.sender, args.path, args.mode);
+    iface_->chmod(args.sender, args.path, args.mode, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.chmod");
@@ -5274,7 +5631,7 @@ void DFSProcessor::process_chown(int32_t, ::apache::thrift::protocol::TProtocol*
   }
 
   try {
-    iface_->chown(args.sender, args.path, args.uid, args.gid);
+    iface_->chown(args.sender, args.path, args.uid, args.gid, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.chown");
@@ -5311,7 +5668,7 @@ void DFSProcessor::process_truncate(int32_t, ::apache::thrift::protocol::TProtoc
   }
 
   try {
-    iface_->truncate(args.sender, args.path, args.size);
+    iface_->truncate(args.sender, args.path, args.size, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.truncate");
@@ -5348,7 +5705,7 @@ void DFSProcessor::process_ftruncate(int32_t, ::apache::thrift::protocol::TProto
   }
 
   try {
-    iface_->ftruncate(args.sender, args.path, args.size, args.fi);
+    iface_->ftruncate(args.sender, args.path, args.size, args.fi, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.ftruncate");
@@ -5385,7 +5742,7 @@ void DFSProcessor::process_create(int32_t, ::apache::thrift::protocol::TProtocol
   }
 
   try {
-    iface_->create(args.sender, args.path, args.mode, args.fi);
+    iface_->create(args.sender, args.path, args.mode, args.fi, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.create");
@@ -5422,7 +5779,7 @@ void DFSProcessor::process_write(int32_t, ::apache::thrift::protocol::TProtocol*
   }
 
   try {
-    iface_->write(args.sender, args.path, args.buf, args.size, args.offset, args.fi);
+    iface_->write(args.sender, args.path, args.buf, args.size, args.offset, args.fi, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.write");
@@ -5459,7 +5816,7 @@ void DFSProcessor::process_flush(int32_t, ::apache::thrift::protocol::TProtocol*
   }
 
   try {
-    iface_->flush(args.sender, args.path, args.fi);
+    iface_->flush(args.sender, args.path, args.fi, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.flush");
@@ -5496,7 +5853,7 @@ void DFSProcessor::process_release(int32_t, ::apache::thrift::protocol::TProtoco
   }
 
   try {
-    iface_->release(args.sender, args.path, args.fi);
+    iface_->release(args.sender, args.path, args.fi, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.release");
@@ -5533,7 +5890,7 @@ void DFSProcessor::process_flock(int32_t, ::apache::thrift::protocol::TProtocol*
   }
 
   try {
-    iface_->flock(args.sender, args.path, args.fi, args.op);
+    iface_->flock(args.sender, args.path, args.fi, args.op, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.flock");
@@ -5570,7 +5927,7 @@ void DFSProcessor::process_fallocate(int32_t, ::apache::thrift::protocol::TProto
   }
 
   try {
-    iface_->fallocate(args.sender, args.path, args.mode, args.offset, args.length, args.fi);
+    iface_->fallocate(args.sender, args.path, args.mode, args.offset, args.length, args.fi, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.fallocate");
@@ -5607,7 +5964,7 @@ void DFSProcessor::process_utimens(int32_t, ::apache::thrift::protocol::TProtoco
   }
 
   try {
-    iface_->utimens(args.sender, args.path, args.atime, args.mtime);
+    iface_->utimens(args.sender, args.path, args.atime, args.mtime, args.rand);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "DFS.utimens");
@@ -5645,7 +6002,7 @@ void DFSProcessor::process_fsync(int32_t seqid, ::apache::thrift::protocol::TPro
 
   DFS_fsync_result result;
   try {
-    result.success = iface_->fsync(args.sender, args.path, args.isdatasync, args.fi);
+    result.success = iface_->fsync(args.sender, args.path, args.isdatasync, args.fi, args.rand);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
@@ -5699,7 +6056,7 @@ void DFSProcessor::process_open(int32_t seqid, ::apache::thrift::protocol::TProt
 
   DFS_open_result result;
   try {
-    result.success = iface_->open(args.sender, args.path, args.fi);
+    result.success = iface_->open(args.sender, args.path, args.fi, args.rand);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
@@ -5753,7 +6110,7 @@ void DFSProcessor::process_opendir(int32_t seqid, ::apache::thrift::protocol::TP
 
   DFS_opendir_result result;
   try {
-    result.success = iface_->opendir(args.sender, args.path, args.fi);
+    result.success = iface_->opendir(args.sender, args.path, args.fi, args.rand);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {

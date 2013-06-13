@@ -4,7 +4,7 @@
 using namespace std;
 using namespace DFS;
 
-static const bool DEBUG = false;
+static const bool DEBUG = true;
 
 ostream& LockSet::print(std::ostream& out) const {
     for (auto& lockPair: locks_)

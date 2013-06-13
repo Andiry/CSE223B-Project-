@@ -24,27 +24,27 @@ class DFSIf {
   virtual void join(std::set<HostID> & _return, const HostID& sender) = 0;
   virtual void requestJoinLock(std::string& _return, const HostID& sender) = 0;
   virtual bool getJoinLock(const HostID& sender, const HostID& newServer) = 0;
-  virtual void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
-  virtual void mkdir(const HostID& sender, const std::string& path, const int32_t mode) = 0;
-  virtual void unlink(const HostID& sender, const std::string& path) = 0;
-  virtual void rmdir(const HostID& sender, const std::string& path) = 0;
-  virtual void symlink(const HostID& sender, const std::string& from, const std::string& to) = 0;
-  virtual void rename(const HostID& sender, const std::string& from, const std::string& to) = 0;
-  virtual void link(const HostID& sender, const std::string& from, const std::string& to) = 0;
-  virtual void chmod(const HostID& sender, const std::string& path, const int32_t mode) = 0;
-  virtual void chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid) = 0;
-  virtual void truncate(const HostID& sender, const std::string& path, const int64_t size) = 0;
-  virtual void ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi) = 0;
-  virtual void create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi) = 0;
-  virtual void write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi) = 0;
-  virtual void flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
-  virtual void release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
-  virtual void flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op) = 0;
-  virtual void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi) = 0;
-  virtual void utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime) = 0;
-  virtual bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) = 0;
-  virtual bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
-  virtual bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) = 0;
+  virtual void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) = 0;
+  virtual void mkdir(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand) = 0;
+  virtual void unlink(const HostID& sender, const std::string& path, const int64_t rand) = 0;
+  virtual void rmdir(const HostID& sender, const std::string& path, const int64_t rand) = 0;
+  virtual void symlink(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand) = 0;
+  virtual void rename(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand) = 0;
+  virtual void link(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand) = 0;
+  virtual void chmod(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand) = 0;
+  virtual void chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid, const int64_t rand) = 0;
+  virtual void truncate(const HostID& sender, const std::string& path, const int64_t size, const int64_t rand) = 0;
+  virtual void ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi, const int64_t rand) = 0;
+  virtual void create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi, const int64_t rand) = 0;
+  virtual void write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi, const int64_t rand) = 0;
+  virtual void flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) = 0;
+  virtual void release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) = 0;
+  virtual void flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op, const int64_t rand) = 0;
+  virtual void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi, const int64_t rand) = 0;
+  virtual void utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime, const int64_t rand) = 0;
+  virtual bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi, const int64_t rand) = 0;
+  virtual bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) = 0;
+  virtual bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) = 0;
 };
 
 class DFSIfFactory {
@@ -103,69 +103,69 @@ class DFSNull : virtual public DFSIf {
     bool _return = false;
     return _return;
   }
-  void releasedir(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */) {
+  void releasedir(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */, const int64_t /* rand */) {
     return;
   }
-  void mkdir(const HostID& /* sender */, const std::string& /* path */, const int32_t /* mode */) {
+  void mkdir(const HostID& /* sender */, const std::string& /* path */, const int32_t /* mode */, const int64_t /* rand */) {
     return;
   }
-  void unlink(const HostID& /* sender */, const std::string& /* path */) {
+  void unlink(const HostID& /* sender */, const std::string& /* path */, const int64_t /* rand */) {
     return;
   }
-  void rmdir(const HostID& /* sender */, const std::string& /* path */) {
+  void rmdir(const HostID& /* sender */, const std::string& /* path */, const int64_t /* rand */) {
     return;
   }
-  void symlink(const HostID& /* sender */, const std::string& /* from */, const std::string& /* to */) {
+  void symlink(const HostID& /* sender */, const std::string& /* from */, const std::string& /* to */, const int64_t /* rand */) {
     return;
   }
-  void rename(const HostID& /* sender */, const std::string& /* from */, const std::string& /* to */) {
+  void rename(const HostID& /* sender */, const std::string& /* from */, const std::string& /* to */, const int64_t /* rand */) {
     return;
   }
-  void link(const HostID& /* sender */, const std::string& /* from */, const std::string& /* to */) {
+  void link(const HostID& /* sender */, const std::string& /* from */, const std::string& /* to */, const int64_t /* rand */) {
     return;
   }
-  void chmod(const HostID& /* sender */, const std::string& /* path */, const int32_t /* mode */) {
+  void chmod(const HostID& /* sender */, const std::string& /* path */, const int32_t /* mode */, const int64_t /* rand */) {
     return;
   }
-  void chown(const HostID& /* sender */, const std::string& /* path */, const int32_t /* uid */, const int32_t /* gid */) {
+  void chown(const HostID& /* sender */, const std::string& /* path */, const int32_t /* uid */, const int32_t /* gid */, const int64_t /* rand */) {
     return;
   }
-  void truncate(const HostID& /* sender */, const std::string& /* path */, const int64_t /* size */) {
+  void truncate(const HostID& /* sender */, const std::string& /* path */, const int64_t /* size */, const int64_t /* rand */) {
     return;
   }
-  void ftruncate(const HostID& /* sender */, const std::string& /* path */, const int64_t /* size */, const FUSEFileInfoTransport& /* fi */) {
+  void ftruncate(const HostID& /* sender */, const std::string& /* path */, const int64_t /* size */, const FUSEFileInfoTransport& /* fi */, const int64_t /* rand */) {
     return;
   }
-  void create(const HostID& /* sender */, const std::string& /* path */, const int32_t /* mode */, const FUSEFileInfoTransport& /* fi */) {
+  void create(const HostID& /* sender */, const std::string& /* path */, const int32_t /* mode */, const FUSEFileInfoTransport& /* fi */, const int64_t /* rand */) {
     return;
   }
-  void write(const HostID& /* sender */, const std::string& /* path */, const std::vector<int8_t> & /* buf */, const int64_t /* size */, const int64_t /* offset */, const FUSEFileInfoTransport& /* fi */) {
+  void write(const HostID& /* sender */, const std::string& /* path */, const std::vector<int8_t> & /* buf */, const int64_t /* size */, const int64_t /* offset */, const FUSEFileInfoTransport& /* fi */, const int64_t /* rand */) {
     return;
   }
-  void flush(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */) {
+  void flush(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */, const int64_t /* rand */) {
     return;
   }
-  void release(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */) {
+  void release(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */, const int64_t /* rand */) {
     return;
   }
-  void flock(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */, const int64_t /* op */) {
+  void flock(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */, const int64_t /* op */, const int64_t /* rand */) {
     return;
   }
-  void fallocate(const HostID& /* sender */, const std::string& /* path */, const int64_t /* mode */, const int64_t /* offset */, const int64_t /* length */, const FUSEFileInfoTransport& /* fi */) {
+  void fallocate(const HostID& /* sender */, const std::string& /* path */, const int64_t /* mode */, const int64_t /* offset */, const int64_t /* length */, const FUSEFileInfoTransport& /* fi */, const int64_t /* rand */) {
     return;
   }
-  void utimens(const HostID& /* sender */, const std::string& /* path */, const TimeSpec& /* atime */, const TimeSpec& /* mtime */) {
+  void utimens(const HostID& /* sender */, const std::string& /* path */, const TimeSpec& /* atime */, const TimeSpec& /* mtime */, const int64_t /* rand */) {
     return;
   }
-  bool fsync(const HostID& /* sender */, const std::string& /* path */, const int32_t /* isdatasync */, const FUSEFileInfoTransport& /* fi */) {
+  bool fsync(const HostID& /* sender */, const std::string& /* path */, const int32_t /* isdatasync */, const FUSEFileInfoTransport& /* fi */, const int64_t /* rand */) {
     bool _return = false;
     return _return;
   }
-  bool open(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */) {
+  bool open(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */, const int64_t /* rand */) {
     bool _return = false;
     return _return;
   }
-  bool opendir(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */) {
+  bool opendir(const HostID& /* sender */, const std::string& /* path */, const FUSEFileInfoTransport& /* fi */, const int64_t /* rand */) {
     bool _return = false;
     return _return;
   }
@@ -904,16 +904,17 @@ class DFS_getJoinLock_presult {
 };
 
 typedef struct _DFS_releasedir_args__isset {
-  _DFS_releasedir_args__isset() : sender(false), path(false), fi(false) {}
+  _DFS_releasedir_args__isset() : sender(false), path(false), fi(false), rand(false) {}
   bool sender;
   bool path;
   bool fi;
+  bool rand;
 } _DFS_releasedir_args__isset;
 
 class DFS_releasedir_args {
  public:
 
-  DFS_releasedir_args() : path() {
+  DFS_releasedir_args() : path(), rand(0) {
   }
 
   virtual ~DFS_releasedir_args() throw() {}
@@ -921,6 +922,7 @@ class DFS_releasedir_args {
   HostID sender;
   std::string path;
   FUSEFileInfoTransport fi;
+  int64_t rand;
 
   _DFS_releasedir_args__isset __isset;
 
@@ -936,6 +938,10 @@ class DFS_releasedir_args {
     fi = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_releasedir_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -943,6 +949,8 @@ class DFS_releasedir_args {
     if (!(path == rhs.path))
       return false;
     if (!(fi == rhs.fi))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -967,22 +975,24 @@ class DFS_releasedir_pargs {
   const HostID* sender;
   const std::string* path;
   const FUSEFileInfoTransport* fi;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_mkdir_args__isset {
-  _DFS_mkdir_args__isset() : sender(false), path(false), mode(false) {}
+  _DFS_mkdir_args__isset() : sender(false), path(false), mode(false), rand(false) {}
   bool sender;
   bool path;
   bool mode;
+  bool rand;
 } _DFS_mkdir_args__isset;
 
 class DFS_mkdir_args {
  public:
 
-  DFS_mkdir_args() : path(), mode(0) {
+  DFS_mkdir_args() : path(), mode(0), rand(0) {
   }
 
   virtual ~DFS_mkdir_args() throw() {}
@@ -990,6 +1000,7 @@ class DFS_mkdir_args {
   HostID sender;
   std::string path;
   int32_t mode;
+  int64_t rand;
 
   _DFS_mkdir_args__isset __isset;
 
@@ -1005,6 +1016,10 @@ class DFS_mkdir_args {
     mode = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_mkdir_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -1012,6 +1027,8 @@ class DFS_mkdir_args {
     if (!(path == rhs.path))
       return false;
     if (!(mode == rhs.mode))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1036,27 +1053,30 @@ class DFS_mkdir_pargs {
   const HostID* sender;
   const std::string* path;
   const int32_t* mode;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_unlink_args__isset {
-  _DFS_unlink_args__isset() : sender(false), path(false) {}
+  _DFS_unlink_args__isset() : sender(false), path(false), rand(false) {}
   bool sender;
   bool path;
+  bool rand;
 } _DFS_unlink_args__isset;
 
 class DFS_unlink_args {
  public:
 
-  DFS_unlink_args() : path() {
+  DFS_unlink_args() : path(), rand(0) {
   }
 
   virtual ~DFS_unlink_args() throw() {}
 
   HostID sender;
   std::string path;
+  int64_t rand;
 
   _DFS_unlink_args__isset __isset;
 
@@ -1068,11 +1088,17 @@ class DFS_unlink_args {
     path = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_unlink_args & rhs) const
   {
     if (!(sender == rhs.sender))
       return false;
     if (!(path == rhs.path))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1096,27 +1122,30 @@ class DFS_unlink_pargs {
 
   const HostID* sender;
   const std::string* path;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_rmdir_args__isset {
-  _DFS_rmdir_args__isset() : sender(false), path(false) {}
+  _DFS_rmdir_args__isset() : sender(false), path(false), rand(false) {}
   bool sender;
   bool path;
+  bool rand;
 } _DFS_rmdir_args__isset;
 
 class DFS_rmdir_args {
  public:
 
-  DFS_rmdir_args() : path() {
+  DFS_rmdir_args() : path(), rand(0) {
   }
 
   virtual ~DFS_rmdir_args() throw() {}
 
   HostID sender;
   std::string path;
+  int64_t rand;
 
   _DFS_rmdir_args__isset __isset;
 
@@ -1128,11 +1157,17 @@ class DFS_rmdir_args {
     path = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_rmdir_args & rhs) const
   {
     if (!(sender == rhs.sender))
       return false;
     if (!(path == rhs.path))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1156,22 +1191,24 @@ class DFS_rmdir_pargs {
 
   const HostID* sender;
   const std::string* path;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_symlink_args__isset {
-  _DFS_symlink_args__isset() : sender(false), from(false), to(false) {}
+  _DFS_symlink_args__isset() : sender(false), from(false), to(false), rand(false) {}
   bool sender;
   bool from;
   bool to;
+  bool rand;
 } _DFS_symlink_args__isset;
 
 class DFS_symlink_args {
  public:
 
-  DFS_symlink_args() : from(), to() {
+  DFS_symlink_args() : from(), to(), rand(0) {
   }
 
   virtual ~DFS_symlink_args() throw() {}
@@ -1179,6 +1216,7 @@ class DFS_symlink_args {
   HostID sender;
   std::string from;
   std::string to;
+  int64_t rand;
 
   _DFS_symlink_args__isset __isset;
 
@@ -1194,6 +1232,10 @@ class DFS_symlink_args {
     to = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_symlink_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -1201,6 +1243,8 @@ class DFS_symlink_args {
     if (!(from == rhs.from))
       return false;
     if (!(to == rhs.to))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1225,22 +1269,24 @@ class DFS_symlink_pargs {
   const HostID* sender;
   const std::string* from;
   const std::string* to;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_rename_args__isset {
-  _DFS_rename_args__isset() : sender(false), from(false), to(false) {}
+  _DFS_rename_args__isset() : sender(false), from(false), to(false), rand(false) {}
   bool sender;
   bool from;
   bool to;
+  bool rand;
 } _DFS_rename_args__isset;
 
 class DFS_rename_args {
  public:
 
-  DFS_rename_args() : from(), to() {
+  DFS_rename_args() : from(), to(), rand(0) {
   }
 
   virtual ~DFS_rename_args() throw() {}
@@ -1248,6 +1294,7 @@ class DFS_rename_args {
   HostID sender;
   std::string from;
   std::string to;
+  int64_t rand;
 
   _DFS_rename_args__isset __isset;
 
@@ -1263,6 +1310,10 @@ class DFS_rename_args {
     to = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_rename_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -1270,6 +1321,8 @@ class DFS_rename_args {
     if (!(from == rhs.from))
       return false;
     if (!(to == rhs.to))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1294,22 +1347,24 @@ class DFS_rename_pargs {
   const HostID* sender;
   const std::string* from;
   const std::string* to;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_link_args__isset {
-  _DFS_link_args__isset() : sender(false), from(false), to(false) {}
+  _DFS_link_args__isset() : sender(false), from(false), to(false), rand(false) {}
   bool sender;
   bool from;
   bool to;
+  bool rand;
 } _DFS_link_args__isset;
 
 class DFS_link_args {
  public:
 
-  DFS_link_args() : from(), to() {
+  DFS_link_args() : from(), to(), rand(0) {
   }
 
   virtual ~DFS_link_args() throw() {}
@@ -1317,6 +1372,7 @@ class DFS_link_args {
   HostID sender;
   std::string from;
   std::string to;
+  int64_t rand;
 
   _DFS_link_args__isset __isset;
 
@@ -1332,6 +1388,10 @@ class DFS_link_args {
     to = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_link_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -1339,6 +1399,8 @@ class DFS_link_args {
     if (!(from == rhs.from))
       return false;
     if (!(to == rhs.to))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1363,22 +1425,24 @@ class DFS_link_pargs {
   const HostID* sender;
   const std::string* from;
   const std::string* to;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_chmod_args__isset {
-  _DFS_chmod_args__isset() : sender(false), path(false), mode(false) {}
+  _DFS_chmod_args__isset() : sender(false), path(false), mode(false), rand(false) {}
   bool sender;
   bool path;
   bool mode;
+  bool rand;
 } _DFS_chmod_args__isset;
 
 class DFS_chmod_args {
  public:
 
-  DFS_chmod_args() : path(), mode(0) {
+  DFS_chmod_args() : path(), mode(0), rand(0) {
   }
 
   virtual ~DFS_chmod_args() throw() {}
@@ -1386,6 +1450,7 @@ class DFS_chmod_args {
   HostID sender;
   std::string path;
   int32_t mode;
+  int64_t rand;
 
   _DFS_chmod_args__isset __isset;
 
@@ -1401,6 +1466,10 @@ class DFS_chmod_args {
     mode = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_chmod_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -1408,6 +1477,8 @@ class DFS_chmod_args {
     if (!(path == rhs.path))
       return false;
     if (!(mode == rhs.mode))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1432,23 +1503,25 @@ class DFS_chmod_pargs {
   const HostID* sender;
   const std::string* path;
   const int32_t* mode;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_chown_args__isset {
-  _DFS_chown_args__isset() : sender(false), path(false), uid(false), gid(false) {}
+  _DFS_chown_args__isset() : sender(false), path(false), uid(false), gid(false), rand(false) {}
   bool sender;
   bool path;
   bool uid;
   bool gid;
+  bool rand;
 } _DFS_chown_args__isset;
 
 class DFS_chown_args {
  public:
 
-  DFS_chown_args() : path(), uid(0), gid(0) {
+  DFS_chown_args() : path(), uid(0), gid(0), rand(0) {
   }
 
   virtual ~DFS_chown_args() throw() {}
@@ -1457,6 +1530,7 @@ class DFS_chown_args {
   std::string path;
   int32_t uid;
   int32_t gid;
+  int64_t rand;
 
   _DFS_chown_args__isset __isset;
 
@@ -1476,6 +1550,10 @@ class DFS_chown_args {
     gid = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_chown_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -1485,6 +1563,8 @@ class DFS_chown_args {
     if (!(uid == rhs.uid))
       return false;
     if (!(gid == rhs.gid))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1510,22 +1590,24 @@ class DFS_chown_pargs {
   const std::string* path;
   const int32_t* uid;
   const int32_t* gid;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_truncate_args__isset {
-  _DFS_truncate_args__isset() : sender(false), path(false), size(false) {}
+  _DFS_truncate_args__isset() : sender(false), path(false), size(false), rand(false) {}
   bool sender;
   bool path;
   bool size;
+  bool rand;
 } _DFS_truncate_args__isset;
 
 class DFS_truncate_args {
  public:
 
-  DFS_truncate_args() : path(), size(0) {
+  DFS_truncate_args() : path(), size(0), rand(0) {
   }
 
   virtual ~DFS_truncate_args() throw() {}
@@ -1533,6 +1615,7 @@ class DFS_truncate_args {
   HostID sender;
   std::string path;
   int64_t size;
+  int64_t rand;
 
   _DFS_truncate_args__isset __isset;
 
@@ -1548,6 +1631,10 @@ class DFS_truncate_args {
     size = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_truncate_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -1555,6 +1642,8 @@ class DFS_truncate_args {
     if (!(path == rhs.path))
       return false;
     if (!(size == rhs.size))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1579,23 +1668,25 @@ class DFS_truncate_pargs {
   const HostID* sender;
   const std::string* path;
   const int64_t* size;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_ftruncate_args__isset {
-  _DFS_ftruncate_args__isset() : sender(false), path(false), size(false), fi(false) {}
+  _DFS_ftruncate_args__isset() : sender(false), path(false), size(false), fi(false), rand(false) {}
   bool sender;
   bool path;
   bool size;
   bool fi;
+  bool rand;
 } _DFS_ftruncate_args__isset;
 
 class DFS_ftruncate_args {
  public:
 
-  DFS_ftruncate_args() : path(), size(0) {
+  DFS_ftruncate_args() : path(), size(0), rand(0) {
   }
 
   virtual ~DFS_ftruncate_args() throw() {}
@@ -1604,6 +1695,7 @@ class DFS_ftruncate_args {
   std::string path;
   int64_t size;
   FUSEFileInfoTransport fi;
+  int64_t rand;
 
   _DFS_ftruncate_args__isset __isset;
 
@@ -1623,6 +1715,10 @@ class DFS_ftruncate_args {
     fi = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_ftruncate_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -1632,6 +1728,8 @@ class DFS_ftruncate_args {
     if (!(size == rhs.size))
       return false;
     if (!(fi == rhs.fi))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1657,23 +1755,25 @@ class DFS_ftruncate_pargs {
   const std::string* path;
   const int64_t* size;
   const FUSEFileInfoTransport* fi;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_create_args__isset {
-  _DFS_create_args__isset() : sender(false), path(false), mode(false), fi(false) {}
+  _DFS_create_args__isset() : sender(false), path(false), mode(false), fi(false), rand(false) {}
   bool sender;
   bool path;
   bool mode;
   bool fi;
+  bool rand;
 } _DFS_create_args__isset;
 
 class DFS_create_args {
  public:
 
-  DFS_create_args() : path(), mode(0) {
+  DFS_create_args() : path(), mode(0), rand(0) {
   }
 
   virtual ~DFS_create_args() throw() {}
@@ -1682,6 +1782,7 @@ class DFS_create_args {
   std::string path;
   int32_t mode;
   FUSEFileInfoTransport fi;
+  int64_t rand;
 
   _DFS_create_args__isset __isset;
 
@@ -1701,6 +1802,10 @@ class DFS_create_args {
     fi = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_create_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -1710,6 +1815,8 @@ class DFS_create_args {
     if (!(mode == rhs.mode))
       return false;
     if (!(fi == rhs.fi))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1735,25 +1842,27 @@ class DFS_create_pargs {
   const std::string* path;
   const int32_t* mode;
   const FUSEFileInfoTransport* fi;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_write_args__isset {
-  _DFS_write_args__isset() : sender(false), path(false), buf(false), size(false), offset(false), fi(false) {}
+  _DFS_write_args__isset() : sender(false), path(false), buf(false), size(false), offset(false), fi(false), rand(false) {}
   bool sender;
   bool path;
   bool buf;
   bool size;
   bool offset;
   bool fi;
+  bool rand;
 } _DFS_write_args__isset;
 
 class DFS_write_args {
  public:
 
-  DFS_write_args() : path(), size(0), offset(0) {
+  DFS_write_args() : path(), size(0), offset(0), rand(0) {
   }
 
   virtual ~DFS_write_args() throw() {}
@@ -1764,6 +1873,7 @@ class DFS_write_args {
   int64_t size;
   int64_t offset;
   FUSEFileInfoTransport fi;
+  int64_t rand;
 
   _DFS_write_args__isset __isset;
 
@@ -1791,6 +1901,10 @@ class DFS_write_args {
     fi = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_write_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -1804,6 +1918,8 @@ class DFS_write_args {
     if (!(offset == rhs.offset))
       return false;
     if (!(fi == rhs.fi))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1831,22 +1947,24 @@ class DFS_write_pargs {
   const int64_t* size;
   const int64_t* offset;
   const FUSEFileInfoTransport* fi;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_flush_args__isset {
-  _DFS_flush_args__isset() : sender(false), path(false), fi(false) {}
+  _DFS_flush_args__isset() : sender(false), path(false), fi(false), rand(false) {}
   bool sender;
   bool path;
   bool fi;
+  bool rand;
 } _DFS_flush_args__isset;
 
 class DFS_flush_args {
  public:
 
-  DFS_flush_args() : path() {
+  DFS_flush_args() : path(), rand(0) {
   }
 
   virtual ~DFS_flush_args() throw() {}
@@ -1854,6 +1972,7 @@ class DFS_flush_args {
   HostID sender;
   std::string path;
   FUSEFileInfoTransport fi;
+  int64_t rand;
 
   _DFS_flush_args__isset __isset;
 
@@ -1869,6 +1988,10 @@ class DFS_flush_args {
     fi = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_flush_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -1876,6 +1999,8 @@ class DFS_flush_args {
     if (!(path == rhs.path))
       return false;
     if (!(fi == rhs.fi))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1900,22 +2025,24 @@ class DFS_flush_pargs {
   const HostID* sender;
   const std::string* path;
   const FUSEFileInfoTransport* fi;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_release_args__isset {
-  _DFS_release_args__isset() : sender(false), path(false), fi(false) {}
+  _DFS_release_args__isset() : sender(false), path(false), fi(false), rand(false) {}
   bool sender;
   bool path;
   bool fi;
+  bool rand;
 } _DFS_release_args__isset;
 
 class DFS_release_args {
  public:
 
-  DFS_release_args() : path() {
+  DFS_release_args() : path(), rand(0) {
   }
 
   virtual ~DFS_release_args() throw() {}
@@ -1923,6 +2050,7 @@ class DFS_release_args {
   HostID sender;
   std::string path;
   FUSEFileInfoTransport fi;
+  int64_t rand;
 
   _DFS_release_args__isset __isset;
 
@@ -1938,6 +2066,10 @@ class DFS_release_args {
     fi = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_release_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -1945,6 +2077,8 @@ class DFS_release_args {
     if (!(path == rhs.path))
       return false;
     if (!(fi == rhs.fi))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -1969,23 +2103,25 @@ class DFS_release_pargs {
   const HostID* sender;
   const std::string* path;
   const FUSEFileInfoTransport* fi;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_flock_args__isset {
-  _DFS_flock_args__isset() : sender(false), path(false), fi(false), op(false) {}
+  _DFS_flock_args__isset() : sender(false), path(false), fi(false), op(false), rand(false) {}
   bool sender;
   bool path;
   bool fi;
   bool op;
+  bool rand;
 } _DFS_flock_args__isset;
 
 class DFS_flock_args {
  public:
 
-  DFS_flock_args() : path(), op(0) {
+  DFS_flock_args() : path(), op(0), rand(0) {
   }
 
   virtual ~DFS_flock_args() throw() {}
@@ -1994,6 +2130,7 @@ class DFS_flock_args {
   std::string path;
   FUSEFileInfoTransport fi;
   int64_t op;
+  int64_t rand;
 
   _DFS_flock_args__isset __isset;
 
@@ -2013,6 +2150,10 @@ class DFS_flock_args {
     op = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_flock_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -2022,6 +2163,8 @@ class DFS_flock_args {
     if (!(fi == rhs.fi))
       return false;
     if (!(op == rhs.op))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -2047,25 +2190,27 @@ class DFS_flock_pargs {
   const std::string* path;
   const FUSEFileInfoTransport* fi;
   const int64_t* op;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_fallocate_args__isset {
-  _DFS_fallocate_args__isset() : sender(false), path(false), mode(false), offset(false), length(false), fi(false) {}
+  _DFS_fallocate_args__isset() : sender(false), path(false), mode(false), offset(false), length(false), fi(false), rand(false) {}
   bool sender;
   bool path;
   bool mode;
   bool offset;
   bool length;
   bool fi;
+  bool rand;
 } _DFS_fallocate_args__isset;
 
 class DFS_fallocate_args {
  public:
 
-  DFS_fallocate_args() : path(), mode(0), offset(0), length(0) {
+  DFS_fallocate_args() : path(), mode(0), offset(0), length(0), rand(0) {
   }
 
   virtual ~DFS_fallocate_args() throw() {}
@@ -2076,6 +2221,7 @@ class DFS_fallocate_args {
   int64_t offset;
   int64_t length;
   FUSEFileInfoTransport fi;
+  int64_t rand;
 
   _DFS_fallocate_args__isset __isset;
 
@@ -2103,6 +2249,10 @@ class DFS_fallocate_args {
     fi = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_fallocate_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -2116,6 +2266,8 @@ class DFS_fallocate_args {
     if (!(length == rhs.length))
       return false;
     if (!(fi == rhs.fi))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -2143,23 +2295,25 @@ class DFS_fallocate_pargs {
   const int64_t* offset;
   const int64_t* length;
   const FUSEFileInfoTransport* fi;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_utimens_args__isset {
-  _DFS_utimens_args__isset() : sender(false), path(false), atime(false), mtime(false) {}
+  _DFS_utimens_args__isset() : sender(false), path(false), atime(false), mtime(false), rand(false) {}
   bool sender;
   bool path;
   bool atime;
   bool mtime;
+  bool rand;
 } _DFS_utimens_args__isset;
 
 class DFS_utimens_args {
  public:
 
-  DFS_utimens_args() : path() {
+  DFS_utimens_args() : path(), rand(0) {
   }
 
   virtual ~DFS_utimens_args() throw() {}
@@ -2168,6 +2322,7 @@ class DFS_utimens_args {
   std::string path;
   TimeSpec atime;
   TimeSpec mtime;
+  int64_t rand;
 
   _DFS_utimens_args__isset __isset;
 
@@ -2187,6 +2342,10 @@ class DFS_utimens_args {
     mtime = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_utimens_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -2196,6 +2355,8 @@ class DFS_utimens_args {
     if (!(atime == rhs.atime))
       return false;
     if (!(mtime == rhs.mtime))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -2221,23 +2382,25 @@ class DFS_utimens_pargs {
   const std::string* path;
   const TimeSpec* atime;
   const TimeSpec* mtime;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _DFS_fsync_args__isset {
-  _DFS_fsync_args__isset() : sender(false), path(false), isdatasync(false), fi(false) {}
+  _DFS_fsync_args__isset() : sender(false), path(false), isdatasync(false), fi(false), rand(false) {}
   bool sender;
   bool path;
   bool isdatasync;
   bool fi;
+  bool rand;
 } _DFS_fsync_args__isset;
 
 class DFS_fsync_args {
  public:
 
-  DFS_fsync_args() : path(), isdatasync(0) {
+  DFS_fsync_args() : path(), isdatasync(0), rand(0) {
   }
 
   virtual ~DFS_fsync_args() throw() {}
@@ -2246,6 +2409,7 @@ class DFS_fsync_args {
   std::string path;
   int32_t isdatasync;
   FUSEFileInfoTransport fi;
+  int64_t rand;
 
   _DFS_fsync_args__isset __isset;
 
@@ -2265,6 +2429,10 @@ class DFS_fsync_args {
     fi = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_fsync_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -2274,6 +2442,8 @@ class DFS_fsync_args {
     if (!(isdatasync == rhs.isdatasync))
       return false;
     if (!(fi == rhs.fi))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -2299,6 +2469,7 @@ class DFS_fsync_pargs {
   const std::string* path;
   const int32_t* isdatasync;
   const FUSEFileInfoTransport* fi;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2362,16 +2533,17 @@ class DFS_fsync_presult {
 };
 
 typedef struct _DFS_open_args__isset {
-  _DFS_open_args__isset() : sender(false), path(false), fi(false) {}
+  _DFS_open_args__isset() : sender(false), path(false), fi(false), rand(false) {}
   bool sender;
   bool path;
   bool fi;
+  bool rand;
 } _DFS_open_args__isset;
 
 class DFS_open_args {
  public:
 
-  DFS_open_args() : path() {
+  DFS_open_args() : path(), rand(0) {
   }
 
   virtual ~DFS_open_args() throw() {}
@@ -2379,6 +2551,7 @@ class DFS_open_args {
   HostID sender;
   std::string path;
   FUSEFileInfoTransport fi;
+  int64_t rand;
 
   _DFS_open_args__isset __isset;
 
@@ -2394,6 +2567,10 @@ class DFS_open_args {
     fi = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_open_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -2401,6 +2578,8 @@ class DFS_open_args {
     if (!(path == rhs.path))
       return false;
     if (!(fi == rhs.fi))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -2425,6 +2604,7 @@ class DFS_open_pargs {
   const HostID* sender;
   const std::string* path;
   const FUSEFileInfoTransport* fi;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2488,16 +2668,17 @@ class DFS_open_presult {
 };
 
 typedef struct _DFS_opendir_args__isset {
-  _DFS_opendir_args__isset() : sender(false), path(false), fi(false) {}
+  _DFS_opendir_args__isset() : sender(false), path(false), fi(false), rand(false) {}
   bool sender;
   bool path;
   bool fi;
+  bool rand;
 } _DFS_opendir_args__isset;
 
 class DFS_opendir_args {
  public:
 
-  DFS_opendir_args() : path() {
+  DFS_opendir_args() : path(), rand(0) {
   }
 
   virtual ~DFS_opendir_args() throw() {}
@@ -2505,6 +2686,7 @@ class DFS_opendir_args {
   HostID sender;
   std::string path;
   FUSEFileInfoTransport fi;
+  int64_t rand;
 
   _DFS_opendir_args__isset __isset;
 
@@ -2520,6 +2702,10 @@ class DFS_opendir_args {
     fi = val;
   }
 
+  void __set_rand(const int64_t val) {
+    rand = val;
+  }
+
   bool operator == (const DFS_opendir_args & rhs) const
   {
     if (!(sender == rhs.sender))
@@ -2527,6 +2713,8 @@ class DFS_opendir_args {
     if (!(path == rhs.path))
       return false;
     if (!(fi == rhs.fi))
+      return false;
+    if (!(rand == rhs.rand))
       return false;
     return true;
   }
@@ -2551,6 +2739,7 @@ class DFS_opendir_pargs {
   const HostID* sender;
   const std::string* path;
   const FUSEFileInfoTransport* fi;
+  const int64_t* rand;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2655,50 +2844,50 @@ class DFSClient : virtual public DFSIf {
   bool getJoinLock(const HostID& sender, const HostID& newServer);
   void send_getJoinLock(const HostID& sender, const HostID& newServer);
   bool recv_getJoinLock();
-  void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
-  void send_releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
-  void mkdir(const HostID& sender, const std::string& path, const int32_t mode);
-  void send_mkdir(const HostID& sender, const std::string& path, const int32_t mode);
-  void unlink(const HostID& sender, const std::string& path);
-  void send_unlink(const HostID& sender, const std::string& path);
-  void rmdir(const HostID& sender, const std::string& path);
-  void send_rmdir(const HostID& sender, const std::string& path);
-  void symlink(const HostID& sender, const std::string& from, const std::string& to);
-  void send_symlink(const HostID& sender, const std::string& from, const std::string& to);
-  void rename(const HostID& sender, const std::string& from, const std::string& to);
-  void send_rename(const HostID& sender, const std::string& from, const std::string& to);
-  void link(const HostID& sender, const std::string& from, const std::string& to);
-  void send_link(const HostID& sender, const std::string& from, const std::string& to);
-  void chmod(const HostID& sender, const std::string& path, const int32_t mode);
-  void send_chmod(const HostID& sender, const std::string& path, const int32_t mode);
-  void chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid);
-  void send_chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid);
-  void truncate(const HostID& sender, const std::string& path, const int64_t size);
-  void send_truncate(const HostID& sender, const std::string& path, const int64_t size);
-  void ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi);
-  void send_ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi);
-  void create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi);
-  void send_create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi);
-  void write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi);
-  void send_write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi);
-  void flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
-  void send_flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
-  void release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
-  void send_release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
-  void flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op);
-  void send_flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op);
-  void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi);
-  void send_fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi);
-  void utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime);
-  void send_utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime);
-  bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi);
-  void send_fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi);
+  void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void send_releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void mkdir(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand);
+  void send_mkdir(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand);
+  void unlink(const HostID& sender, const std::string& path, const int64_t rand);
+  void send_unlink(const HostID& sender, const std::string& path, const int64_t rand);
+  void rmdir(const HostID& sender, const std::string& path, const int64_t rand);
+  void send_rmdir(const HostID& sender, const std::string& path, const int64_t rand);
+  void symlink(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand);
+  void send_symlink(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand);
+  void rename(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand);
+  void send_rename(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand);
+  void link(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand);
+  void send_link(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand);
+  void chmod(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand);
+  void send_chmod(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand);
+  void chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid, const int64_t rand);
+  void send_chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid, const int64_t rand);
+  void truncate(const HostID& sender, const std::string& path, const int64_t size, const int64_t rand);
+  void send_truncate(const HostID& sender, const std::string& path, const int64_t size, const int64_t rand);
+  void ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void send_ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void send_create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void send_write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void send_flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void send_release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op, const int64_t rand);
+  void send_flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op, const int64_t rand);
+  void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void send_fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime, const int64_t rand);
+  void send_utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime, const int64_t rand);
+  bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void send_fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi, const int64_t rand);
   bool recv_fsync();
-  bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
-  void send_open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
+  bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void send_open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand);
   bool recv_open();
-  bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
-  void send_opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi);
+  bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand);
+  void send_opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand);
   bool recv_opendir();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
@@ -2889,193 +3078,193 @@ class DFSMultiface : virtual public DFSIf {
     return ifaces_[i]->getJoinLock(sender, newServer);
   }
 
-  void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+  void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->releasedir(sender, path, fi);
+      ifaces_[i]->releasedir(sender, path, fi, rand);
     }
-    ifaces_[i]->releasedir(sender, path, fi);
+    ifaces_[i]->releasedir(sender, path, fi, rand);
   }
 
-  void mkdir(const HostID& sender, const std::string& path, const int32_t mode) {
+  void mkdir(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->mkdir(sender, path, mode);
+      ifaces_[i]->mkdir(sender, path, mode, rand);
     }
-    ifaces_[i]->mkdir(sender, path, mode);
+    ifaces_[i]->mkdir(sender, path, mode, rand);
   }
 
-  void unlink(const HostID& sender, const std::string& path) {
+  void unlink(const HostID& sender, const std::string& path, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->unlink(sender, path);
+      ifaces_[i]->unlink(sender, path, rand);
     }
-    ifaces_[i]->unlink(sender, path);
+    ifaces_[i]->unlink(sender, path, rand);
   }
 
-  void rmdir(const HostID& sender, const std::string& path) {
+  void rmdir(const HostID& sender, const std::string& path, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->rmdir(sender, path);
+      ifaces_[i]->rmdir(sender, path, rand);
     }
-    ifaces_[i]->rmdir(sender, path);
+    ifaces_[i]->rmdir(sender, path, rand);
   }
 
-  void symlink(const HostID& sender, const std::string& from, const std::string& to) {
+  void symlink(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->symlink(sender, from, to);
+      ifaces_[i]->symlink(sender, from, to, rand);
     }
-    ifaces_[i]->symlink(sender, from, to);
+    ifaces_[i]->symlink(sender, from, to, rand);
   }
 
-  void rename(const HostID& sender, const std::string& from, const std::string& to) {
+  void rename(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->rename(sender, from, to);
+      ifaces_[i]->rename(sender, from, to, rand);
     }
-    ifaces_[i]->rename(sender, from, to);
+    ifaces_[i]->rename(sender, from, to, rand);
   }
 
-  void link(const HostID& sender, const std::string& from, const std::string& to) {
+  void link(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->link(sender, from, to);
+      ifaces_[i]->link(sender, from, to, rand);
     }
-    ifaces_[i]->link(sender, from, to);
+    ifaces_[i]->link(sender, from, to, rand);
   }
 
-  void chmod(const HostID& sender, const std::string& path, const int32_t mode) {
+  void chmod(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->chmod(sender, path, mode);
+      ifaces_[i]->chmod(sender, path, mode, rand);
     }
-    ifaces_[i]->chmod(sender, path, mode);
+    ifaces_[i]->chmod(sender, path, mode, rand);
   }
 
-  void chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid) {
+  void chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->chown(sender, path, uid, gid);
+      ifaces_[i]->chown(sender, path, uid, gid, rand);
     }
-    ifaces_[i]->chown(sender, path, uid, gid);
+    ifaces_[i]->chown(sender, path, uid, gid, rand);
   }
 
-  void truncate(const HostID& sender, const std::string& path, const int64_t size) {
+  void truncate(const HostID& sender, const std::string& path, const int64_t size, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->truncate(sender, path, size);
+      ifaces_[i]->truncate(sender, path, size, rand);
     }
-    ifaces_[i]->truncate(sender, path, size);
+    ifaces_[i]->truncate(sender, path, size, rand);
   }
 
-  void ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi) {
+  void ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->ftruncate(sender, path, size, fi);
+      ifaces_[i]->ftruncate(sender, path, size, fi, rand);
     }
-    ifaces_[i]->ftruncate(sender, path, size, fi);
+    ifaces_[i]->ftruncate(sender, path, size, fi, rand);
   }
 
-  void create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi) {
+  void create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->create(sender, path, mode, fi);
+      ifaces_[i]->create(sender, path, mode, fi, rand);
     }
-    ifaces_[i]->create(sender, path, mode, fi);
+    ifaces_[i]->create(sender, path, mode, fi, rand);
   }
 
-  void write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi) {
+  void write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->write(sender, path, buf, size, offset, fi);
+      ifaces_[i]->write(sender, path, buf, size, offset, fi, rand);
     }
-    ifaces_[i]->write(sender, path, buf, size, offset, fi);
+    ifaces_[i]->write(sender, path, buf, size, offset, fi, rand);
   }
 
-  void flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+  void flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->flush(sender, path, fi);
+      ifaces_[i]->flush(sender, path, fi, rand);
     }
-    ifaces_[i]->flush(sender, path, fi);
+    ifaces_[i]->flush(sender, path, fi, rand);
   }
 
-  void release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+  void release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->release(sender, path, fi);
+      ifaces_[i]->release(sender, path, fi, rand);
     }
-    ifaces_[i]->release(sender, path, fi);
+    ifaces_[i]->release(sender, path, fi, rand);
   }
 
-  void flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op) {
+  void flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->flock(sender, path, fi, op);
+      ifaces_[i]->flock(sender, path, fi, op, rand);
     }
-    ifaces_[i]->flock(sender, path, fi, op);
+    ifaces_[i]->flock(sender, path, fi, op, rand);
   }
 
-  void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi) {
+  void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->fallocate(sender, path, mode, offset, length, fi);
+      ifaces_[i]->fallocate(sender, path, mode, offset, length, fi, rand);
     }
-    ifaces_[i]->fallocate(sender, path, mode, offset, length, fi);
+    ifaces_[i]->fallocate(sender, path, mode, offset, length, fi, rand);
   }
 
-  void utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime) {
+  void utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->utimens(sender, path, atime, mtime);
+      ifaces_[i]->utimens(sender, path, atime, mtime, rand);
     }
-    ifaces_[i]->utimens(sender, path, atime, mtime);
+    ifaces_[i]->utimens(sender, path, atime, mtime, rand);
   }
 
-  bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) {
+  bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->fsync(sender, path, isdatasync, fi);
+      ifaces_[i]->fsync(sender, path, isdatasync, fi, rand);
     }
-    return ifaces_[i]->fsync(sender, path, isdatasync, fi);
+    return ifaces_[i]->fsync(sender, path, isdatasync, fi, rand);
   }
 
-  bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+  bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->open(sender, path, fi);
+      ifaces_[i]->open(sender, path, fi, rand);
     }
-    return ifaces_[i]->open(sender, path, fi);
+    return ifaces_[i]->open(sender, path, fi, rand);
   }
 
-  bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+  bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->opendir(sender, path, fi);
+      ifaces_[i]->opendir(sender, path, fi, rand);
     }
-    return ifaces_[i]->opendir(sender, path, fi);
+    return ifaces_[i]->opendir(sender, path, fi, rand);
   }
 
 };

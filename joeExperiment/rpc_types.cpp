@@ -354,5 +354,4 @@ bool HostID::operator<(DFS::HostID const& rhs) const {
         port < rhs.port : hostname < rhs.hostname;
 }
 
-
 } // namespace

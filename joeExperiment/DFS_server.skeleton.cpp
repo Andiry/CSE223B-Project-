@@ -67,107 +67,107 @@ class DFSHandler : virtual public DFSIf {
     printf("getJoinLock\n");
   }
 
-  void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+  void releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     // Your implementation goes here
     printf("releasedir\n");
   }
 
-  void mkdir(const HostID& sender, const std::string& path, const int32_t mode) {
+  void mkdir(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand) {
     // Your implementation goes here
     printf("mkdir\n");
   }
 
-  void unlink(const HostID& sender, const std::string& path) {
+  void unlink(const HostID& sender, const std::string& path, const int64_t rand) {
     // Your implementation goes here
     printf("unlink\n");
   }
 
-  void rmdir(const HostID& sender, const std::string& path) {
+  void rmdir(const HostID& sender, const std::string& path, const int64_t rand) {
     // Your implementation goes here
     printf("rmdir\n");
   }
 
-  void symlink(const HostID& sender, const std::string& from, const std::string& to) {
+  void symlink(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand) {
     // Your implementation goes here
     printf("symlink\n");
   }
 
-  void rename(const HostID& sender, const std::string& from, const std::string& to) {
+  void rename(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand) {
     // Your implementation goes here
     printf("rename\n");
   }
 
-  void link(const HostID& sender, const std::string& from, const std::string& to) {
+  void link(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand) {
     // Your implementation goes here
     printf("link\n");
   }
 
-  void chmod(const HostID& sender, const std::string& path, const int32_t mode) {
+  void chmod(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand) {
     // Your implementation goes here
     printf("chmod\n");
   }
 
-  void chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid) {
+  void chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid, const int64_t rand) {
     // Your implementation goes here
     printf("chown\n");
   }
 
-  void truncate(const HostID& sender, const std::string& path, const int64_t size) {
+  void truncate(const HostID& sender, const std::string& path, const int64_t size, const int64_t rand) {
     // Your implementation goes here
     printf("truncate\n");
   }
 
-  void ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi) {
+  void ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi, const int64_t rand) {
     // Your implementation goes here
     printf("ftruncate\n");
   }
 
-  void create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi) {
+  void create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi, const int64_t rand) {
     // Your implementation goes here
     printf("create\n");
   }
 
-  void write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi) {
+  void write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi, const int64_t rand) {
     // Your implementation goes here
     printf("write\n");
   }
 
-  void flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+  void flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     // Your implementation goes here
     printf("flush\n");
   }
 
-  void release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+  void release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     // Your implementation goes here
     printf("release\n");
   }
 
-  void flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op) {
+  void flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op, const int64_t rand) {
     // Your implementation goes here
     printf("flock\n");
   }
 
-  void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi) {
+  void fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi, const int64_t rand) {
     // Your implementation goes here
     printf("fallocate\n");
   }
 
-  void utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime) {
+  void utimens(const HostID& sender, const std::string& path, const TimeSpec& atime, const TimeSpec& mtime, const int64_t rand) {
     // Your implementation goes here
     printf("utimens\n");
   }
 
-  bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) {
+  bool fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi, const int64_t rand) {
     // Your implementation goes here
     printf("fsync\n");
   }
 
-  bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+  bool open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     // Your implementation goes here
     printf("open\n");
   }
 
-  bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+  bool opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     // Your implementation goes here
     printf("opendir\n");
   }

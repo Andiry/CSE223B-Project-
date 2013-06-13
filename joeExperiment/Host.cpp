@@ -1,5 +1,6 @@
 
 #include "Host.hpp"
+    std::mt19937_64 randGen_;
 
 using namespace std;
 using namespace DFS;
@@ -10,6 +11,7 @@ Host::Host() : state_(UNKNOWN), me_(NULL) {
 
 Host::Host(const HostID& id, const HostID& me)
     : id_(id), state_(ALIVE), me_(&me) {
+    randGen_.seed(chrono::system_clock::now().time_since_epoch().count());
     setup();
 }
 
@@ -29,6 +31,8 @@ Host::Host(const Host& rhs) : id_(rhs.id_), state_(rhs.state_), me_(rhs.me_) {
 void Host::setup() {
     if (state_ == ME || state_ == UNKNOWN)
         return;
+
+    randGen_.seed(chrono::system_clock::now().time_since_epoch().count());
 
     socket_.reset(new apache::thrift::transport::TSocket(id_.hostname, id_.port));
     transport_.reset(new apache::thrift::transport::TFramedTransport(socket_));
@@ -196,28 +200,28 @@ bool Host::getJoinLock(const DFS::HostID& newServer) {
 }
 
 void Host::releasedir(const string& path, const DFS::FUSEFileInfoTransport& fi) {
-    TRY(return, return, return, client_->releasedir(*me_, path, fi));
+    TRY(return, return, return, client_->releasedir(*me_, path, fi, randGen_()));
     //PRECHECK(return, return);
     //client_->releasedir(*me_, path, fi);
     //POSTCHECK(return);
 }
 
 void Host::mkdir(const string& path, const int32_t mode) {
-    TRY(return, return, return, client_->mkdir(*me_, path, mode));
+    TRY(return, return, return, client_->mkdir(*me_, path, mode, randGen_()));
     //PRECHECK(return, return);
     //client_->mkdir(*me_, path, mode);
     //POSTCHECK(return);
 }
 
 void Host::unlink(const string& path) {
-    TRY(return, return, return, client_->unlink(*me_, path));
+    TRY(return, return, return, client_->unlink(*me_, path, randGen_()));
     //PRECHECK(return, return);
     //client_->unlink(*me_, path);
     //POSTCHECK(return);
 }
 
 void Host::rmdir(const string& path) {
-    TRY(return, return, return, client_->rmdir(*me_, path));
+    TRY(return, return, return, client_->rmdir(*me_, path, randGen_()));
     //PRECHECK(return, return);
     //client_->rmdir(*me_, path);
     //POSTCHECK(return);
@@ -227,98 +231,98 @@ void Host::symlink(const string& from, const string& to) {
     //PRECHECK(return, return);
     //client_->symlink(*me_, from, to);
     //POSTCHECK(return);
-    TRY(return, return, return, client_->symlink(*me_, from, to));
+    TRY(return, return, return, client_->symlink(*me_, from, to, randGen_()));
 }
 
 void Host::rename(const string& from, const string& to) {
     //PRECHECK(return, return);
     //client_->rename(*me_, from, to);
     //POSTCHECK(return);
-    TRY(return, return, return, client_->rename(*me_, from, to));
+    TRY(return, return, return, client_->rename(*me_, from, to, randGen_()));
 }
 
 void Host::link(const string& from, const string& to) {
     //PRECHECK(return, return);
     //client_->link(*me_, from, to);
     //POSTCHECK(return);
-    TRY(return, return, return, client_->link(*me_, from, to));
+    TRY(return, return, return, client_->link(*me_, from, to, randGen_()));
 }
 
 void Host::chmod(const string& path, const int32_t mode) {
     //PRECHECK(return, return);
     //client_->chmod(*me_, path, mode);
     //POSTCHECK(return);
-    TRY(return, return, return, client_->chmod(*me_, path, mode));
+    TRY(return, return, return, client_->chmod(*me_, path, mode, randGen_()));
 }
 
 void Host::chown(const string& path, const int32_t uid, const int32_t gid) {
     //PRECHECK(return, return);
     //client_->chown(*me_, path, uid, gid);
     //POSTCHECK(return);
-    TRY(return, return, return, client_->chown(*me_, path, uid, gid));
+    TRY(return, return, return, client_->chown(*me_, path, uid, gid, randGen_()));
 }
 
 void Host::truncate(const string& path, const int64_t size) {
     //PRECHECK(return, return);
     //client_->truncate(*me_, path, size);
     //POSTCHECK(return);
-    TRY(return, return, return, client_->truncate(*me_, path, size));
+    TRY(return, return, return, client_->truncate(*me_, path, size, randGen_()));
 }
 
 void Host::ftruncate(const string& path, const int64_t size, const DFS::FUSEFileInfoTransport& fi) {
     //PRECHECK(return, return);
     //client_->ftruncate(*me_, path, size, fi);
     //POSTCHECK(return);
-    TRY(return, return, return, client_->ftruncate(*me_, path, size, fi));
+    TRY(return, return, return, client_->ftruncate(*me_, path, size, fi, randGen_()));
 }
 
 void Host::create(const string& path, const int32_t mode, const DFS::FUSEFileInfoTransport& fi) {
     //PRECHECK(return, return);
     //client_->create(*me_, path, mode, fi);
     //POSTCHECK(return);
-    TRY(return, return, return, client_->create(*me_, path, mode, fi));
+    TRY(return, return, return, client_->create(*me_, path, mode, fi, randGen_()));
 }
 
 void Host::write(const string& path, const vector<int8_t> & buf, const int64_t size, const int64_t offset, const DFS::FUSEFileInfoTransport& fi) {
     //PRECHECK(return, return);
     //client_->write(*me_, path, buf, size, offset, fi);
     //POSTCHECK(return);
-    TRY(return, return, return, client_->write(*me_, path, buf, size, offset, fi));
+    TRY(return, return, return, client_->write(*me_, path, buf, size, offset, fi, randGen_()));
 }
 
 void Host::flush(const string& path, const DFS::FUSEFileInfoTransport& fi) {
     //PRECHECK(return, return);
     //client_->flush(*me_, path, fi);
     //POSTCHECK(return);
-    TRY(return, return, return, client_->flush(*me_, path, fi));
+    TRY(return, return, return, client_->flush(*me_, path, fi, randGen_()));
 }
 
 void Host::release(const string& path, const DFS::FUSEFileInfoTransport& fi) {
     //PRECHECK(return, return);
     //client_->release(*me_, path, fi);
     //POSTCHECK(return);
-    TRY(return, return, return, client_->release(*me_, path, fi));
+    TRY(return, return, return, client_->release(*me_, path, fi, randGen_()));
 }
 
 void Host::flock(const string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t op) {
     //PRECHECK(return, return);
     //client_->flock(*me_, path, fi, op);
     //POSTCHECK(return);
-    TRY(return, return, return, client_->flock(*me_, path, fi, op));
+    TRY(return, return, return, client_->flock(*me_, path, fi, op, randGen_()));
 }
 
 void Host::fallocate(const string& path, const int64_t mode, const int64_t offset, const int64_t length, const DFS::FUSEFileInfoTransport& fi) {
     //PRECHECK(return, return);
     //client_->fallocate(*me_, path, mode, offset, length, fi);
     //POSTCHECK(return);
-    TRY(return, return, return, client_->fallocate(*me_, path, mode, offset, length, fi));
+    TRY(return, return, return, client_->fallocate(*me_, path, mode, offset, length, fi, randGen_()));
 }
 
 bool Host::fsync(const string& path, const int32_t isdatasync, const DFS::FUSEFileInfoTransport& fi) {
     //PRECHECK(return true, return false);
     //return client_->fsync(*me_, path, isdatasync, fi);
     //POSTCHECK(return true);
-    TRY(return true, return false, , return client_->fsync(*me_, path, isdatasync, fi));
+    TRY(return true, return false, , return client_->fsync(*me_, path, isdatasync, fi, randGen_()));
     return false;
 }
 
@@ -326,7 +330,7 @@ bool Host::open(const string& path, const DFS::FUSEFileInfoTransport& fi) {
     //PRECHECK(return true, return false);
     //return client_->open(*me_, path, fi);
     //POSTCHECK(return true);
-    TRY(return true, return false, , return client_->open(*me_, path, fi));
+    TRY(return true, return false, , return client_->open(*me_, path, fi, randGen_()));
     return false;
 }
 
@@ -334,7 +338,7 @@ bool Host::opendir(const string& path, const DFS::FUSEFileInfoTransport& fi) {
     //PRECHECK(return true, return false);
     //return client_->opendir(*me_, path, fi);
     //POSTCHECK(return true);
-    TRY(return true, return false, , return client_->opendir(*me_, path, fi));
+    TRY(return true, return false, , return client_->opendir(*me_, path, fi, randGen_()));
     return false;
 }
 
@@ -342,7 +346,7 @@ void Host::utimens(const string& path, const TimeSpec& atime, const TimeSpec& mt
     //PRECHECK(return, return);
     //client_->utimens(*me_, path, atime, mtime);
     //POSTCHECK(return);
-    TRY(return, return, , client_->utimens(*me_, path, atime, mtime));
+    TRY(return, return, , client_->utimens(*me_, path, atime, mtime, randGen_()));
 }
 
 

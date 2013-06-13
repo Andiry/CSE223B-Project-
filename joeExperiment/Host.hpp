@@ -7,6 +7,10 @@
 #include <protocol/TBinaryProtocol.h>
 #include <map>
 
+#include <chrono>
+#include <random>
+#include <ostream>
+
 class Host {
   public:
 
@@ -26,6 +30,8 @@ class Host {
     inline std::string identifier() const {
         return id_.hostname + ":" + std::to_string(id_.port);
     }
+
+    int64_t lastRand_;
 
     bool ping();
 
@@ -69,6 +75,8 @@ class Host {
     boost::shared_ptr<apache::thrift::transport::TTransport> transport_;
     boost::shared_ptr<apache::thrift::protocol::TProtocol> protocol_;
     boost::shared_ptr<DFS::DFSClient> client_;
+    
+    std::mt19937_64 randGen_;
 };
 
 #endif

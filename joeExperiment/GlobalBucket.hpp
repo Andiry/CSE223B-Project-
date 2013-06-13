@@ -35,8 +35,8 @@ struct GlobalBucket {
 
     std::map<uint64_t, uint64_t> fhMap_;
 
-    DebugStream debug_;
-    //std::ostream& debug_;
+    //DebugStream debug_;
+    std::ostream& debug_;
     pthread_cond_t joinCond_;
     pthread_mutex_t joinMutex_;
     // TODO - use these for blocking writes on joinLock
@@ -44,8 +44,8 @@ struct GlobalBucket {
     //        IS, that the server will be killed off!
 
     GlobalBucket(const std::string& hostname, int16_t port, void (*killall)(void))
-        : killall_(killall), joinLock_(false), joinMaster_(false) {
-        //: killall_(killall), joinLock_(false), joinMaster_(false), debug_(std::cerr) {
+        //: killall_(killall), joinLock_(false), joinMaster_(false) {
+        : killall_(killall), joinLock_(false), joinMaster_(false), debug_(std::cerr) {
         me_.hostname = hostname;
         me_.port     = port;
         randGen_.seed(std::chrono::system_clock::now().time_since_epoch().count());

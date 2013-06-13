@@ -22,6 +22,16 @@ inline string DFSHandler::convert(const string& path) {
     return newPath;
 }
 
+#define randCheck() \
+if (globals_->hostMap_[sender].lastRand_ == rand) \
+    return;\
+globals_->hostMap_[sender].lastRand_ = rand;
+
+#define boolRandCheck() \
+if (globals_->hostMap_[sender].lastRand_ == rand) \
+    return false;\
+globals_->hostMap_[sender].lastRand_ = rand;
+
 bool DFSHandler::checkForDead(const HostID& sender) {
     if (globals_->hostMap_[sender].state_ == Host::State::DEAD) {
         globals_->hostMap_[sender].die();
@@ -175,8 +185,9 @@ void DFSHandler::ffit2ffi(const FUSEFileInfoTransport& ffit, fuse_file_info& ffi
     ffi.lock_owner  = ffit.lock_owner;
 }
 
-void DFSHandler::releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+void DFSHandler::releasedir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     announceOperation("releasedir", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
 
     string cpath = convert(path);
@@ -186,75 +197,85 @@ void DFSHandler::releasedir(const HostID& sender, const std::string& path, const
     local_releasedir(cpath.c_str(), &ffi, fh);
 }
 
-void DFSHandler::mkdir(const HostID& sender, const std::string& path, const int32_t mode) {
+void DFSHandler::mkdir(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand) {
     announceOperation("mkdir", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
     string cpath = convert(path);
     local_mkdir(cpath.c_str(), mode);
 }
 
-void DFSHandler::unlink(const HostID& sender, const std::string& path) {
+void DFSHandler::unlink(const HostID& sender, const std::string& path, const int64_t rand) {
     announceOperation("unlink", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
     string cpath = convert(path);
     local_unlink(cpath.c_str());
 }
 
-void DFSHandler::rmdir(const HostID& sender, const std::string& path) {
+void DFSHandler::rmdir(const HostID& sender, const std::string& path, const int64_t rand) {
     announceOperation("rmdir", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
 
     string cpath = convert(path);
     local_rmdir(cpath.c_str());
 }
 
-void DFSHandler::symlink(const HostID& sender, const std::string& from, const std::string& to) {
+void DFSHandler::symlink(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand) {
     announceOperation("symlink", sender, from, to);
+    randCheck();
     if (checkForDead(sender)) return;
     string cfrom = convert(from);
     string cto = convert(to);
     local_symlink(cfrom.c_str(), cto.c_str());
 }
 
-void DFSHandler::rename(const HostID& sender, const std::string& from, const std::string& to) {
+void DFSHandler::rename(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand) {
     announceOperation("rename", sender, from, to);
+    randCheck();
     if (checkForDead(sender)) return;
     string cfrom = convert(from);
     string cto = convert(to);
     local_rename(cfrom.c_str(), cto.c_str());
 }
 
-void DFSHandler::link(const HostID& sender, const std::string& from, const std::string& to) {
+void DFSHandler::link(const HostID& sender, const std::string& from, const std::string& to, const int64_t rand) {
     announceOperation("link", sender, from, to);
+    randCheck();
     if (checkForDead(sender)) return;
     string cfrom = convert(from);
     string cto = convert(to);
     local_link(cfrom.c_str(), cto.c_str());
 }
 
-void DFSHandler::chmod(const HostID& sender, const std::string& path, const int32_t mode) {
+void DFSHandler::chmod(const HostID& sender, const std::string& path, const int32_t mode, const int64_t rand) {
     announceOperation("chmod", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
     string cpath = convert(path);
     local_chmod(cpath.c_str(), mode);
 }
 
-void DFSHandler::chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid) {
+void DFSHandler::chown(const HostID& sender, const std::string& path, const int32_t uid, const int32_t gid, const int64_t rand) {
     announceOperation("chown", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
     string cpath = convert(path);
     local_chown(cpath.c_str(), uid, gid);
 }
 
-void DFSHandler::truncate(const HostID& sender, const std::string& path, const int64_t size) {
+void DFSHandler::truncate(const HostID& sender, const std::string& path, const int64_t size, const int64_t rand) {
     announceOperation("truncate", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
     string cpath = convert(path);
     local_truncate(cpath.c_str(), size);
 }
 
-void DFSHandler::ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi) {
+void DFSHandler::ftruncate(const HostID& sender, const std::string& path, const int64_t size, const FUSEFileInfoTransport& fi, const int64_t rand) {
     announceOperation("ftruncate", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
@@ -263,9 +284,10 @@ void DFSHandler::ftruncate(const HostID& sender, const std::string& path, const 
     local_ftruncate(cpath.c_str(), size, &ffi, fh);
 }
 
-void DFSHandler::create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi) {
+void DFSHandler::create(const HostID& sender, const std::string& path, const int32_t mode, const FUSEFileInfoTransport& fi, const int64_t rand) {
 
     announceOperation("create", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
 
     fuse_file_info ffi;
@@ -275,8 +297,9 @@ void DFSHandler::create(const HostID& sender, const std::string& path, const int
     local_create(cpath.c_str(), mode, &ffi, fh);
 }
 
-void DFSHandler::write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi) {
+void DFSHandler::write(const HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const FUSEFileInfoTransport& fi, const int64_t rand) {
     announceOperation("write", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
@@ -288,8 +311,9 @@ void DFSHandler::write(const HostID& sender, const std::string& path, const std:
     delete [] newbuf;
 }
 
-void DFSHandler::flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+void DFSHandler::flush(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     announceOperation("flush", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
@@ -298,8 +322,9 @@ void DFSHandler::flush(const HostID& sender, const std::string& path, const FUSE
     local_flush(cpath.c_str(), &ffi, fh);
 }
 
-void DFSHandler::release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+void DFSHandler::release(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     announceOperation("release", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
 
     fuse_file_info ffi;
@@ -314,8 +339,9 @@ void DFSHandler::release(const HostID& sender, const std::string& path, const FU
     local_release(cpath.c_str(), &ffi, fh);
 }
 
-void DFSHandler::flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op) {
+void DFSHandler::flock(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t op, const int64_t rand) {
     announceOperation("flock", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
@@ -324,8 +350,9 @@ void DFSHandler::flock(const HostID& sender, const std::string& path, const FUSE
     local_flock(cpath.c_str(), &ffi, op, fh);
 }
 
-void DFSHandler::fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi) {
+void DFSHandler::fallocate(const HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const FUSEFileInfoTransport& fi, const int64_t rand) {
     announceOperation("fallocate", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
 #ifdef HAVE_POSIX_FALLOCATE
     fuse_file_info ffi;
@@ -336,7 +363,7 @@ void DFSHandler::fallocate(const HostID& sender, const std::string& path, const 
 #endif
 }
 
-bool DFSHandler::fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi) {
+bool DFSHandler::fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi, const int64_t rand) {
     announceOperation("fsync", sender, path);
     if (checkForDead(sender)) return false;
     fuse_file_info ffi;
@@ -348,7 +375,7 @@ bool DFSHandler::fsync(const HostID& sender, const std::string& path, const int3
     return true;
 }
 
-bool DFSHandler::open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+bool DFSHandler::open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     announceOperation("open", sender, path);
     if (checkForDead(sender)) return false;
 
@@ -360,7 +387,7 @@ bool DFSHandler::open(const HostID& sender, const std::string& path, const FUSEF
     return true;
 }
 
-bool DFSHandler::opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi) {
+bool DFSHandler::opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
 
     announceOperation("opendir", sender, path);
     if (checkForDead(sender)) return false;
@@ -373,8 +400,9 @@ bool DFSHandler::opendir(const HostID& sender, const std::string& path, const FU
     return false;
 }
 
-void DFSHandler::utimens(const HostID& sender, const string& path, const TimeSpec& atime, const TimeSpec& mtime) {
+void DFSHandler::utimens(const HostID& sender, const string& path, const TimeSpec& atime, const TimeSpec& mtime, const int64_t rand) {
     announceOperation("utimens", sender, path);
+    randCheck();
     if (checkForDead(sender)) return;
 
 
