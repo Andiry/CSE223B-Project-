@@ -19,31 +19,7 @@ that are active in the system. If AJFS queued outgoing requests and handled
 transmitting of the data asynchronously, bandwidth would decoupled from the 
 number of nodes in the system. This change would require the introduction of one
 or more worker threads whose job would be to send data to other nodes. This
-change is the single largest opportunity for easy performance improvement, and
-would also reduce node death as described below.
-
-\subsection{Synchronous RPC}
-
-While working on AJFS, we discovered an issue with Thrift that results in
-significant limitations for the system. When the system is under heavy load, a
-TCP connection will fail between servers and Thrift will fail to successfully
-transfer data to the receiving server, but will not throw an exception
-identifying that the transfer was not successful.
-
-Since the sending system believes that the operation succeeded, and the
-operations are asynchronous and return nothing to the server, the sender has no
-means of determining that the operation wasn't successful. Moreover, since a
-server doesn't store operations after their sent, there's no way for the client
-to subsequently request that operations are resent.
-
-The same code additions in the client that allow the receiving server to ensure
-idempotence allow us to detect these errors when they happen, but the only
-options are to unsafely ignore them, or kill the server.
-
-If the asynchronous data system described in the previous section was
-implemented, it would be trivial to replace all of the thrift "oneway" functions
-with synchronous RPC calls. This change would allow the sending system to verify
-that the operation was received successfully.
+change is the single largest opportunity for easy performance improvement.
 
 \subsection{Blocking on Node Join}
 

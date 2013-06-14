@@ -2,7 +2,8 @@
 In today's world, people use a variety of computers from a variety of locations.
 They demand that their files remain synchronized and accessible from wherever
 they are. In this space, the winners have been cloud storage services such as
-Dropbox~\cite{Dropbox}, Google Drive~\cite{googledrive}, Microsoft SkyDrive~\cite{skydrive}, Apple iCloud~\cite{icloud} and others.
+Dropbox~\cite{Dropbox}, Google Drive~\cite{googledrive}, Microsoft
+SkyDrive~\cite{skydrive}, Apple iCloud~\cite{icloud} and others.
 
 These services meet the need fairly effectively. As long as the user has
 internet access, files remain available and largely synchronized. However, these
@@ -13,13 +14,13 @@ service.
 
 We present AJFS: a fully-replicated file system that supports multiple users and
 limited simultaneous editing across hosts. AJFS is robust against nodes failing
-and joining the system, and is designed with the Dropbox use case in mind.
+and joining the system, and is designed with a use case similar to Dropbox.
 
 AJFS is not meant to replace Dropbox, but is instead meant as a first step
 towards facilitating users to share files under similar usage patterns as
-Dropbox without having to trust a third party service provided. On the other
-hand, it presently has no support for file system changes while a host is
-offline or unable to access all other nodes participating.
+Dropbox without having to trust a third party service provided. While it does
+provide a "shared folder" similar to that of Dropbox, it provides no support for
+systems that are offline or unable to access all other nodes participating.
 
 AJFS is fully functional and presently emphasizes data safety and correctness
 over performance, but future work could dramatically decrease the performance

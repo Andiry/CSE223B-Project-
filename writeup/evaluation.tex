@@ -1,65 +1,120 @@
-We test AJFS on a local machine as well as sysnet cluster. The evaluation includes consistency part and performance part.
+Testing of AJFS was completed on a small cluster of 8 nodes. Each node in the
+cluster was a virtual machine with two cores on a 2.8GHz Intel Xeon CPU. The
+systems run Ubuntu 12.04.2 LTS with Linux kernel 3.2.0-39. The nodes each have
+2GB of RAM, and share an NFS mounted set of home directories.  Tests were run in
+userspace running over NFS. No client-side caching was disabled.
+
+The systems supported FUSE 2.8.6 and Apache Thrift 0.9.0. AJFS was evaluated for
+both consistency and performance.
 
 \subsection{Consistency}
+The main design goal of AJFS requires file consistency across multiple servers,
+and as a result, evaluation of safety and file consistency is the most important
+measure of whether AJFS has achieved its objectives.
 
-The main design purpose of AJFS is the file consistency when accessed by multiple servers. We've tested the following cases:
+What follows are the descriptions of a few simple tests and use cases that,
+among others, suggest consistency despite a variety of perturbations. 
 
 \subsubsection{Server crash and rejoin}
 
-In distributed system, it's common that server crashes. We need to guarantee that when a server is down, the data is not corrupted and when the server is back online, the data will be synchronized.
+In distributed system, it's common that a server crashes. We need to guarantee
+that when a server is down, data that changes while a server is offline is not
+lost, and when the dead server comes back online, the data is synchronized.
 
-The design of AJFS supports server rejoin. Since it's running based on the local backup, client can access the file locally without issue, just like Coda~\cite{KS92} does.
-The only problem is when the server is down, client cannot access the mount point, because fuse server is also down. Instead, client should access the local backup. When the server rejoins, it will automatiaclly rsync with remote repositories and sync up the local files with remote replicas.
+% The design of AJFS supports server rejoins. Since it's running based on the
+% local backup, client can access the file locally without issue, just like
+% Coda~\cite{KS92} does.  The only problem is when the server is down, client
+% cannot access the mount point, because fuse server is also down. Instead,
+% client should access the local backup. When the server rejoins, it will
+% automatiaclly rsync with remote repositories and sync up the local files with
+% remote replicas.
 
-We tested following test cases on AJFS:
+Specifically, we tested the following scenario on AJFS:
 
-1. Start three AJFS servers A, B and C; kill server C; client a on server A creates file x; restart server C.
+\begin{enumerate}
+    \item AJFS is running with three servers $A$, $B$ and $C$; we kill server
+        $C$; client $a$ on server $A$ creates file $x$; we then restart server
+        $C$.
+    \item AJFS is running with three servers $A$, $B$ and $C$; client $a$
+        on server $A$ creates file $x$ and starts writing to it. While writing, we kill server
+        $C$. Client $a$ then completes $x$ and we restart server $C$.
+\end{enumerate}
 
-\emph{Result}: client c on Server C can get file x automatically.
+In both cases, we were able to successfully retrieve a complete and accurate
+file $x$ on server $C$.
 
-The test proves AJFS's robustness: server can join and crash randomly, but file consistency is kept among replicas.
+The test shows that AJFS is robust against a common occurance: a server dying
+while other operations continue. Consistency is still maintained across systems.
 
 \subsubsection{Write protection}
 
-Many distributed systems support mulitple simultaneous writes. TreadMarks~\cite{treadmarks} supports multiple writers; Bayou~\cite{bayou} askes each writer to provide dependency check and merge procedures.
-AJFS does not support multiple simultaneous writers though, this is mainly for simplicity reason. 
+Many distributed systems support mulitple simultaneous writes.
+TreadMarks~\cite{treadmarks} supports multiple writers; Bayou~\cite{bayou} askes
+each writer to provide dependency check and merge procedures.
+However, AJFS choosees to not permit this functionality to avoid the possibility
+of conflicts and to maintain simplicity.
 
-A possible solution to support multiple simultaneous writers in AJFS is copy on write. The write operation only writes to the local copy, and when the file is closed, the modifications is propagated to the replicas. We do not use this mechanism because the merge procedure on server the side may be complicated. Another solution to this issue is to keep different conflict versions of a single file. 
-However, we choose locks and only allow one writer to a file at one time, which is simple and the correctness is guaranteed.
+A possible solution to support multiple simultaneous writers in AJFS is copy on
+write. The write operation only writes to the local copy, and when the file is
+closed, the modifications is propagated to the replicas. We do not use this
+mechanism because the merge procedure on server the side may be complicated.
+Another solution to this issue is to keep different conflict versions of a
+single file. 
 
-We tested following test cases on AJFS:
+Instead, we chose locks and only allow one writer to a file at one time, which
+is simple and easier to maintain correctness. Given our non-collaborative
+expected use cases, this is also completely reasonable.
 
-1. Client a on server A writes to file x; at the same time client b on sever B opens file x for read.
+We tested many cases, drawing special attention to the following cases on AJFS
+with two servers $A$ and $B$:
+\begin{enumerate}
+\item Client $a$ on server $A$ writes to file $x$; at the same time client $b$ on
+sever $B$ opens file $x$ for read.
+\item Client $a$ on server $A$ writes to file $x$; at the same time client $b$ on
+sever $B$ opens file $x$ for write.
+\item Client $a$ on server $A$ reads file $x$; at the same time client $b$ on
+    sever $B$ deletes the folder which contains file $x$.
+\end{enumerate}
 
-2. Client a on server A writes to file x; at the same time client b on sever B opens file x for write.
-
-3. Client a on server A read file x; at the same time client b on sever B deletes the folder which contains file x.
-
-On AJFS, all the test cases work as expected; For test case 1, client b can open the file for read, because we allow one writer and multiple readers simultaneously. For test case 2, the request from client b is declined. For test case 3, AJFS denies the operation, specifies the folder is not empty. Hence we guarantee the file consistency on AJFS.
+On AJFS, all the test cases work as expected; For test case 1, client $b$ can
+not open the file for read, because we only allow one writer OR multiple
+readers. For test case 2, the request from client $b$ is similarly declined. For
+test case 3, AJFS denies the operation, specifying that there are no locks
+available. These results suggest that AJFS maintains file consistency in the
+presence of multiple interacting clients.
 
 \subsection{Performance}
 
-Performance is not the key motivation of AJFS. Use AJFS to sync up big files is not efficient, this is because AJFS needs to propagate the data to all the nodes during the write.
-However, AJFS supports big file sync up.
+Performance is \textbf{not} the key motivation of AJFS. Using AJFS to sync up
+big files is not efficient as AJFS needs to propagate the data to
+all the nodes during the initial write. However, in order to understand how to
+improve AJFS, it is useful to understand its current limitations.
 
-Figure \ref{fig:writeperf} shows the performance of AJFS write, which is measured using dd.
-There is a clear trend that with the number of AJFS nodes increasing,
-the write bandwidth of AJFS decreases. This is because although AJFS uses asynchronous write propagation, that it does not wait for the response from remote nodes,
-transfer the data itself adds additional overhead. 
-More nodes means more data needs to transfer, hence the performance degrades with the number of nodes increasing.
-That's why AJFS does not suit for big files sync up.
+Figure~\ref{fig:writeperf} shows the average performance of a \texttt{write()}
+under AJFS with a varying number of nodes, as compared with a basic example
+using FUSE, and the base file system performance. These values are measured
+using the Unix command \texttt{dd}. The results remain consistent regardless of
+how much data is written with a single \texttt{write()} call.
 
-We can optimize the write performance by using additional thread, which queues up write requests and propagate them to remote nodes asynchronously.
-This will improve the write performance of AJFS and makes the write performance constant.
+There is a clear trend that with the number of AJFS nodes increasing, the write
+bandwidth of AJFS decreases. This is because although AJFS uses asynchronous
+write propagation in that it does not wait for the response from remote nodes'
+operations, it still must transfer the data to other hosts synchronously.
+As more nodes means more nodes to transfer to (as each transfer is unicast), the
+performance degrades with the number of nodes increasing. 
 
-Figure \ref{fig:readperf} shows the read performance of AJFS. It is constant with number of nodes increasing, and is also close to Fuse read performance.
-This is because AJFS handles read locally and does not propagate non-modification request.
+Figure~\ref{fig:readperf} shows performance of a \texttt{read()} operation under
+AJFS with a varying number of nodes. It is constant with respect to the number
+of nodes, and is also close to the base FUSE read performance.
+This is because AJFS handles \texttt{read()} operations locally and does not
+propagate non-modifying requests to other servers.
+
+In both graphs, there is a significant difference in performance between the
+local file system and FUSE/AJFS. The version of FUSE used on these systems
+clearly adds significant overhead, but this overhead resides in FUSE rather than
+in AJFS.
+
 %However, we compare the AJFS system with a local filesystem. The test is run by bonnie++ 1.03e~\cite{bonnie++}. Table \ref{table:performance} shows the AJFS bandwidth performance. 
-
-As we can see, since FUSE is a user space file system, it adds additional
- overhead to the file operations and hence the performance is worse than the local file system.
-Also, the write performance of AJFS is lower than FUSE with number of nodes increasing, as it needs to propagate the requests to all the remote nodes.
- This is a limitation with current AJFS implementation and can be resolved by propagating write requests asynchronously.
 
 \begin{figure}[Ht]
 \includegraphics[width=\linewidth]{readperf.pdf}
