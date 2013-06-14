@@ -39,12 +39,25 @@ On AJFS, all the test cases work as expected; For test case 1, client b can open
 
 \subsection{Performance}
 
-Performance is not the key motivation of AJFS. We do not use AJFS to sync up big files; If people want to do that, he/she should use a network transfer protocol instead. Due to that, we do not evaluate the AJFS bandwidth of network transfer.
-However, we compare the AJFS system with a local filesystem. The test is run by bonnie++ 1.03e~\cite{bonnie++}. Table \ref{table:performance} shows the AJFS bandwidth performance. 
+Performance is not the key motivation of AJFS. Use AJFS to sync up big files is not efficient, this is because AJFS needs to propagate the data to all the nodes during the write.
+However, AJFS supports big file sync up.
+Figure \ref{figure:writeperf} shows the performance of AJFS write. 
+We use dd to test the write performance. There is a clear trend that with number of AJFS nodes increasing,
+the write bandwidth decreases. This is because although AJFS uses asynchronous write propagation, that it does not wait for the response from remote nodes,
+transfer the data itself adds additional overhead. 
+More nodes means more data needs to transfer, hence the performance degrades with number of nodes increasing.
+That's why AJFS does not suit for big files sync up.
+We can optimize the write performance by using additional thread, which queues up write requests and propagate them to remote nodes asynchronously.
+This will improve the write performance of AJFS and makes the write performance constant.
 
-As we can see, since FUSE is a user space file system, it adds additional overhead to the file operations and hence the performance is worse than the local file system.
-Also, the write performance of AJFS is lower than FUSE, as it needs to handle thrift RPCs as well. AJFS handles read operation locally, and the performance is almost the same as base Ext3 performance.
-Since AJFS does not really care the performance and it's limited by FUSE, we regard the performance of AJFS acceptable. 
+\ref{figure:readperf} shows the read performance of AJFS. It is constant with number of nodes increasing, and is also close to Fuse read performance.
+This is because AJFS handles read locally and does not propagate non-modification request.
+%However, we compare the AJFS system with a local filesystem. The test is run by bonnie++ 1.03e~\cite{bonnie++}. Table \ref{table:performance} shows the AJFS bandwidth performance. 
+
+As we can see, since FUSE is a user space file system, it adds additional
+ overhead to the file operations and hence the performance is worse than the local file system.
+Also, the write performance of AJFS is lower than FUSE with number of nodes increasing, as it needs to propagate the requests to all the remote nodes.
+ This is a limitation with current AJFS implementation and can be resolved by propagating write requests asynchronously.
 
 
 \begin{table}[Ht]
