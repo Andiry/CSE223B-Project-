@@ -1,3 +1,8 @@
+/* AJFS - a simple distributed file system.
+ *
+ * By Joe DeBlasio and Andiry Xu
+ * For UCSD CSE223B, SP13
+ * */
 
 #include "HostManager.hpp"
 

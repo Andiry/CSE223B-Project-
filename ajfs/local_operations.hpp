@@ -1,3 +1,8 @@
+/* AJFS - a simple distributed file system.
+ *
+ * By Joe DeBlasio and Andiry Xu
+ * For UCSD CSE223B, SP13
+ * */
 #ifndef LOCAL_OPERATIONS_HPP_INC
 #define LOCAL_OPERATIONS_HPP_INC 1
 

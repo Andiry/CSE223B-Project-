@@ -1,3 +1,8 @@
+/* AJFS - a simple distributed file system.
+ *
+ * By Joe DeBlasio and Andiry Xu
+ * For UCSD CSE223B, SP13
+ * */
 #ifndef DFS_SERVER_HPP_INC
 #define DFS_SERVER_HPP_INC 1
 
@@ -6,7 +11,6 @@
 #include "local_operations.hpp"
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TNonblockingServer.h>
-//#include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
 
