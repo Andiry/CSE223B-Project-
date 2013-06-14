@@ -41,12 +41,14 @@ On AJFS, all the test cases work as expected; For test case 1, client b can open
 
 Performance is not the key motivation of AJFS. Use AJFS to sync up big files is not efficient, this is because AJFS needs to propagate the data to all the nodes during the write.
 However, AJFS supports big file sync up.
-Figure \ref{figure:writeperf} shows the performance of AJFS write. 
-We use dd to test the write performance. There is a clear trend that with number of AJFS nodes increasing,
-the write bandwidth decreases. This is because although AJFS uses asynchronous write propagation, that it does not wait for the response from remote nodes,
+
+Figure \ref{figure:writeperf} shows the performance of AJFS write, which is measured using dd.
+There is a clear trend that with the number of AJFS nodes increasing,
+the write bandwidth of AJFS decreases. This is because although AJFS uses asynchronous write propagation, that it does not wait for the response from remote nodes,
 transfer the data itself adds additional overhead. 
-More nodes means more data needs to transfer, hence the performance degrades with number of nodes increasing.
+More nodes means more data needs to transfer, hence the performance degrades with the number of nodes increasing.
 That's why AJFS does not suit for big files sync up.
+
 We can optimize the write performance by using additional thread, which queues up write requests and propagate them to remote nodes asynchronously.
 This will improve the write performance of AJFS and makes the write performance constant.
 
