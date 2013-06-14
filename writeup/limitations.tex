@@ -6,18 +6,36 @@ chosen for simplicity, as AJFS is able to leverage the buffered socket
 connection to queue requests. This approach requires, however, that every
 request be immediately forwarded on to other hosts.
 
-Operations that need to be fast (for instance, \texttt{write()}) thus suffer, as
-they need to be fully transferred to other hosts before the operation is able to
-return to the user. Even though the actual operation execution is asynchronous,
-the data transmission often dominates the time it takes to perform the
-operation, and that is fully synchronous.
+\subsection{Asynchronous Data Transmission}
 
-This results in bandwidth that is inversely proportional to the number of nodes
+Operations that need to be fast (for instance, \texttt{write()}) suffer from
+this behavior, as data must  be fully transferred to other hosts before the
+operation is able to return to the user. Even though the actual operation
+execution is asynchronous, the data transmission often dominates the time it
+takes to perform the operation, and that is fully synchronous.
+
+This results in bandwidth that is inversely related to the number of nodes
 that are active in the system. If AJFS queued outgoing requests and handled
-transmitting of the data asynchronously, bandwidth would be constant with
-respect to number of nodes. This change would require the introduction of a
-worker thread whose job would be to send data to other nodes. This change is
-the single largest opportunity for easy performance improvement.
+transmitting of the data asynchronously, bandwidth would decoupled from the 
+number of nodes in the system. This change would require the introduction of a
+worker thread whose job would be to send data to other nodes. This change is the
+single largest opportunity for easy performance improvement.
+
+\subsection{Synchronous RPC}
+
+While working on AJFS, we discovered an issue with Thrift that results in
+significant limitations for the system. Under some cases when a TCP connection
+fails,  
+
+%In addition to the normal arguments, most operations also require a host
+%operation counter. This counter allows remote operations to be idempotent. When
+%the Thrift server receives an RPC from a sending host with a counter value less
+%than or equal to that of a previous call, the server drops the operation instead
+%of acting on the request.
+
+%idempotent
+
+\subsection{Blocking on Node Join}
 
 While a node is joining, no changes can be made to the system as the joining
 node is syncing with the others. A current limitation of the system is that it
@@ -26,6 +44,8 @@ returns the error EAGAIN ("Resource temporarily unavailable"). While this
 behavior is safe, it may confuse applications that aren't prepared for that
 possibility, and this approach does not guarantee that they will repeatedly try
 their operation (causing unnecessary load on the system in the process).
+
+\subsection{Syncing independent of \texttt{rsync}}
 
 While the system does support view changes (of nodes joining, dying and total
 network partitions), the node joining algorithm relies heavily on \texttt{rsync}
@@ -36,10 +56,14 @@ implementation). To support efficient syncing on its own, the system could
 employ the common method of logging so that the log could be replayed on a
 remote server.
 
+\subsection{Support for "Partial" Partitions}
+
 The system also does not support "partial" partitions at all (meaning when
 the connection graph is connected, but not fully connected). To support this
 possibility, AJFS would need to support a gossip-like communication mechanism.
 It would also need to support sender-side operation queuing as described above.
+
+\subsection{Support for "Partial" Partitions}
 
 Finally, the system does not provide protection against adversarial or malicious
 systems. A future avenue of work would be to provide some level of protection

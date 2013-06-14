@@ -1,9 +1,25 @@
-We implement AJFS with C++, based on FUSE 2.9.2 "fusexmp\_fh" example and thrift. Figure \ref{fig:architecture} shows the architecture of AJFS. It consists of about 2800 lines of code, and can be divided into three major function components:
+AJFS is written in C++ and uses FUSE 2.9.2 and Apache Thrift.
+Figure~\ref{fig:architecture} shows the general architecture of AJFS. It
+consists of about 2800 lines of code, and can be divided into three major
+function components:
 
-\emph{Thrift Server}: Thrift server is the instance of a thrift host, which provides remote access services to each other. It provides interface for two kinds of remote services, file operations and lock services. File operations include all the fuse file operations, except for the "read" type operations mentioned in Section \ref{sec:designOverview}. Lock operations include \texttt{lock()}, \texttt{join()}, \texttt{requestJoinLock()} and \texttt{getJoinLock()}. Section \ref{sec:designOverview} and \ref{sec:joinProcedure} have introduced the services.
+\emph{Thrift Server}: The Thrift server listens for RPC calls from other
+instances of AJFS, providing operations for file manipulation, file locking and
+adding new servers to an AJFS system. The file manipulation operations include
+all standard modifying file operations. No "read" operations are included.
+See Section~\ref{sec:designOverview} and \ref{sec:joinProcedure} for more
+information about this functionality.
 
-\emph{Host Manager}: Host manager manages two categories of locks: join lock and file lock. Join lock is for server joining and file lock is for file protection. When a server joins in a cluster, the join lock needs to be acquired before doing any file rsync work, this guarantees the file consistency after server joined in. File lock is used to maintain file consistency with multiple users. When a file is locked for writing, it cannot be written by another user. Unlike other cloud storage applications which provide a copy of the original file to allow simultaneously editing, we use lock to achieve safety and simple implementation.
+\emph{Host Manager}: The host manager maintains the connections to the other
+servers in the AJFS system, and upon detecting a node's death, is in charge of
+releasing both file locks and the join lock.
 
-\emph{Fuse Server}: Fuse server handles the file operations in AJFS, which is inherited from FUSE, but we repack it to two components: local file operations and fuse operations. This is to simplify the seperation of file operation requests from local server and remote servers. A file operation request from local server will go into fuse operation handler, which will propagate the request to other servers as well as performing the local request. File operation requests from remote servers will go to thrift server handler, which will perform local file operations only.
+\emph{FUSE Server}: The FUSE server handles file operations originating from the
+local system. The FUSE server is responsible for forwarding on calls to
+perform local file operations, as well as forwarding on those calls to the other
+servers in the system.
 
-When AJFS is executed, we launch three threads to handle the three components seperately. This helps to make the function components easy to understand and debug.
+When AJFS is executed, we launch three threads to handle the three components
+seperately. This helps to make the function components easy to understand and
+debug.
+
