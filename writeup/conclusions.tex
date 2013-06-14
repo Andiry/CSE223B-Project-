@@ -1,13 +1,15 @@
 % TODO - this needs to be fleshed out.
 
 We've presented AJFS, a fully replicated network file system designed for
-similar use cases to cloud storage systems like Dropbox.
+loosely similar use cases to cloud storage systems like Dropbox.
 
 While performance is not a primary objective in systems like this, the system
-has significant performance limitations that prevent largescale adoption.
+has significant performance limitations that prevent large-scale adoption.
 Moreover, the lack of support for hosts without connectivity prohibits
-replacement of services like Dropbox.
+true replacement of services like Dropbox.
 
-None the less, AJFS provides a safe, fully replicated file system that supports
-view changes of several varieties.
+In its current state, the system is a slightly better match for replicating NFS
+across systems. None the less, AJFS successfully provides a safe, fully
+replicated file system that supports view changes of several varieties.
+
 

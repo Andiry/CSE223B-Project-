@@ -73,15 +73,27 @@ sever $B$ opens file $x$ for read.
 \item Client $a$ on server $A$ writes to file $x$; at the same time client $b$ on
 sever $B$ opens file $x$ for write.
 \item Client $a$ on server $A$ reads file $x$; at the same time client $b$ on
-    sever $B$ deletes the folder which contains file $x$.
+    sever $B$ tries to delete parent folders of file $x$.
 \end{enumerate}
 
 On AJFS, all the test cases work as expected; For test case 1, client $b$ can
 not open the file for read, because we only allow one writer OR multiple
 readers. For test case 2, the request from client $b$ is similarly declined. For
-test case 3, AJFS denies the operation, specifying that there are no locks
+test case 3, AJFS denies the operations, specifying that there are no locks
 available. These results suggest that AJFS maintains file consistency in the
 presence of multiple interacting clients.
+
+\subsubsection{Rapid Writing and Hash Testing}
+
+In order to develop some faith in Thrift and the approach taken by AJFS, we
+tested AJFS under a series of high-throughput "nightmare" scenarios. Tested
+across 8 nodes, we performed a series of randomized file writes originating from
+all servers. To verify correctness, MD5 hashes were calculated for all generated
+files across all of the servers. The hashes were then cross-checked across the
+servers to ensure that all nodes had identical files.
+
+This ended up being a great debugging test, but ultimately successfully handled
+dozens of writes up to 1 GB each without any data loss.
 
 \subsection{Performance}
 
@@ -113,6 +125,13 @@ In both graphs, there is a significant difference in performance between the
 local file system and FUSE/AJFS. The version of FUSE used on these systems
 clearly adds significant overhead, but this overhead resides in FUSE rather than
 in AJFS.
+
+It is worth noting that in the AJFS \texttt{read()} throughput graph, the tests
+are fairly obviously benefitting from a file buffer cache. Rather attempt to
+measure performance in an artificial-use scenario, we opted to allow the
+caching. We believe these speeds more accuraely reflect real-life usage
+patterns. FUSE does not add any additional caching, and instead we rely on the
+caching of the underlying file database.
 
 %However, we compare the AJFS system with a local filesystem. The test is run by bonnie++ 1.03e~\cite{bonnie++}. Table \ref{table:performance} shows the AJFS bandwidth performance. 
 
@@ -147,3 +166,14 @@ in AJFS.
 %\end{tabular}
 %\label{table:performance}
 %\end{table}
+
+\subsection{Usability}
+
+Anecdotally, AJFS feels completely useable, even across multiple nodes. The
+system feels responsive, and excepting very large file writes, the
+\texttt{write()} slowness doesn't carry over to a poor user experience.
+
+In the spirit of "eating our own dogfood", one author even wrote a significant
+portion of this paper through AJFS between two nodes. This was completed without
+any ill-effects.
+
