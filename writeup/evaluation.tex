@@ -61,6 +61,19 @@ As we can see, since FUSE is a user space file system, it adds additional
 Also, the write performance of AJFS is lower than FUSE with number of nodes increasing, as it needs to propagate the requests to all the remote nodes.
  This is a limitation with current AJFS implementation and can be resolved by propagating write requests asynchronously.
 
+\begin{figure}[Ht]
+\includegraphics[width=\linewidth]{readperf.pdf}
+\caption{AJFS Read Performance}
+\label{fig:readperf}
+\vspace{-5mm}
+\end{figure}
+
+\begin{figure}[Ht]
+\includegraphics[width=\linewidth]{writeperf.pdf}
+\caption{AJFS Write Performance}
+\label{fig:writeperf}
+\vspace{-5mm}
+\end{figure}
 
 \begin{table}[Ht]
 \caption{AJFS read/write performance (KB/s)}

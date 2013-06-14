@@ -38,13 +38,13 @@ def print_graph(filename):
     file.close(f)
 
     ax = plt.subplot(111)
-    ax.plot(nodes, base, '--', marker = '^', markersize = 15, linewidth = 5, label = 'Local')
-    ax.plot(nodes, fuse, '-.', marker = 'v', markersize = 15, linewidth = 5, label = 'Fuse')
-    ax.plot(nodes, ajfs, '-', marker = 's', markersize = 15, linewidth = 5, label = 'AJFS')
+    ax.plot(nodes, base, '--', color='y', marker = '^', markersize = 15, linewidth = 5, label = 'Local')
+    ax.plot(nodes, fuse, '-.', color='0.4', marker = 'v', markersize = 15, linewidth = 5, label = 'Fuse')
+    ax.plot(nodes, ajfs, '-', color='#fda566', marker = 's', markersize = 15, linewidth = 5, label = 'AJFS')
     ylabel = op + ' ' + 'Throughput (MB/s)'
-    ax.set_ylabel(ylabel, fontsize = '30')
-    plt.xticks(fontsize = '30')
-    plt.yticks(fontsize = '30')
+    ax.set_ylabel(ylabel, fontsize = '40')
+    plt.xticks(fontsize = '40')
+    plt.yticks(fontsize = '40')
     if op == 'Write':
 	ax.set_ylim([0, 9])
 	loc1 = 7
@@ -52,13 +52,13 @@ def print_graph(filename):
 	ax.set_ylim([0, 1100])
 	loc1 = 4
     ax.set_xlim([0.8, 8.2])
-    ax.set_xlabel("Number of AJFS nodes #", fontsize = '30')
-    ax.legend(loc = loc1, prop = {'size': 30})
+    ax.set_xlabel("Number of AJFS nodes #", fontsize = '40')
+    ax.legend(loc = loc1, prop = {'size': 40})
     plt.grid()
     plt.show()
 
 if len(sys.argv) < 2:
-    print "Parameter Error"
+    print "Format: $ python fig_throughput.py input_file"
     sys.exit(0)
 
 filename = sys.argv[1]
