@@ -3,7 +3,7 @@
 
 #include "DFS.h"
 #include "GlobalBucket.hpp"
-#include "LFS_operations.hpp"
+#include "local_operations.hpp"
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TNonblockingServer.h>
 //#include <thrift/server/TSimpleServer.h>
