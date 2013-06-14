@@ -50,7 +50,6 @@ struct GlobalBucket {
         me_.port     = port;
         randGen_.seed(std::chrono::system_clock::now().time_since_epoch().count());
         pthread_mutex_init(&hostLock_, NULL);
-        //pthread_cond_init(&joinCond_, pthread_condattr_t *cond_attr); 
     }
 };
 

@@ -30,13 +30,13 @@ void Host::setup() {
     if (state_ == ME || state_ == UNKNOWN)
         return;
 
-    //randGen_.seed(chrono::system_clock::now().time_since_epoch().count());
     counter_ = 0;
-    lastRand_ = 0;
+    farCounter_ = 0;
+
+    pthread_mutex_init(&connectLock_, NULL);
 
     socket_.reset(new apache::thrift::transport::TSocket(id_.hostname, id_.port));
     transport_.reset(new apache::thrift::transport::TFramedTransport(socket_));
-    //transport_.reset(new apache::thrift::transport::TBufferedTransport(socket_));
     protocol_.reset(new apache::thrift::protocol::TBinaryProtocol(transport_));
     client_.reset(new DFSClient(protocol_));
 
@@ -89,285 +89,176 @@ void Host::kill() {
     }
 }
 
-
-#define PRECHECK(ON_ME, ON_FAIL)      \
-    if (state_ == ME)      { ON_ME;   } \
-    if (state_ == UNKNOWN) { ON_ME;   } \
-    if (me_ == NULL)       { ON_FAIL; } \
-    if (state_ != ALIVE)   { ON_FAIL; } \
-    if (tryConnect()) {               \
-        try {
-#define POSTCHECK(ON_FAIL)                          \
-        } catch (apache::thrift::TException &tx) {  \
-            state_ = DEAD;                          \
-            { ON_FAIL; }                            \
-        }                                           \
-    }
-
 #define TRY(ON_ME, ON_FAIL, ON_SUCCESS, ATTEMPT)    \
     if (state_ == ME)      { ON_ME;   }             \
     if (state_ == UNKNOWN) { ON_ME;   }             \
     if (me_ == NULL)       { ON_FAIL; }             \
     if (state_ != ALIVE)   { ON_FAIL; }             \
-    int tryCount = 0; bool trySuccess = false;      \
+    int tryCount = 0;                               \
+    bool trySuccess = false;                        \
+    pthread_mutex_lock(&connectLock_);              \
     while (tryCount < 2 && tryConnect()) {          \
         try {                                       \
             { ATTEMPT; }                            \
-            trySuccess = true; break;               \
+            trySuccess = true;                      \
+            break;                                  \
         } catch (apache::thrift::TException &tx) {  \
             state_ = DEAD;                          \
         }                                           \
         ++tryCount;                                 \
     }                                               \
-    if (trySuccess) { ON_SUCCESS; } else {ON_FAIL;} \
+    pthread_mutex_unlock(&connectLock_);            \
+    if (trySuccess) { ON_SUCCESS; }                 \
+    else { ON_FAIL; }
 
 
 bool Host::ping() {
-    //#define TRY(ON_ME, ON_FAIL, ON_SUCCESS, ATTEMPT)
     TRY(return true, return false, return true, client_->ping(*me_));
-    /*
-    PRECHECK(return true, return false);
-    client_->ping(*me_);
-    POSTCHECK(return false);
-    return true;
-    */
 }
 
 void Host::unlock(const string& file) {
     TRY(return, return, return, client_->unlock(*me_, file));
-    //PRECHECK(return, return);
-    //client_->unlock(*me_, file);
-    //POSTCHECK(return);
 }
 
 void Host::die() {
     cerr << "Telling " << identifier() << " to die." << endl;
     TRY(return, return, return, client_->die(*me_));
-    //PRECHECK(, return);
-    //client_->die(*me_);
-    //POSTCHECK(return);
 }
 
 void Host::addServer(const DFS::HostID& newServer) {
-    //PRECHECK(return, return);
-    //client_->addServer(*me_, newServer);
-    //POSTCHECK(return);
     TRY(return, return, return, client_->addServer(*me_, newServer));
 }
 
 void Host::releaseJoinLock() {
-    //PRECHECK(return, return);
-    //client_->releaseJoinLock(*me_);
-    //POSTCHECK(return);
     TRY(return, return, return, client_->releaseJoinLock(*me_));
 }
 
 bool Host::lock(const string& file, LockType::type type) {
     bool ret;
     TRY(return true, return true, return ret, ret = client_->lock(*me_, file, type));
-    //PRECHECK(return true;, cerr << "First fail" << endl; return true);
-    //ret = client_->lock(*me_, file, type);
-    //cerr << "Succeeded to request lock on " << file << " from " << identifier() << endl;
-    //POSTCHECK(cerr << "Second lock fail" << endl; return true;);
-    //return ret;
 }
 
 void Host::join(set<DFS::HostID> & _return) {
-    //TRY(ON_ME, ON_FAIL, ON_SUCCESS, ATTEMPT)
-    //PRECHECK(return, return);
-    //client_->join(_return, *me_);
-    //POSTCHECK(return);
     TRY(return, return, return, client_->join(_return, *me_));
 }
 
 bool Host::requestJoinLock(string& _return) {
     cerr << "Requesting JoinLock from " << identifier() << "...";
     TRY(cerr << "Failed (me)" << endl; return false, cerr << "Failed (ON_FAIL)" << endl; return true, if(_return == "") return false; else return true;, client_->requestJoinLock(_return, *me_));
-    //PRECHECK(cerr << "Failed (me)" << endl; return false, cerr << "Failed (ON_FAIL)" << endl; return true);
-    //client_->requestJoinLock(_return, *me_);
-    //if(_return == "")
-    //    return false;
-    //POSTCHECK(return true);
     return true;
 }
 
 bool Host::getJoinLock(const DFS::HostID& newServer) {
     TRY(return true, return true,, return client_->getJoinLock(*me_, newServer));
-    //PRECHECK(return true, return true);
-    //return client_->getJoinLock(*me_, newServer);
-    //POSTCHECK(return true);
     return false;
 }
 
 void Host::releasedir(const string& path, const DFS::FUSEFileInfoTransport& fi) {
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->releasedir(*me_, path, fi, rand));
-    //PRECHECK(return, return);
-    //client_->releasedir(*me_, path, fi);
-    //POSTCHECK(return);
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->releasedir(*me_, path, fi, counter));
 }
 
 void Host::mkdir(const string& path, const int32_t mode) {
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->mkdir(*me_, path, mode, rand));
-    //PRECHECK(return, return);
-    //client_->mkdir(*me_, path, mode);
-    //POSTCHECK(return);
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->mkdir(*me_, path, mode, counter));
 }
 
 void Host::unlink(const string& path) {
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->unlink(*me_, path, rand));
-    //PRECHECK(return, return);
-    //client_->unlink(*me_, path);
-    //POSTCHECK(return);
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->unlink(*me_, path, counter));
 }
 
 void Host::rmdir(const string& path) {
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->rmdir(*me_, path, rand));
-    //PRECHECK(return, return);
-    //client_->rmdir(*me_, path);
-    //POSTCHECK(return);
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->rmdir(*me_, path, counter));
 }
 
 void Host::symlink(const string& from, const string& to) {
-    //PRECHECK(return, return);
-    //client_->symlink(*me_, from, to);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->symlink(*me_, from, to, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->symlink(*me_, from, to, counter));
 }
 
 void Host::rename(const string& from, const string& to) {
-    //PRECHECK(return, return);
-    //client_->rename(*me_, from, to);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->rename(*me_, from, to, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->rename(*me_, from, to, counter));
 }
 
 void Host::link(const string& from, const string& to) {
-    //PRECHECK(return, return);
-    //client_->link(*me_, from, to);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->link(*me_, from, to, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->link(*me_, from, to, counter));
 }
 
 void Host::chmod(const string& path, const int32_t mode) {
-    //PRECHECK(return, return);
-    //client_->chmod(*me_, path, mode);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->chmod(*me_, path, mode, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->chmod(*me_, path, mode, counter));
 }
 
 void Host::chown(const string& path, const int32_t uid, const int32_t gid) {
-    //PRECHECK(return, return);
-    //client_->chown(*me_, path, uid, gid);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->chown(*me_, path, uid, gid, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->chown(*me_, path, uid, gid, counter));
 }
 
 void Host::truncate(const string& path, const int64_t size) {
-    //PRECHECK(return, return);
-    //client_->truncate(*me_, path, size);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->truncate(*me_, path, size, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->truncate(*me_, path, size, counter));
 }
 
 void Host::ftruncate(const string& path, const int64_t size, const DFS::FUSEFileInfoTransport& fi) {
-    //PRECHECK(return, return);
-    //client_->ftruncate(*me_, path, size, fi);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->ftruncate(*me_, path, size, fi, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->ftruncate(*me_, path, size, fi, counter));
 }
 
 void Host::create(const string& path, const int32_t mode, const DFS::FUSEFileInfoTransport& fi) {
-    //PRECHECK(return, return);
-    //client_->create(*me_, path, mode, fi);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->create(*me_, path, mode, fi, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->create(*me_, path, mode, fi, counter));
 }
 
 void Host::write(const string& path, const vector<int8_t> & buf, const int64_t size, const int64_t offset, const DFS::FUSEFileInfoTransport& fi) {
-    //PRECHECK(return, return);
-    //client_->write(*me_, path, buf, size, offset, fi);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->write(*me_, path, buf, size, offset, fi, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->write(*me_, path, buf, size, offset, fi, counter));
 }
 
 void Host::flush(const string& path, const DFS::FUSEFileInfoTransport& fi) {
-    //PRECHECK(return, return);
-    //client_->flush(*me_, path, fi);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->flush(*me_, path, fi, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->flush(*me_, path, fi, counter));
 }
 
 void Host::release(const string& path, const DFS::FUSEFileInfoTransport& fi) {
-    //PRECHECK(return, return);
-    //client_->release(*me_, path, fi);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->release(*me_, path, fi, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->release(*me_, path, fi, counter));
 }
 
 void Host::flock(const string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t op) {
-    //PRECHECK(return, return);
-    //client_->flock(*me_, path, fi, op);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->flock(*me_, path, fi, op, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->flock(*me_, path, fi, op, counter));
 }
 
 void Host::fallocate(const string& path, const int64_t mode, const int64_t offset, const int64_t length, const DFS::FUSEFileInfoTransport& fi) {
-    //PRECHECK(return, return);
-    //client_->fallocate(*me_, path, mode, offset, length, fi);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, return, client_->fallocate(*me_, path, mode, offset, length, fi, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, return, client_->fallocate(*me_, path, mode, offset, length, fi, counter));
 }
 
 bool Host::fsync(const string& path, const int32_t isdatasync, const DFS::FUSEFileInfoTransport& fi) {
-    //PRECHECK(return true, return false);
-    //return client_->fsync(*me_, path, isdatasync, fi);
-    //POSTCHECK(return true);
-    int64_t rand = ++counter_;
-    TRY(return true, return false, , return client_->fsync(*me_, path, isdatasync, fi, rand));
+    int64_t counter = ++counter_;
+    TRY(return true, return false, , return client_->fsync(*me_, path, isdatasync, fi, counter));
     return false;
 }
 
 bool Host::open(const string& path, const DFS::FUSEFileInfoTransport& fi) {
-    //PRECHECK(return true, return false);
-    //return client_->open(*me_, path, fi);
-    //POSTCHECK(return true);
-    int64_t rand = ++counter_;
-    TRY(return true, return false, , return client_->open(*me_, path, fi, rand));
+    int64_t counter = ++counter_;
+    TRY(return true, return false, , return client_->open(*me_, path, fi, counter));
     return false;
 }
 
 bool Host::opendir(const string& path, const DFS::FUSEFileInfoTransport& fi) {
-    //PRECHECK(return true, return false);
-    //return client_->opendir(*me_, path, fi);
-    //POSTCHECK(return true);
-    int64_t rand = ++counter_;
-    TRY(return true, return false, , return client_->opendir(*me_, path, fi, rand));
+    int64_t counter = ++counter_;
+    TRY(return true, return false, , return client_->opendir(*me_, path, fi, counter));
     return false;
 }
 
 void Host::utimens(const string& path, const TimeSpec& atime, const TimeSpec& mtime) {
-    //PRECHECK(return, return);
-    //client_->utimens(*me_, path, atime, mtime);
-    //POSTCHECK(return);
-    int64_t rand = ++counter_;
-    TRY(return, return, , client_->utimens(*me_, path, atime, mtime, rand));
+    int64_t counter = ++counter_;
+    TRY(return, return, , client_->utimens(*me_, path, atime, mtime, counter));
 }
 
 

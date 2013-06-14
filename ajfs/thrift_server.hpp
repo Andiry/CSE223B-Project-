@@ -51,27 +51,27 @@ class DFSHandler : virtual public DFS::DFSIf {
     void requestJoinLock(std::string & _return, const DFS::HostID& sender);    
     bool getJoinLock(const DFS::HostID& sender, const DFS::HostID& newServer);
 
-    void releasedir(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t rand);
-    void mkdir(const DFS::HostID& sender, const std::string& path, const int32_t mode, const int64_t rand);    
-    void unlink(const DFS::HostID& sender, const std::string& path, const int64_t rand);    
-    void rmdir(const DFS::HostID& sender, const std::string& path, const int64_t rand);    
-    void symlink(const DFS::HostID& sender, const std::string& from, const std::string& to, const int64_t rand);    
-    void rename(const DFS::HostID& sender, const std::string& from, const std::string& to, const int64_t rand);    
-    void link(const DFS::HostID& sender, const std::string& from, const std::string& to, const int64_t rand);    
-    void chmod(const DFS::HostID& sender, const std::string& path, const int32_t mode, const int64_t rand);    
-    void chown(const DFS::HostID& sender, const std::string& path, const int32_t uid, const int32_t gid, const int64_t rand);    
-    void truncate(const DFS::HostID& sender, const std::string& path, const int64_t size, const int64_t rand);    
-    void ftruncate(const DFS::HostID& sender, const std::string& path, const int64_t size, const DFS::FUSEFileInfoTransport& fi, const int64_t rand);    
-    void create(const DFS::HostID& sender, const std::string& path, const int32_t mode, const DFS::FUSEFileInfoTransport& fi, const int64_t rand);    
-    void write(const DFS::HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const DFS::FUSEFileInfoTransport& fi, const int64_t rand);    
-    void flush(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t rand);    
-    void release(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t rand);    
-    void flock(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t op, const int64_t rand);    
-    void fallocate(const DFS::HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const DFS::FUSEFileInfoTransport& fi, const int64_t rand);    
-    bool fsync(const DFS::HostID& sender, const std::string& path, const int32_t isdatasync, const DFS::FUSEFileInfoTransport& fi, const int64_t rand);    
-    bool open(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t rand);    
-    bool opendir(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t rand);
-    void utimens(const DFS::HostID& sender, const std::string& path, const DFS::TimeSpec& atime, const DFS::TimeSpec& mtime, const int64_t rand);
+    void releasedir(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t counter);
+    void mkdir(const DFS::HostID& sender, const std::string& path, const int32_t mode, const int64_t counter);    
+    void unlink(const DFS::HostID& sender, const std::string& path, const int64_t counter);    
+    void rmdir(const DFS::HostID& sender, const std::string& path, const int64_t counter);    
+    void symlink(const DFS::HostID& sender, const std::string& from, const std::string& to, const int64_t counter);    
+    void rename(const DFS::HostID& sender, const std::string& from, const std::string& to, const int64_t counter);    
+    void link(const DFS::HostID& sender, const std::string& from, const std::string& to, const int64_t counter);    
+    void chmod(const DFS::HostID& sender, const std::string& path, const int32_t mode, const int64_t counter);    
+    void chown(const DFS::HostID& sender, const std::string& path, const int32_t uid, const int32_t gid, const int64_t counter);    
+    void truncate(const DFS::HostID& sender, const std::string& path, const int64_t size, const int64_t counter);    
+    void ftruncate(const DFS::HostID& sender, const std::string& path, const int64_t size, const DFS::FUSEFileInfoTransport& fi, const int64_t counter);    
+    void create(const DFS::HostID& sender, const std::string& path, const int32_t mode, const DFS::FUSEFileInfoTransport& fi, const int64_t counter);    
+    void write(const DFS::HostID& sender, const std::string& path, const std::vector<int8_t> & buf, const int64_t size, const int64_t offset, const DFS::FUSEFileInfoTransport& fi, const int64_t counter);    
+    void flush(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t counter);    
+    void release(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t counter);    
+    void flock(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t op, const int64_t counter);    
+    void fallocate(const DFS::HostID& sender, const std::string& path, const int64_t mode, const int64_t offset, const int64_t length, const DFS::FUSEFileInfoTransport& fi, const int64_t counter);    
+    bool fsync(const DFS::HostID& sender, const std::string& path, const int32_t isdatasync, const DFS::FUSEFileInfoTransport& fi, const int64_t counter);    
+    bool open(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t counter);    
+    bool opendir(const DFS::HostID& sender, const std::string& path, const DFS::FUSEFileInfoTransport& fi, const int64_t counter);
+    void utimens(const DFS::HostID& sender, const std::string& path, const DFS::TimeSpec& atime, const DFS::TimeSpec& mtime, const int64_t counter);
 
 };
 
