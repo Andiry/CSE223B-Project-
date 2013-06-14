@@ -15,6 +15,12 @@ are executed serially or in the proper order. This is because in a
 multi-threaded Thrift server, the server may schedule RPCs to different worker
 threads.
 
+In addition to the normal arguments, most operations also require a host
+operation counter. This counter allows remote operations to be idempotent. When
+the Thrift server receives an RPC from a sending host with a counter value less
+than or equal to that of a previous call, the server drops the operation instead
+of acting on the request.
+
 Since we must provide a causal ordering for operations from the same host, we
 use a single-threaded version of Thrift's Non-blocking server. Since it can only
 service a single request at a time, and since it does not (usually) interrupt an
