@@ -23,14 +23,17 @@ inline string DFSHandler::convert(const string& path) {
 }
 
 #define randCheck() \
-if (globals_->hostMap_[sender].lastRand_ == rand) \
+/*cerr << "Checking " << globals_->hostMap_[sender].lastRand_ << " " << rand <<  * endl; */\
+if (globals_->hostMap_[sender].lastRand_ + 1 != rand) { \
+    /*cerr << "Bad value detected! " << globals_->hostMap_[sender].lastRand_ << " " << rand << endl; */\
+    globals_->hostMap_[sender].lastRand_ = rand; \
+    /*sleep(1);*/\
     return;\
+} \
 globals_->hostMap_[sender].lastRand_ = rand;
 
-#define boolRandCheck() \
-if (globals_->hostMap_[sender].lastRand_ == rand) \
-    return false;\
-globals_->hostMap_[sender].lastRand_ = rand;
+#define randUpdate() \
+++globals_->hostMap_[sender].lastRand_;
 
 bool DFSHandler::checkForDead(const HostID& sender) {
     if (globals_->hostMap_[sender].state_ == Host::State::DEAD) {
@@ -365,6 +368,7 @@ void DFSHandler::fallocate(const HostID& sender, const std::string& path, const 
 
 bool DFSHandler::fsync(const HostID& sender, const std::string& path, const int32_t isdatasync, const FUSEFileInfoTransport& fi, const int64_t rand) {
     announceOperation("fsync", sender, path);
+    randUpdate();
     if (checkForDead(sender)) return false;
     fuse_file_info ffi;
     ffit2ffi(fi, ffi);
@@ -377,6 +381,7 @@ bool DFSHandler::fsync(const HostID& sender, const std::string& path, const int3
 
 bool DFSHandler::open(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
     announceOperation("open", sender, path);
+    randUpdate();
     if (checkForDead(sender)) return false;
 
     fuse_file_info ffi;
@@ -390,6 +395,7 @@ bool DFSHandler::open(const HostID& sender, const std::string& path, const FUSEF
 bool DFSHandler::opendir(const HostID& sender, const std::string& path, const FUSEFileInfoTransport& fi, const int64_t rand) {
 
     announceOperation("opendir", sender, path);
+    randUpdate();
     if (checkForDead(sender)) return false;
 
     fuse_file_info ffi;

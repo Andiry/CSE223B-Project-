@@ -77,6 +77,7 @@ class Host {
     boost::shared_ptr<DFS::DFSClient> client_;
     
     std::mt19937_64 randGen_;
+    int64_t counter_;
 };
 
 #endif

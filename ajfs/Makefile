@@ -5,6 +5,8 @@ DFS_OBJ := $(patsubst %.cpp,%.o, $(DFS_SRC))
 
 BINS    := dfs_server dfs_client fusexmp_fh ajfs
 
+#FUSE_DIR=/classes/cse223b/sp13/mdeblasi/fuse
+#FUSE_PKGS=-D_FILE_OFFSET_BITS=64 -I$(FUSE_DIR)/include -pthread -L/lib -lfuse  
 FUSE_PKGS=`pkg-config fuse --cflags --libs`
 THRIFT_PKGS=`pkg-config thrift-nb libevent --cflags --libs`
 #THRIFT_PKGS := -L/usr/local/lib -lthriftnb -lthrift
