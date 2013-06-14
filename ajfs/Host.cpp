@@ -96,18 +96,19 @@ void Host::kill() {
     if (state_ != ALIVE)   { ON_FAIL; }             \
     int tryCount = 0;                               \
     bool trySuccess = false;                        \
-    pthread_mutex_lock(&connectLock_);              \
     while (tryCount < 2 && tryConnect()) {          \
+        pthread_mutex_lock(&connectLock_);              \
         try {                                       \
             { ATTEMPT; }                            \
             trySuccess = true;                      \
+            pthread_mutex_unlock(&connectLock_);    \
             break;                                  \
         } catch (apache::thrift::TException &tx) {  \
             state_ = DEAD;                          \
         }                                           \
+        pthread_mutex_unlock(&connectLock_);            \
         ++tryCount;                                 \
     }                                               \
-    pthread_mutex_unlock(&connectLock_);            \
     if (trySuccess) { ON_SUCCESS; }                 \
     else { ON_FAIL; }
 
@@ -149,8 +150,9 @@ bool Host::requestJoinLock(string& _return) {
 }
 
 bool Host::getJoinLock(const DFS::HostID& newServer) {
-    TRY(return true, return true,, return client_->getJoinLock(*me_, newServer));
-    return false;
+    bool ret = false;
+    TRY(return true, return true,, ret = client_->getJoinLock(*me_, newServer));
+    return ret;
 }
 
 void Host::releasedir(const string& path, const DFS::FUSEFileInfoTransport& fi) {
@@ -240,20 +242,23 @@ void Host::fallocate(const string& path, const int64_t mode, const int64_t offse
 
 bool Host::fsync(const string& path, const int32_t isdatasync, const DFS::FUSEFileInfoTransport& fi) {
     int64_t counter = ++counter_;
-    TRY(return true, return false, , return client_->fsync(*me_, path, isdatasync, fi, counter));
-    return false;
+    bool ret = false;
+    TRY(return true, return false, , ret = client_->fsync(*me_, path, isdatasync, fi, counter));
+    return ret;
 }
 
 bool Host::open(const string& path, const DFS::FUSEFileInfoTransport& fi) {
     int64_t counter = ++counter_;
-    TRY(return true, return false, , return client_->open(*me_, path, fi, counter));
-    return false;
+    bool ret = false;
+    TRY(return true, return false, , ret = client_->open(*me_, path, fi, counter));
+    return ret;
 }
 
 bool Host::opendir(const string& path, const DFS::FUSEFileInfoTransport& fi) {
     int64_t counter = ++counter_;
-    TRY(return true, return false, , return client_->opendir(*me_, path, fi, counter));
-    return false;
+    bool ret = false;
+    TRY(return true, return false, , ret = client_->opendir(*me_, path, fi, counter));
+    return ret;
 }
 
 void Host::utimens(const string& path, const TimeSpec& atime, const TimeSpec& mtime) {
