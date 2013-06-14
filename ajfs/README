@@ -46,3 +46,7 @@ I recommend running the system as follows:
     (this assumes that there exists a directory in the current directory named
     the same as the current hostname for every node in the cluster)
 
+You might need to specify the path to Thrift if you're system can't find the
+shared library on its own. Set LD_LIBRARY_PATH to the path that contains the
+shared library for thrift, and then start AJFS as before.
+
