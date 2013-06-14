@@ -133,7 +133,6 @@ caching. We believe these speeds more accuraely reflect real-life usage
 patterns. FUSE does not add any additional caching, and instead we rely on the
 caching of the underlying file database.
 
-%However, we compare the AJFS system with a local filesystem. The test is run by bonnie++ 1.03e~\cite{bonnie++}. Table \ref{table:performance} shows the AJFS bandwidth performance. 
 
 \begin{figure}[Ht]
 \includegraphics[width=\linewidth]{readperf.pdf}
@@ -149,23 +148,251 @@ caching of the underlying file database.
 \vspace{-5mm}
 \end{figure}
 
-%\begin{table}[Ht]
-%\caption{AJFS read/write performance (KB/s)}
-%\centering
-%\begin{tabular}{|p{0.9cm}|p{0.9cm}|p{0.9cm}|p{0.9cm}|p{0.9cm}|p{0.9cm}|}
-%\hline\hline
-%System & Byte Write & Block Write & Rewrite & Byte Read & Block Read \\
-%heading
-%\hline
-%Ext3	& 49090	& 55403	& 17766	& 45094	& 66464	\\
-%\hline
-%FUSE	& 33792	& 47490	& 15417	& 39853	& 78666	\\
-%\hline
-%AJFS	& 13972	& 19651	& 11383	& 41987	& 74125	\\
-%\hline
-%\end{tabular}
-%\label{table:performance}
-%\end{table}
+\subsection{FS Benchmarks with Bonnie++}
+
+We further do some limited testing of performance of AJFS with Bonnie++
+\cite{bonnie++}. Bonnie++ is a benchmarking tool designed to test file system
+performance by doing "database type" file access. It tests file creation,
+reading, writing and deleting files in a variety of patterns. For the most part,
+Bonnie++ tests are more information than is needed for testing AJFS, as
+performance of AJFS is so closely related to the performance of the underlying
+system.
+
+Tables~\ref{tab:bonnie-8n}, \ref{tab:bonnie-1n},
+\ref{tab:bonnie-fusexmp_fh} and \ref{tab:bonnie-nfs} present the results
+from running Bonnie++ with a total file size of 4GB under AJFS with eight nodes,
+AJFS with one node, a simple FUSE wrapper and the base file system. All systems
+use NFS to a remote 'black box' file server on the backend.
+
+For the most part, these results%
+\endnote{A full explanation of the Bonnie++ output is beyond the scope of this
+writeup, but more information is available at \url{http://www.coker.com.au/bonnie++/readme.html}
+}
+are consistent with the \texttt{dd} tests, and further show that writing
+operations all suffer relatively uniformly, while reading operations are
+relatively lightweight.
+
+\begin{table}[Ht]
+\centering
+\begin{tabular}{| c | c | c | c | c | c |}
+\hline
+\multicolumn{6}{|c|}{\bf Sequential Output}\\
+\hline
+\multicolumn{2}{|c|}{Per Char} &
+\multicolumn{2}{c|}{Block} &
+\multicolumn{2}{c|}{Rewrite} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & K/sec & \%CP \\
+\hline
+ 1500 & 3 & 1567 & 0 & 1481 & 0 \\
+\hline
+
+\multicolumn{4}{|c|}{\bf Sequential Input} & \multicolumn{2}{c|}{\bf Random}\\
+\hline
+\multicolumn{2}{|c|}{Per Char} &
+\multicolumn{2}{c|}{Block} &
+\multicolumn{2}{c|}{Seeks} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & /sec & \%CP \\
+\hline
+ 31354 & 63 & 41290 & 5 & 139.8 & 0 \\
+\hline
+
+\multicolumn{6}{|c|}{\bf Sequential Create}\\
+\hline
+\multicolumn{2}{|c|}{Create} &
+\multicolumn{2}{c|}{Read} &
+\multicolumn{2}{c|}{Delete} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & K/sec & \%CP \\
+\hline
+   74 & 0 & 16200 & 23 & 439 & 1 \\
+\hline
+
+\multicolumn{6}{|c|}{\bf Random Create}\\
+\hline
+\multicolumn{2}{|c|}{Create} &
+\multicolumn{2}{c|}{Read} &
+\multicolumn{2}{c|}{Delete} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & /sec & \%CP \\
+\hline
+  108 & 0 & 3264 & 5 & 367 & 1 \\
+\hline
+\end{tabular}
+\caption{Performance of AJFS with eight nodes as measured by Bonnie++}
+\label{tab:bonnie-8n}
+\end{table}
+
+
+
+
+
+
+
+
+\begin{table}[Ht]
+\centering
+\begin{tabular}{| c | c | c | c | c | c |}
+\hline
+\multicolumn{6}{|c|}{\bf Sequential Output}\\
+\hline
+\multicolumn{2}{|c|}{Per Char} &
+\multicolumn{2}{c|}{Block} &
+\multicolumn{2}{c|}{Rewrite} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & K/sec & \%CP \\
+\hline
+ 13986 & 27 & 19547 & 6 & 10306 & 4 \\
+\hline
+
+\multicolumn{4}{|c|}{\bf Sequential Input} & \multicolumn{2}{c|}{\bf Random}\\
+\hline
+\multicolumn{2}{|c|}{Per Char} &
+\multicolumn{2}{c|}{Block} &
+\multicolumn{2}{c|}{Seeks} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & /sec & \%CP \\
+\hline
+ 34123 & 68 & 44993 & 5 & 115.8 & 0 \\
+\hline
+
+\multicolumn{6}{|c|}{\bf Sequential Create}\\
+\hline
+\multicolumn{2}{|c|}{Create} &
+\multicolumn{2}{c|}{Read} &
+\multicolumn{2}{c|}{Delete} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & K/sec & \%CP \\
+\hline
+150 & 0 & 16781 & 22 & 1735 & 4 \\
+\hline
+
+\multicolumn{6}{|c|}{\bf Random Create}\\
+\hline
+\multicolumn{2}{|c|}{Create} &
+\multicolumn{2}{c|}{Read} &
+\multicolumn{2}{c|}{Delete} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & /sec & \%CP \\
+\hline
+219 & 0 & 3342 & 4 & 664 & 1 \\
+\hline
+\end{tabular}
+\caption{Performance of AJFS with one node as measured by Bonnie++}
+\label{tab:bonnie-1n}
+\end{table}
+
+
+
+
+\begin{table}[Ht]
+\centering
+\begin{tabular}{| c | c | c | c | c | c |}
+\hline
+\multicolumn{6}{|c|}{\bf Sequential Output}\\
+\hline
+\multicolumn{2}{|c|}{Per Char} &
+\multicolumn{2}{c|}{Block} &
+\multicolumn{2}{c|}{Rewrite} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & K/sec & \%CP \\
+\hline
+30722& 60 & 38081 & 14 & 18118 & 8 \\
+\hline
+
+\multicolumn{4}{|c|}{\bf Sequential Input} & \multicolumn{2}{c|}{\bf Random}\\
+\hline
+\multicolumn{2}{|c|}{Per Char} &
+\multicolumn{2}{c|}{Block} &
+\multicolumn{2}{c|}{Seeks} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & /sec & \%CP \\
+\hline
+40862 & 74 & 47330 & 4 & 138.2 & 0 \\
+\hline
+
+\multicolumn{6}{|c|}{\bf Sequential Create}\\
+\hline
+\multicolumn{2}{|c|}{Create} &
+\multicolumn{2}{c|}{Read} &
+\multicolumn{2}{c|}{Delete} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & K/sec & \%CP \\
+\hline
+6950 & 32 & ++ & ++ & 12324 & 30 \\
+\hline
+
+\multicolumn{6}{|c|}{\bf Random Create}\\
+\hline
+\multicolumn{2}{|c|}{Create} &
+\multicolumn{2}{c|}{Read} &
+\multicolumn{2}{c|}{Delete} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & /sec & \%CP \\
+\hline
+6679 & 31 & ++ & ++ & 12659 & 31 \\
+\hline
+\end{tabular}
+\caption{Performance of baseline \texttt{fusexmp\_fh} example as measured by Bonnie++}
+\label{tab:bonnie-fusexmp_fh}
+\end{table}
+
+
+
+
+
+\begin{table}[Ht]
+\centering
+\begin{tabular}{| c | c | c | c | c | c |}
+\hline
+\multicolumn{6}{|c|}{\bf Sequential Output}\\
+\hline
+\multicolumn{2}{|c|}{Per Char} &
+\multicolumn{2}{c|}{Block} &
+\multicolumn{2}{c|}{Rewrite} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & K/sec & \%CP \\
+\hline
+32215 & 59 & 38264 & 6 & 18068 & 7 \\
+\hline
+
+\multicolumn{4}{|c|}{\bf Sequential Input} & \multicolumn{2}{c|}{\bf Random}\\
+\hline
+\multicolumn{2}{|c|}{Per Char} &
+\multicolumn{2}{c|}{Block} &
+\multicolumn{2}{c|}{Seeks} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & /sec & \%CP \\
+\hline
+36931 & 71 & 54691 & 7 & 552.6 & 1 \\
+\hline
+
+\multicolumn{6}{|c|}{\bf Sequential Create}\\
+\hline
+\multicolumn{2}{|c|}{Create} &
+\multicolumn{2}{c|}{Read} &
+\multicolumn{2}{c|}{Delete} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & K/sec & \%CP \\
+\hline
+  313 & 2 & ++ & ++ & 2434 & 13 \\
+\hline
+
+\multicolumn{6}{|c|}{\bf Random Create}\\
+\hline
+\multicolumn{2}{|c|}{Create} &
+\multicolumn{2}{c|}{Read} &
+\multicolumn{2}{c|}{Delete} \\
+\hline
+K/sec & \%CP & K/sec & \%CP & /sec & \%CP \\
+\hline
+  438 & 3 & 4649 & 14 & 2918 & 10 \\
+\hline
+\end{tabular}
+\caption{Performance of baseline file system as measured by Bonnie++}
+\label{tab:bonnie-nfs}
+\end{table}
 
 \subsection{Usability}
 

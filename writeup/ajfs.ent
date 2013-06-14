@@ -1,8 +1,25 @@
-%\@doanenote {1}
-%macro:->Remember
-%to
-%use
-%endnotes,
-%not
-%footnotes!
-%\@endanenote 
+\@doanenote {1}
+macro:->A
+full
+explanation
+of
+the
+Bonnie++
+output
+is
+beyond
+the
+scope
+of
+this
+writeup,
+but
+more
+information
+is
+available
+at
+\url
+{http://www.coker.com.au/bonnie++/readme.html}
+
+\@endanenote 
