@@ -1,0 +1,48 @@
+AJFS Source Directory README
+by Joe DeBlasio and Andiry Xu, SP2013
+
+=============== CRITICAL SETUP ===============
+    SYSTEMS MUST BE ABLE TO SSH TO EACH OTHER WITHOUT A PASSWORD. If they can't,
+    the join procedure will fail.
+
+    The easiest way to set this up, assuming nodes share home directories (for
+    instance via NFS), is roughly:
+        $ mkdir -f ~/.ssh
+        $ ssh-keygen -t rsa -p -N "" -f ~/.ssh/id_rsa
+        $ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+    Then, you must ssh once to every machine that you want to use in the
+    cluster. (This is just to store every hosts info in ~/.ssh/known_hosts).
+
+    Also, please make sure that FUSE and Thrift are installed properly and can
+    be found by 'pkg-config'.
+
+=============== COMPILING ===============
+To compile, run:
+    $ make
+
+    (if you make any changes to a header file, make sure to remake with
+    "make -B"-- there's a bug in the Makefile wherein the header files aren't
+    seen as dependencies for cpp files that include them).
+
+=============== RUNNING ===============
+Once compiled, you can AJFS by running:
+    $ ./ajfs MNT_PT BACKUP_DIR LOCAL_HOSTNAME LOCAL_PORT [RM_HOSTNAME RM_PORT]
+
+    Where:
+        MNT_PT          - the directory you want to mount AJFS to.
+        BACKUP_DIR      - the backup database directory that AJFS serves from.
+        LOCAL_HOSTNAME  - the hostname that this system can be referred to as
+        LOCAL_PORT      - the port to listen on
+    and optionally:
+        RM_HOSTNAME     - the hostname of a node in a pre-existing AJFS cluster.
+        RM_PORT         - the port of the node in a pre-existing AJFS cluster.
+
+I recommend running the system as follows:
+    On the first node (say hostname "sysnet76"):
+        $ ./ajfs mnt `hostname` `hostname` 8900
+    On subsequent nodes:
+        $ ./ajfs mnt `hostname` `hostname` 8900 sysnet76 8900
+    (this assumes that there exists a directory in the current directory named
+    the same as the current hostname for every node in the cluster)
+
