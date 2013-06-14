@@ -42,7 +42,7 @@ On AJFS, all the test cases work as expected; For test case 1, client b can open
 Performance is not the key motivation of AJFS. Use AJFS to sync up big files is not efficient, this is because AJFS needs to propagate the data to all the nodes during the write.
 However, AJFS supports big file sync up.
 
-Figure \ref{figure:writeperf} shows the performance of AJFS write, which is measured using dd.
+Figure \ref{fig:writeperf} shows the performance of AJFS write, which is measured using dd.
 There is a clear trend that with the number of AJFS nodes increasing,
 the write bandwidth of AJFS decreases. This is because although AJFS uses asynchronous write propagation, that it does not wait for the response from remote nodes,
 transfer the data itself adds additional overhead. 
@@ -52,7 +52,7 @@ That's why AJFS does not suit for big files sync up.
 We can optimize the write performance by using additional thread, which queues up write requests and propagate them to remote nodes asynchronously.
 This will improve the write performance of AJFS and makes the write performance constant.
 
-\ref{figure:readperf} shows the read performance of AJFS. It is constant with number of nodes increasing, and is also close to Fuse read performance.
+Figure \ref{fig:readperf} shows the read performance of AJFS. It is constant with number of nodes increasing, and is also close to Fuse read performance.
 This is because AJFS handles read locally and does not propagate non-modification request.
 %However, we compare the AJFS system with a local filesystem. The test is run by bonnie++ 1.03e~\cite{bonnie++}. Table \ref{table:performance} shows the AJFS bandwidth performance. 
 
@@ -75,20 +75,20 @@ Also, the write performance of AJFS is lower than FUSE with number of nodes incr
 \vspace{-5mm}
 \end{figure}
 
-\begin{table}[Ht]
-\caption{AJFS read/write performance (KB/s)}
-\centering
-\begin{tabular}{|p{0.9cm}|p{0.9cm}|p{0.9cm}|p{0.9cm}|p{0.9cm}|p{0.9cm}|}
-\hline\hline
-System & Byte Write & Block Write & Rewrite & Byte Read & Block Read \\
+%\begin{table}[Ht]
+%\caption{AJFS read/write performance (KB/s)}
+%\centering
+%\begin{tabular}{|p{0.9cm}|p{0.9cm}|p{0.9cm}|p{0.9cm}|p{0.9cm}|p{0.9cm}|}
+%\hline\hline
+%System & Byte Write & Block Write & Rewrite & Byte Read & Block Read \\
 %heading
-\hline
-Ext3	& 49090	& 55403	& 17766	& 45094	& 66464	\\
-\hline
-FUSE	& 33792	& 47490	& 15417	& 39853	& 78666	\\
-\hline
-AJFS	& 13972	& 19651	& 11383	& 41987	& 74125	\\
-\hline
-\end{tabular}
-\label{table:performance}
-\end{table}
+%\hline
+%Ext3	& 49090	& 55403	& 17766	& 45094	& 66464	\\
+%\hline
+%FUSE	& 33792	& 47490	& 15417	& 39853	& 78666	\\
+%\hline
+%AJFS	& 13972	& 19651	& 11383	& 41987	& 74125	\\
+%\hline
+%\end{tabular}
+%\label{table:performance}
+%\end{table}
